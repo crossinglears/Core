@@ -27,16 +27,22 @@ Crossing Lears creates tools that aims to make game development in Unity Engine 
 - **[ReadOnly]** – Makes a field **readonly** in the **Inspector**
 
 ### Context Menus
-- **Autograb** – Fills all empty public/SerializedFields in the selected component  
+- `Autograb` – Fills all empty public/SerializedFields in the selected component  
   _Right-click on a component → Select **Autograb**_  
   _Undo changes with **CTRL+Z**_
-- **MoveToTop** – Moves a MonoBehaviour to the top of the component list  
+- `MoveToTop` – Moves a MonoBehaviour to the top of the component list  
   _Right-click on a MonoBehaviour → Select **MoveToTop**_
 
 ### Extensions
 - `Instantiate(Object)` – Simplifies object instantiation
 - `Destroy(Object)` – Streamlines object destruction
 - `Close(GameObject) / Open(GameObject)` – Easily toggle GameObject visibility
+
+### Extensions
+- ...soon
+  
+### Windows
+- ...soon
 
 ### MonoBehaviours
 - **PlatformDependent** – Restricts a GameObject to specific platforms
