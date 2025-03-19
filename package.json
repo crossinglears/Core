@@ -4,5 +4,11 @@
   "version": "1.0.0",
   "unity": "6000.0",
   "description": "The core component of Crossing Lears tools",
-  "dependencies": {}
+  "dependencies": {},
+
+  "author": {
+    "name": "Crossing Lears",
+    "email": "crossinglears@gmail.com"
+  }
+  
 }
