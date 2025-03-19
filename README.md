@@ -3,7 +3,7 @@
 
 The core component of Crossing Lears tools
 
-This package contains tools and extensions that will mostly be used by different tools created by Crossing Lears
+This package contains tools and extensions that will mostly be used by different tools created by [Crossing Lears](https://crossinglears.carrd.co/)
 
 ### Why you should use the Crossing Lears tools?
 Crossing Lears creates tools that aims to make game development in Unity Engine more convenient.
@@ -21,10 +21,10 @@ Crossing Lears creates tools that aims to make game development in Unity Engine 
 
 ## Features & Contents
 ### Attributes
-- **[Button]** – Exposes a method as a button in the **Inspector**
+- `[Button]` – Exposes a method as a button in the **Inspector**
   - ` [Button] `
   - ` [Button("Custom Label")] `
-- **[ReadOnly]** – Makes a field **readonly** in the **Inspector**
+- `[ReadOnly]` – Makes a field **readonly** in the **Inspector**
 
 ### Context Menus
 - `Autograb` – Fills all empty public/SerializedFields in the selected component  
@@ -45,7 +45,7 @@ Crossing Lears creates tools that aims to make game development in Unity Engine 
 - ...soon
 
 ### MonoBehaviours
-- **PlatformDependent** – Restricts a GameObject to specific platforms
+- `PlatformDependent` – Restricts a GameObject to specific platforms
 
 ---
 
