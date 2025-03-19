@@ -1,11 +1,12 @@
-# Crossing Lears - Core
-
+# Core
 <img src="https://github.com/user-attachments/assets/635f1ca3-ccb6-4b10-b55e-514b805c2d91" align="right" width="250">
 
-The **Core** package contains essential tools and extensions used across various **Crossing Lears** tools, designed to enhance and streamline game development in Unity.
+The core component of Crossing Lears tools
 
-## Why Use Crossing Lears Tools?
-Crossing Lears tools aim to make **Unity game development more efficient** by providing useful utilities, extensions, and workflow improvements.
+This package contains tools and extensions that will mostly be used by different tools created by Crossing Lears
+
+### Why you should use the Crossing Lears tools?
+Crossing Lears creates tools that aims to make game development in Unity Engine more convenient.
 
 ## Installation
 ### Unity 2019.2 or Later (via Unity Package Manager)
