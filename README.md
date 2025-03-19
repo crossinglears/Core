@@ -1,51 +1,46 @@
-# Core
+# Crossing Lears - Core
+
 <img src="https://github.com/user-attachments/assets/635f1ca3-ccb6-4b10-b55e-514b805c2d91" align="right" width="250">
 
-The core component of Crossing Lears tools
+The **Core** package contains essential tools and extensions used across various **Crossing Lears** tools, designed to enhance and streamline game development in Unity.
 
-This package contains tools and extensions that will mostly be used by different tools created by Crossing Lears
+## 🚀 Why Use Crossing Lears Tools?
+Crossing Lears tools aim to make **Unity game development more efficient** by providing useful utilities, extensions, and workflow improvements.
 
-### Why you should use the Crossing Lears tools?
-Crossing Lears creates tools that aims to make game development in Unity Engine more convenient.
+## 📦 Installation
+### Unity 2019.2 or Later (via Unity Package Manager)
+1. Open **Window** → **Package Manager**
+2. Click **Add package from git URL**
+3. Paste the following URL:
+   ```
+   https://github.com/crossinglears/Core.git#main
+   ```
 
-## Installation
-### (For Unity 2019.2 or later) Through Unity Package Manager
- * MenuItem - Window - Package Manager
- * Add package from git url
- * paste ```https://github.com/crossinglears/Core.git#main```
+---
 
-# Features/Contents
-- **Attributes**
-- **Context Menus**
-- **CustomEditors**
-- ... and more (soon)
+## 🛠 Features & Contents
+### ✅ Attributes
+- **[Button]** – Exposes a method as a button in the **Inspector**
+  - ` [Button] `
+  - ` [Button("Custom Label")] `
+- **[ReadOnly]** – Makes a field **readonly** in the **Inspector**
 
-## Interfaces
+### ✅ Context Menus
+- **Autograb** – Fills all empty public/SerializedFields in the selected component  
+  _Right-click on a component → Select **Autograb**_  
+  _Undo changes with **CTRL+Z**_
+- **MoveToTop** – Moves a MonoBehaviour to the top of the component list  
+  _Right-click on a MonoBehaviour → Select **MoveToTop**_
 
-## Monobehaviours
-> **PlatformDependent** - Add to gameobject to limit what platform if should be allowed in.
-- ... and more (soon)
+### ✅ Extensions
+- `Instantiate(Object)` – Simplifies object instantiation
+- `Destroy(Object)` – Streamlines object destruction
+- `Close(GameObject) / Open(GameObject)` – Easily toggle GameObject visibility
 
-## Context Menus
-> **Autograb**
--- Automatically fills all empty public/SerializedFields in the component selected
--- Accessed by right clicking a Component
--- Can undo changes with CTRL+Z
+### ✅ MonoBehaviours
+- **PlatformDependent** – Restricts a GameObject to specific platforms
 
-> **MoveToTop**
--- Moves a MonoBehaviour to the first item in the list of the components in a gameobject
--- Accessed by right clicking a MonoBehaviour
+---
 
-## Extensions
--- Instantiate (Object)
--- Destroy (Object)
--- Close and Open (GameObject)
+More features and improvements **coming soon**! 🚀
 
-## Attributes
-[Button]
-[Button(string)]
--- Used on methods to expose a button that executes them in the inspector
-
-[ReadOnly]
--- Makes a field unedittable in the inspector.
--- Used on fields
