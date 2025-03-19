@@ -1,6 +1,6 @@
 # Crossing Lears - Core
 
-![Crossing Lears Logo](https://github.com/user-attachments/assets/635f1ca3-ccb6-4b10-b55e-514b805c2d91)
+<img src="https://github.com/user-attachments/assets/635f1ca3-ccb6-4b10-b55e-514b805c2d91" align="right" width="250">
 
 The **Core** package contains essential tools and extensions used across various **Crossing Lears** tools, designed to enhance and streamline game development in Unity.
 
