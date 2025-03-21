@@ -29,7 +29,7 @@ Crossing Lears creates tools that aims to make game development in Unity Engine 
 ### Context Menus
 - `Autograb` – Fills all empty public/SerializedFields in the selected component  
   _Right-click on a component → Select **Autograb**_  
-  _Undo changes with **CTRL+Z**_
+  (Undo changes with **CTRL+Z**)
 - `MoveToTop` – Moves a MonoBehaviour to the top of the component list  
   _Right-click on a MonoBehaviour → Select **MoveToTop**_
 
