@@ -41,11 +41,15 @@ Crossing Lears creates tools that aims to make game development in Unity Engine 
 ### Extensions
 - ...soon
   
+### Base Classes
+- `Pool` – Simple gameobject pool
+
 ### Windows
 - ...soon
 
 ### MonoBehaviours
 - `PlatformDependent` – Restricts a GameObject to specific platforms
+- `OnEnableScript` – Exposes gameobject OnEnable and OnDisable events in the editor
 
 ---
 
