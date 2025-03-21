@@ -1,7 +1,7 @@
 {
   "name": "com.crossinglears.core",
   "displayName": "Crossing Lears Core",
-  "version": "1.0.0",
+  "version": "0.4.0",
   "unity": "6000.0",
   "description": "The core component of Crossing Lears tools",
   "dependencies": {},
