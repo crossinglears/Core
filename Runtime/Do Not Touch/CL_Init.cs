@@ -7,7 +7,7 @@ namespace CrossingLears
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void OnGameStart()
         {
-            Debug.Log("Game Started!");
+            Debug.Log("Crossing Lears: Game Started!");
         }
     }
 }
