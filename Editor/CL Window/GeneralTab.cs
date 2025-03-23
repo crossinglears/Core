@@ -14,9 +14,21 @@ namespace CrossingLears
         public override void DrawContent()
         {
             GUILayout.Label("General Settings");
-            if (GUILayout.Button("Update Core", GUILayout.Height(30)))
+            
+            if (GUILayout.Button(new GUIContent("Update Core", "Installs or update https://github.com/crossinglears/Core.git#main"), GUILayout.Height(30)))
             {
                 InstallCorePackage();
+            }
+
+            GUILayout.Space(30);            
+            GUILayout.Label("Thank you for supporting this tool\nFor inquiries, feedback or suggestions:");
+            if(GUILayout.Button("Visit Website"))
+            {
+                if (EditorUtility.DisplayDialog("Open url", 
+                    "Open \"https://crossinglears.carrd.co/\" with your browser?", "Yes", "No"))
+                {
+                    Application.OpenURL("https://crossinglears.carrd.co/");
+                }
             }
         }
 

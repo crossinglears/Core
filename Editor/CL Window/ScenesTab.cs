@@ -43,6 +43,7 @@ namespace CrossingLears
 
         public override void DrawContent()
         {
+            EditorGUIUtility.labelWidth = 80;
             if (AllScenePaths == null || AllScenePaths.Length == 0)
             {
                 EditorGUILayout.LabelField("No scenes found.");
@@ -60,8 +61,7 @@ namespace CrossingLears
                     
                     var split = path.Split('/');
                     var key = split[split.Length - 1];
-
-                    EditorGUILayout.LabelField(key, GUILayout.ExpandWidth(true));
+                    EditorGUILayout.LabelField(key, GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
                         
                     if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20))) 
                     {
@@ -74,12 +74,18 @@ namespace CrossingLears
                     }
                     if (GUILayout.Button("Open Scene", GUILayout.Width(100)))
                     {
-                        UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
+                        if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                        {
+                            UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
+                        }
                     }
 
                     if (GUILayout.Button("Open Additive", GUILayout.Width(100)))
                     {
-                        UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
+                        if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                        {
+                            UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
+                        }
                     }
 
                     EditorGUILayout.EndHorizontal();
@@ -87,6 +93,7 @@ namespace CrossingLears
                 EditorGUI.indentLevel--;
                 GUILayout.Space(10);
             }
+            EditorGUIUtility.labelWidth = 0;
         }
     }
 }

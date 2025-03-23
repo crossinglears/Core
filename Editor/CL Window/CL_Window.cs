@@ -1,6 +1,9 @@
 using UnityEditor;
 using UnityEngine;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace CrossingLears
 {
@@ -9,20 +12,16 @@ namespace CrossingLears
         public abstract string TabName { get; }
         public abstract void DrawContent();
 
-        public virtual void OnFocus(){}
-        public virtual void OnEnable(){}
+        public virtual void OnFocus() { }
+        public virtual void OnEnable() { }
     }
 
     public class CL_Window : EditorWindow
     {
         private int selectedTab = 0;
-        private List<CL_WindowTab> tabs = new List<CL_WindowTab> 
-        { 
-            new GeneralTab(),
-            new ScenesTab(),
-            new SaveSystemTab(),
-            new PackagesTab()
-        };
+        private List<CL_WindowTab> tabs = new List<CL_WindowTab>();
+        private Vector2 leftScrollPos;
+        private Vector2 rightScrollPos;
 
         [MenuItem("Crossing Lears/Open Window")]
         public static void ShowWindow()
@@ -32,24 +31,50 @@ namespace CrossingLears
 
         private void OnEnable()
         {
-            Debug.Log("CL Window: Enable");
-            tabs[selectedTab].OnEnable();
+            LoadTabs();
+            if (tabs.Count > 0)
+                tabs[selectedTab].OnEnable();
         }
 
         private void OnFocus()
         {
-            Debug.Log("CL Window: Focused");
-            tabs[selectedTab].OnFocus();
+            if (tabs.Count > 0)
+                tabs[selectedTab].OnFocus();
+        }
+
+        private void LoadTabs()
+        {
+            tabs.Clear();
+
+            IEnumerable<Type> tabTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(t => t.IsClass && !t.IsAbstract && typeof(CL_WindowTab).IsAssignableFrom(t));
+
+            foreach (Type type in tabTypes)
+            {
+                if (Activator.CreateInstance(type) is CL_WindowTab tabInstance)
+                {
+                    tabs.Add(tabInstance);
+                }
+            }
         }
 
         private void OnGUI()
         {
+            if (tabs.Count == 0)
+            {
+                EditorGUILayout.LabelField("No tabs available.", EditorStyles.boldLabel);
+                return;
+            }
+
             EditorGUILayout.BeginHorizontal();
 
-            // Left Tab Section (Fixed Width)
-            EditorGUILayout.BeginVertical(GUILayout.Width(100));
+            // Left Side
+            EditorGUILayout.BeginVertical(GUILayout.Width(120));
             GUILayout.Space(10);
-
+            
+            leftScrollPos = EditorGUILayout.BeginScrollView(leftScrollPos, GUILayout.Width(120), GUILayout.ExpandHeight(true));
+            
             for (int i = 0; i < tabs.Count; i++)
             {
                 GUIStyle tabStyle = new GUIStyle(EditorStyles.label)
@@ -73,7 +98,9 @@ namespace CrossingLears
                     tabs[selectedTab].OnFocus();
                 }
             }
-
+            
+            GUILayout.Space(30); 
+            EditorGUILayout.EndScrollView();
             EditorGUILayout.EndVertical();
 
             // Vertical Line Separator
@@ -81,20 +108,22 @@ namespace CrossingLears
             Rect lineRect = GUILayoutUtility.GetRect(2, Screen.height, GUILayout.Width(2));
             EditorGUI.DrawRect(lineRect, lineColor);
 
-            // Right Content Section
+            // Right Side
             EditorGUILayout.BeginVertical();
             GUILayout.Space(10);
-            GUILayout.Label($"{tabs[selectedTab].TabName}", EditorStyles.boldLabel);
+            GUILayout.Label(tabs[selectedTab].TabName, EditorStyles.boldLabel);
             EditorGUILayout.Space();
 
+            rightScrollPos = EditorGUILayout.BeginScrollView(rightScrollPos, GUILayout.ExpandHeight(true));
             tabs[selectedTab].DrawContent();
+            GUILayout.Space(20);
+            EditorGUILayout.EndScrollView();
 
             EditorGUILayout.EndVertical();
-
+            
             EditorGUILayout.EndHorizontal();
         }
 
-        // Helper method to create a texture for selected tab background
         private static Texture2D MakeTexture(int width, int height, Color color)
         {
             Texture2D texture = new Texture2D(width, height);
