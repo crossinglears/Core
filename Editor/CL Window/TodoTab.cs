@@ -24,6 +24,16 @@ namespace CrossingLears
         
         public override void OnEnable()
         {
+            DrawReordable();
+        }
+
+        public override void OnFocus()
+        {
+            DrawReordable();
+        }
+
+        private void DrawReordable()
+        {
             LoadTasks();
             reorderableList = new ReorderableList(todoTasks, typeof(TodoTask), true, true, false, false);
             
@@ -99,7 +109,7 @@ namespace CrossingLears
                 todoTasks.Add(new TodoTask { TaskName = "New Task" });
                 
                 isEditing = true;
-                editingIndex = todoTasks.Count - 1;
+                editingIndex = todoTasks.Count - 1; 
                 SaveTasks();
             }
             
@@ -122,14 +132,15 @@ namespace CrossingLears
                 {
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField( item.TaskName );
+                    
                     if (GUILayout.Button("Reassign"))
                     {
                         item.isDone = false;
                         todoTasks.Add(item);
                         finishedTasks.Remove(item);
                         SaveTasks();
-                        GUIUtility.ExitGUI();
-                        return;
+                        EditorGUILayout.EndHorizontal();
+                        break;
                     }
                     EditorGUILayout.EndHorizontal();
                 }
@@ -138,20 +149,31 @@ namespace CrossingLears
             {
                 EditorGUILayout.LabelField("Nothing here yet");
             }
+            
+            EditorGUILayout.Space(20);
             EditorGUI.indentLevel--;
         }
 
+        private const string TaskFilePath = "Assets/Editor/Development Files/Todo.json";
+
         private void SaveTasks()
         {
-            string json = JsonUtility.ToJson(new TodoTaskListWrapper { tasks = todoTasks, finished = finishedTasks });
-            EditorPrefs.SetString("TodoTab_Tasks", json);
+            string directory = System.IO.Path.GetDirectoryName(TaskFilePath);
+            if (!System.IO.Directory.Exists(directory))
+            {
+                System.IO.Directory.CreateDirectory(directory);
+            }
+
+            string json = JsonUtility.ToJson(new TodoTaskListWrapper { tasks = todoTasks, finished = finishedTasks }, true);
+            System.IO.File.WriteAllText(TaskFilePath, json);
+            AssetDatabase.Refresh();
         }
-        
+
         private void LoadTasks()
         {
-            if (EditorPrefs.HasKey("TodoTab_Tasks"))
+            if (System.IO.File.Exists(TaskFilePath))
             {
-                string json = EditorPrefs.GetString("TodoTab_Tasks");
+                string json = System.IO.File.ReadAllText(TaskFilePath);
                 TodoTaskListWrapper wrapper = JsonUtility.FromJson<TodoTaskListWrapper>(json);
                 if (wrapper != null)
                 {
@@ -160,7 +182,7 @@ namespace CrossingLears
                 }
             }
         }
-        
+
         [System.Serializable]
         private class TodoTaskListWrapper
         {
