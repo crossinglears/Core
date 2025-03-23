@@ -8,9 +8,10 @@ using UnityEditor.PackageManager.Requests;
 
 namespace CrossingLears
 {
-    public class PackagesTab : CL_Tab
+    public class PackagesTab : CL_WindowTab
     {
         public override string TabName => "Packages";
+        
         private AddRequest addRequest;
         private string newPackageName = "";
         private static readonly string savePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "CrossingLears", "FavoritePackages.json");

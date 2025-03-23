@@ -4,19 +4,22 @@ using System.Collections.Generic;
 
 namespace CrossingLears
 {
-    public abstract class CL_Tab
+    public abstract class CL_WindowTab
     {
         public abstract string TabName { get; }
         public abstract void DrawContent();
+
+        public virtual void OnFocus(){}
+        public virtual void OnEnable(){}
     }
 
     public class CL_Window : EditorWindow
     {
         private int selectedTab = 0;
-        private List<CL_Tab> tabs = new List<CL_Tab> 
+        private List<CL_WindowTab> tabs = new List<CL_WindowTab> 
         { 
             new GeneralTab(),
-            new EventsTab(),
+            new ScenesTab(),
             new PackagesTab()
         };
 
@@ -24,6 +27,18 @@ namespace CrossingLears
         public static void ShowWindow()
         {
             GetWindow<CL_Window>("Crossing Lears");
+        }
+
+        private void OnEnable()
+        {
+            Debug.Log("CL Window: Enable");
+            tabs[selectedTab].OnEnable();
+        }
+
+        private void OnFocus()
+        {
+            Debug.Log("CL Window: Focused");
+            tabs[selectedTab].OnFocus();
         }
 
         private void OnGUI()
@@ -54,6 +69,7 @@ namespace CrossingLears
                 if (GUILayout.Button(tabs[i].TabName, tabStyle, GUILayout.ExpandWidth(true), GUILayout.Height(25)))
                 {
                     selectedTab = i;
+                    tabs[selectedTab].OnFocus();
                 }
             }
 

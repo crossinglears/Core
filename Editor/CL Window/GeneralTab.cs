@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CrossingLears
 {
-    public class GeneralTab : CL_Tab
+    public class GeneralTab : CL_WindowTab
     {
         private AddRequest addRequest;
 
