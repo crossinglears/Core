@@ -20,6 +20,7 @@ namespace CrossingLears
         { 
             new GeneralTab(),
             new ScenesTab(),
+            new SaveSystemTab(),
             new PackagesTab()
         };
 

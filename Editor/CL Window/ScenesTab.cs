@@ -65,7 +65,7 @@ namespace CrossingLears
                         
                     if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20))) 
                     {
-                        var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+                        var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
                         if (asset != null)
                         {
                             EditorGUIUtility.PingObject(asset);

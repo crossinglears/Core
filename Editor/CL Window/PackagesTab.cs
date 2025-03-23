@@ -11,20 +11,29 @@ namespace CrossingLears
     public class PackagesTab : CL_WindowTab
     {
         public override string TabName => "Packages";
-        
+
         private AddRequest addRequest;
         private string newPackageName = "";
         private static readonly string savePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "CrossingLears", "FavoritePackages.json");
 
         private List<(string Name, string Url)> FavoriteTabs = new List<(string, string)>();
 
-        public PackagesTab()
+        public override void OnFocus()
         {
+            base.OnFocus();
             LoadFavorites();
         }
         
         public override void DrawContent()
         {
+            EditorGUILayout.HelpBox("Enlist your frequently used packages to make it easier to install it on your future projects. The list is persistent and is stored in your computer", MessageType.Info);
+            EditorGUILayout.Space(5);
+            EditorGUIUtility.labelWidth = 80;
+            EditorGUILayout.TextField("Save Path", savePath, EditorStyles.textField);
+            EditorGUIUtility.labelWidth = 0;
+
+            EditorGUILayout.Space(10);
+            GUILayout.Label("Favorite Packages", EditorStyles.boldLabel);
             for (int i = 0; i < FavoriteTabs.Count; i++)
             {
                 var package = FavoriteTabs[i];
