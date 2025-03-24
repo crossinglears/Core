@@ -40,60 +40,70 @@ namespace CrossingLears
                 }
             }
         }
+public override void DrawContent()
+{
+    EditorGUIUtility.labelWidth = 80;
+    if (AllScenePaths == null || AllScenePaths.Length == 0)
+    {
+        EditorGUILayout.LabelField("No scenes found.");
+        return;
+    }
 
-        public override void DrawContent()
+    var openScenes = new HashSet<string>();
+    for (int i = 0; i < UnityEditor.SceneManagement.EditorSceneManager.sceneCount; i++)
+    {
+        openScenes.Add(UnityEditor.SceneManagement.EditorSceneManager.GetSceneAt(i).path);
+    }
+
+    foreach (var kvp in GroupedScenes)
+    {
+        GUILayout.Label(kvp.Key, EditorStyles.boldLabel);
+        EditorGUI.indentLevel++;
+
+        foreach (string path in kvp.Value)
         {
-            EditorGUIUtility.labelWidth = 80;
-            if (AllScenePaths == null || AllScenePaths.Length == 0)
-            {
-                EditorGUILayout.LabelField("No scenes found.");
-                return;
-            }
+            bool isOpen = openScenes.Contains(path);
+            Color previousColor = GUI.color;
+            GUI.color = isOpen ? Color.cyan : previousColor;
 
-            foreach (var kvp in GroupedScenes)
+            EditorGUILayout.BeginHorizontal();
+            var split = path.Split('/');
+            var key = split[split.Length - 1];
+            EditorGUILayout.LabelField(key, GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
+
+            if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20)))
             {
-                GUILayout.Label(kvp.Key, EditorStyles.boldLabel);
-                EditorGUI.indentLevel++;
-                
-                foreach(string path in kvp.Value)
+                var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+                if (asset != null)
                 {
-                    EditorGUILayout.BeginHorizontal();
-                    
-                    var split = path.Split('/');
-                    var key = split[split.Length - 1];
-                    EditorGUILayout.LabelField(key, GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
-                        
-                    if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20))) 
-                    {
-                        var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
-                        if (asset != null)
-                        {
-                            EditorGUIUtility.PingObject(asset);
-                            Selection.activeObject = asset;
-                        }
-                    }
-                    if (GUILayout.Button("Open Scene", GUILayout.Width(100)))
-                    {
-                        if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                        {
-                            UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
-                        }
-                    }
-
-                    if (GUILayout.Button("Open Additive", GUILayout.Width(100)))
-                    {
-                        if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                        {
-                            UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
-                        }
-                    }
-
-                    EditorGUILayout.EndHorizontal();
+                    EditorGUIUtility.PingObject(asset);
+                    Selection.activeObject = asset;
                 }
-                EditorGUI.indentLevel--;
-                GUILayout.Space(10);
             }
-            EditorGUIUtility.labelWidth = 0;
+            if (GUILayout.Button("Open Scene", GUILayout.Width(100)))
+            {
+                if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                {
+                    UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
+                }
+            }
+
+            if (GUILayout.Button("Open Additive", GUILayout.Width(100)))
+            {
+                if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                {
+                    UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
+            GUI.color = previousColor; // Restore original color
         }
+        EditorGUI.indentLevel--;
+        GUILayout.Space(10);
+    }
+    EditorGUIUtility.labelWidth = 0;
+}
+
     }
 }

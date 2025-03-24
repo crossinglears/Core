@@ -8,7 +8,7 @@ namespace CrossingLears
     public class TodoTab : CL_WindowTab
     {
         public override string TabName => "Todo";
-        
+
         private List<TodoTask> todoTasks = new();
         private List<TodoTask> finishedTasks = new();
         private bool isEditing = false;
@@ -126,22 +126,32 @@ namespace CrossingLears
         {
             EditorGUILayout.LabelField($"Finished Tasks ({finishedTasks.Count})", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            if(finishedTasks.Count > 0)
+
+            if (finishedTasks.Count > 0)
             {
-                foreach (TodoTask item in finishedTasks)
+                for (int i = finishedTasks.Count - 1; i >= 0; i--)
                 {
+                    TodoTask item = finishedTasks[i];
                     EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField( item.TaskName );
-                    
+                    EditorGUILayout.LabelField(item.TaskName);
+
+                    // Reassign Button
                     if (GUILayout.Button("Reassign"))
                     {
                         item.isDone = false;
                         todoTasks.Add(item);
-                        finishedTasks.Remove(item);
+                        finishedTasks.RemoveAt(i);
                         SaveTasks();
-                        EditorGUILayout.EndHorizontal();
                         break;
                     }
+
+                    if (GUILayout.Button("X", GUILayout.Width(25)))
+                    {
+                        finishedTasks.RemoveAt(i);
+                        SaveTasks();
+                        break;
+                    }
+
                     EditorGUILayout.EndHorizontal();
                 }
             }
@@ -149,10 +159,11 @@ namespace CrossingLears
             {
                 EditorGUILayout.LabelField("Nothing here yet");
             }
-            
+
             EditorGUILayout.Space(20);
             EditorGUI.indentLevel--;
         }
+
 
         private const string TaskFilePath = "Assets/Editor/Development Files/Todo.json";
 

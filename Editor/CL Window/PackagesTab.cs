@@ -29,7 +29,18 @@ namespace CrossingLears
             EditorGUILayout.HelpBox("Enlist your frequently used packages to make it easier to install it on your future projects. The list is persistent and is stored in your computer", MessageType.Info);
             EditorGUILayout.Space(5);
             EditorGUIUtility.labelWidth = 80;
-            EditorGUILayout.TextField("Save Path", savePath, EditorStyles.textField);
+
+            GUILayout.BeginHorizontal();
+            GUI.enabled = false;
+            EditorGUILayout.TextField("Save Path", savePath, EditorStyles.textField, GUILayout.ExpandWidth(true));
+            GUI.enabled = true;
+            if (GUILayout.Button("Copy", GUILayout.Width(60)))
+            {
+                EditorGUIUtility.systemCopyBuffer = savePath;
+                Debug.Log("Path copied: " + savePath);
+            }
+            GUILayout.EndHorizontal();
+
             EditorGUIUtility.labelWidth = 0;
 
             EditorGUILayout.Space(10);
