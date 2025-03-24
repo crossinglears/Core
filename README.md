@@ -33,19 +33,26 @@ Crossing Lears creates tools that aims to make game development in Unity Engine 
 - `MoveToTop` – Moves a MonoBehaviour to the top of the component list  
   _Right-click on a MonoBehaviour → Select **MoveToTop**_
 
+### Utilities
+- `Chance` - simple checkers for easy implementation of random events.
+- `CL_Logger` - Has a `CreateFloatingText2D()` and `CreateFloatingTextUI()` that will help you display texts easily.
+
 ### Extensions
 - `Instantiate(Object)` – Simplifies object instantiation
 - `Destroy(Object)` – Streamlines object destruction
 - `Close(GameObject) / Open(GameObject)` – Easily toggle GameObject visibility
-
-### Extensions
-- ...soon
+- `CSharp_Utilities` - Contains helper tools for C#
+   - `Shuffle`, `GetRandomFromList`, `RandomEnum`
   
 ### Base Classes
 - `Pool` – Simple gameobject pool
 
 ### Windows
-- ...soon
+- `CL_Window` - Contains tools and settings menu. You can easily add your own menu here by creting a `CL_WindowTab` and this window will find it on its own.
+   - `General`
+   - `Packages` - Saves your frequently used git packages.
+   - `Scenes` - Finds all scenes and display them in one tab for easier navigation.
+   - `Todo` - Contains a simple checklist that is saved in your project (for collaboration)
 
 ### MonoBehaviours
 - `PlatformDependent` – Restricts a GameObject to specific platforms
