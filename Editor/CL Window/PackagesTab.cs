@@ -27,7 +27,6 @@ namespace CrossingLears
         public override void DrawContent()
         {
             EditorGUILayout.HelpBox("Enlist your frequently used packages to make it easier to install it on your future projects. The list is persistent and is stored in your computer", MessageType.Info);
-            EditorGUILayout.Space(5);
             EditorGUIUtility.labelWidth = 80;
 
             GUILayout.BeginHorizontal();
@@ -51,7 +50,7 @@ namespace CrossingLears
                 EditorGUILayout.BeginHorizontal();
 
                 EditorGUILayout.LabelField(package.Name, GUILayout.Width(80));
-                FavoriteTabs[i] = (package.Name, EditorGUILayout.TextField(package.Url, GUILayout.ExpandWidth(true)));
+                FavoriteTabs[i] = (package.Name, EditorGUILayout.TextField(package.Url, GUILayout.ExpandWidth(true), GUILayout.MinWidth(30)));
                 if (GUILayout.Button("Remove", GUILayout.Width(60)))
                 {
                     FavoriteTabs.RemoveAt(i);
@@ -80,7 +79,7 @@ namespace CrossingLears
             
             // GUILayout.Space(10);
             EditorGUILayout.BeginHorizontal();
-            float buttonWidth = (EditorGUIUtility.currentViewWidth - 20 - 100) / 2; // Half width with spacing
+            float buttonWidth = (EditorGUIUtility.currentViewWidth - 130) / 2; // Half width with spacing
             if (GUILayout.Button("Reset List", GUILayout.Width(buttonWidth - 5)))
             {
                 if (EditorUtility.DisplayDialog("Reset Favorites", 
@@ -94,7 +93,7 @@ namespace CrossingLears
                 }
             }
 
-            GUILayout.Space(10); // Space between buttons
+            GUILayout.Space(5); // Space between buttons
 
             if (GUILayout.Button("Save List", GUILayout.Width(buttonWidth - 5)))
             {

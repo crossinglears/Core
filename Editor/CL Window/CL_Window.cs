@@ -109,20 +109,40 @@ namespace CrossingLears
             EditorGUI.DrawRect(lineRect, lineColor);
         }
 
+        // private void DrawRightPanel() // No margin
+        // {
+        //     EditorGUILayout.BeginVertical();
+        //     GUILayout.Space(10);
+        //     GUILayout.Label(tabs[selectedTab].TabName, EditorStyles.boldLabel);
+        //     EditorGUILayout.Space();
+            
+        //     rightScrollPos = EditorGUILayout.BeginScrollView(rightScrollPos, GUILayout.ExpandHeight(true));
+        //     tabs[selectedTab].DrawContent();
+        //     GUILayout.Space(20);
+        //     EditorGUILayout.EndScrollView();
+            
+        //     EditorGUILayout.EndVertical();
+        // }
+
         private void DrawRightPanel()
         {
             EditorGUILayout.BeginVertical();
             GUILayout.Space(10);
             GUILayout.Label(tabs[selectedTab].TabName, EditorStyles.boldLabel);
             EditorGUILayout.Space();
-            
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Space(5); // Left margin
             rightScrollPos = EditorGUILayout.BeginScrollView(rightScrollPos, GUILayout.ExpandHeight(true));
             tabs[selectedTab].DrawContent();
             GUILayout.Space(20);
             EditorGUILayout.EndScrollView();
-            
+            GUILayout.Space(5); // Right margin
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.EndVertical();
         }
+
 
         private static Texture2D GetTabBackgroundColor()
         {
