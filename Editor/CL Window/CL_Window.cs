@@ -17,20 +17,32 @@ namespace CrossingLears
 
     public class CL_Window : EditorWindow
     {
+        internal static CL_Window current;
+        
         private int selectedTab = 0;
-        private List<CL_WindowTab> tabs = new List<CL_WindowTab>();
+        internal List<CL_WindowTab> tabs = new List<CL_WindowTab>();
         private Vector2 leftScrollPos;
         private Vector2 rightScrollPos;
         private static Texture2D cachedTexture;
 
+        internal List<string> IgnoredTabs = new();
+        const string IGNOREDTABSKEY = "IgnoredTabs";
+
         [MenuItem("Crossing Lears/Open Window")]
         public static void ShowWindow()
         {
-            GetWindow<CL_Window>("Crossing Lears");
+            current = GetWindow<CL_Window>("Crossing Lears");
+        }
+
+        private void OnDisable()
+        {
+            EditorPrefs.SetString(IGNOREDTABSKEY, string.Join("+", IgnoredTabs));
         }
 
         private void OnEnable()
         {
+            current = this;
+            IgnoredTabs = EditorPrefs.GetString(IGNOREDTABSKEY).Split('+').ToList();
             LoadTabs();
             if (tabs.Count > 0)
                 tabs[selectedTab].OnEnable();
@@ -66,33 +78,38 @@ namespace CrossingLears
             DrawRightPanel();
             EditorGUILayout.EndHorizontal();
         }
-
+            
         private void DrawLeftPanel()
         {
             EditorGUILayout.BeginVertical(GUILayout.Width(120));
             GUILayout.Space(10);
             leftScrollPos = EditorGUILayout.BeginScrollView(leftScrollPos, GUILayout.Width(120), GUILayout.ExpandHeight(true));
-            
+
+            GUIStyle tabStyle = new GUIStyle(EditorStyles.label)
+            {
+                fontSize = 12,
+                alignment = TextAnchor.MiddleLeft,
+                normal = { textColor = Color.white },
+                padding = new RectOffset(10, 10, 5, 5)
+            };
+
             for (int i = 0; i < tabs.Count; i++)
             {
-                GUIStyle tabStyle = new GUIStyle(EditorStyles.label)
-                {
-                    fontSize = 12,
-                    alignment = TextAnchor.MiddleLeft,
-                    normal = { textColor = Color.white },
-                    padding = new RectOffset(10, 10, 5, 5)
-                };
+                CL_WindowTab item = tabs[i];
+                if (IgnoredTabs.Contains(item.TabName))
+                    continue;
 
+                GUIStyle currentStyle = new GUIStyle(tabStyle);
                 if (selectedTab == i)
-                    tabStyle.normal.background = GetTabBackgroundColor();
+                    currentStyle.normal.background = GetTabBackgroundColor();
 
-                if (GUILayout.Button(tabs[i].TabName, tabStyle, GUILayout.ExpandWidth(true), GUILayout.Height(25)))
+                if (GUILayout.Button(item.TabName, currentStyle, GUILayout.ExpandWidth(true), GUILayout.Height(25)))
                 {
                     if (selectedTab != i)
                     {
                         selectedTab = i;
-                        tabs[selectedTab].OnEnable();
-                        tabs[selectedTab].OnFocus();
+                        item.OnEnable();
+                        item.OnFocus();
                     }
                 }
             }
@@ -108,21 +125,6 @@ namespace CrossingLears
             Rect lineRect = GUILayoutUtility.GetRect(2, Screen.height, GUILayout.Width(2));
             EditorGUI.DrawRect(lineRect, lineColor);
         }
-
-        // private void DrawRightPanel() // No margin
-        // {
-        //     EditorGUILayout.BeginVertical();
-        //     GUILayout.Space(10);
-        //     GUILayout.Label(tabs[selectedTab].TabName, EditorStyles.boldLabel);
-        //     EditorGUILayout.Space();
-            
-        //     rightScrollPos = EditorGUILayout.BeginScrollView(rightScrollPos, GUILayout.ExpandHeight(true));
-        //     tabs[selectedTab].DrawContent();
-        //     GUILayout.Space(20);
-        //     EditorGUILayout.EndScrollView();
-            
-        //     EditorGUILayout.EndVertical();
-        // }
 
         private void DrawRightPanel()
         {

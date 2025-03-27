@@ -2,14 +2,13 @@ using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
-using System;
 
 namespace CrossingLears
 {
     public class GeneralTab : CL_WindowTab
     {
         public override string TabName => "General";
-        public override int Order => -100;
+        public override int Order => -1000;
 
         private AddRequest addRequest;
         private string feedbackMessage = "";
@@ -20,14 +19,18 @@ namespace CrossingLears
 
         public override void DrawContent()
         {
-            GUILayout.Label("General Settings");
+            InstallCorePackageButton();
 
-            if (GUILayout.Button(new GUIContent("Update Core", "Installs or updates https://github.com/crossinglears/Core.git#main"), GUILayout.Height(30)))
-            {
-                InstallCorePackage();
-            }
+            GUILayout.Space(10);
+            TabsChecklist();
 
-            GUILayout.Space(30);
+            GUILayout.Space(10);
+            WebsiteAndFeedbackSection();
+            GUILayout.Space(40);
+        }
+
+        private void WebsiteAndFeedbackSection()
+        {
             GUILayout.Label("Thank you for supporting this tool\nFor inquiries, feedback, or suggestions:");
 
             if (GUILayout.Button("Visit Website"))
@@ -74,26 +77,59 @@ namespace CrossingLears
             }
         }
 
-        private void InstallCorePackage()
+        private void InstallCorePackageButton()
         {
-            addRequest = Client.Add("https://github.com/crossinglears/Core.git#main");
-            EditorApplication.update += PackageProgress;
-        }
-
-        private void PackageProgress()
-        {
-            if (addRequest.IsCompleted)
+            if (GUILayout.Button(new GUIContent("Update Core", "Installs or updates https://github.com/crossinglears/Core.git#main"), GUILayout.Height(30)))
             {
-                if (addRequest.Status == StatusCode.Success)
+                addRequest = Client.Add("https://github.com/crossinglears/Core.git#main");
+                EditorApplication.update += PackageProgress;
+                
+                void PackageProgress()
                 {
-                    Debug.Log("Crossing Lears Core updated successfully!");
+                    if (addRequest.IsCompleted)
+                    {
+                        if (addRequest.Status == StatusCode.Success)
+                        {
+                            Debug.Log("Crossing Lears Core updated successfully!");
+                        }
+                        else
+                        {
+                            Debug.LogError("Failed to install Core package: " + addRequest.Error.message);
+                        }
+                        EditorApplication.update -= PackageProgress;
+                    }
                 }
-                else
-                {
-                    Debug.LogError("Failed to install Core package: " + addRequest.Error.message);
-                }
-                EditorApplication.update -= PackageProgress;
             }
         }
+
+        private void TabsChecklist()
+        {
+            CL_Window cL_Window = CL_Window.current;
+            GUILayout.Label("Menus to open", EditorStyles.boldLabel);
+
+            for (int i = 1; i < cL_Window.tabs.Count; i++)
+            {
+                CL_WindowTab tab = cL_Window.tabs[i];
+                bool isActive = !cL_Window.IgnoredTabs.Contains(tab.TabName); // Check if the tab is ignored
+
+                GUILayout.BeginHorizontal();
+                bool newIsActive = EditorGUILayout.Toggle(isActive, GUILayout.Width(20));
+                
+                if (newIsActive != isActive)
+                {
+                    if (newIsActive)
+                    {
+                        cL_Window.IgnoredTabs.Remove(tab.TabName);
+                    }
+                    else
+                    {
+                        cL_Window.IgnoredTabs.Add(tab.TabName);
+                    }
+                }
+                GUILayout.Label(tab.TabName);
+                GUILayout.EndHorizontal();
+            }
+        }
+
     }
 }
