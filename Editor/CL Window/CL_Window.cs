@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CrossingLears
+namespace CrossingLearsEditor
 {
     public abstract class CL_WindowTab
     {

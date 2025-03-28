@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
 
-namespace CrossingLears
+namespace CrossingLearsEditor
 {
     public class TodoTab : CL_WindowTab
     {

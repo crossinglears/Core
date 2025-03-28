@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace CrossingLears
+namespace CrossingLearsEditor
 {
     public class MoveToTop
     {

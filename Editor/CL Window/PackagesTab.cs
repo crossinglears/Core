@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 
-namespace CrossingLears
+namespace CrossingLearsEditor
 {
     public class PackagesTab : CL_WindowTab
     {
@@ -26,7 +26,7 @@ namespace CrossingLears
         
         public override void DrawContent()
         {
-            EditorGUILayout.HelpBox("Enlist your frequently used packages to make it easier to install it on your future projects. The list is persistent and is stored in your computer", MessageType.Info);
+            EditorGUILayout.HelpBox("Enlist your frequently used packages to make it easier to install it on your future projects. The list is persistent and is stored in your computer.", MessageType.Info);
             EditorGUIUtility.labelWidth = 80;
 
             GUILayout.BeginHorizontal();

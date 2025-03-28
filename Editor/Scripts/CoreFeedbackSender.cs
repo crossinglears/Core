@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
 
-namespace CrossingLears
+namespace CrossingLearsEditor
 {
     public static class CoreFeedbackSender
     {

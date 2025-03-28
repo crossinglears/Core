@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 
-namespace CrossingLears
+namespace CrossingLearsEditor
 {
     public class Autograb
     {

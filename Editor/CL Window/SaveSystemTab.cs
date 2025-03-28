@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CrossingLears
+namespace CrossingLearsEditor
 {
     public class SaveSystemTab : CL_WindowTab
     {

@@ -1,10 +1,10 @@
 ﻿using UnityEditor;
 
-namespace CrossingLears
+namespace CrossingLearsEditor
 {
     [CanEditMultipleObjects]
     [CustomEditor(typeof(UnityEngine.Object), true)]
-    public class CL_Editor : Editor
+    public class CL_Editor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
