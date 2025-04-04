@@ -124,19 +124,41 @@ namespace CrossingLearsEditor
                         }
                     }
 
-                    if (GUILayout.Button("Additive", GUILayout.Width(60)))
+                    if(isOpen)
                     {
-                        if (EditorApplication.isPlaying)
+                        if (GUILayout.Button("Close", GUILayout.Width(60)))
                         {
-                            UnityEngine.SceneManagement.SceneManager.LoadScene(path, UnityEngine.SceneManagement.LoadSceneMode.Additive);
-                        }
-                        else
-                        {
-                            if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                            if (EditorApplication.isPlaying)
                             {
-                                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
+                                UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(path);
+                            }
+                            else
+                            {
+                                if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                                {
+                                    var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path);
+                                    UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);
+                                }
                             }
                         }
+                    }
+                    else
+                    {
+                        if (GUILayout.Button("Additive", GUILayout.Width(60)))
+                        {
+                            if (EditorApplication.isPlaying)
+                            {
+                                UnityEngine.SceneManagement.SceneManager.LoadScene(path, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+                            }
+                            else
+                            {
+                                if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                                {
+                                    UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
+                                }
+                            }
+                        }
+
                     }
                     GUI.enabled = true;
 
