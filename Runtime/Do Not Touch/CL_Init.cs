@@ -9,9 +9,9 @@ namespace CrossingLears
         {
             Debug.Log("Crossing Lears: Game Started!");
 
-            foreach (var item in MonoBehaviour.FindObjectsByType<ClosedAtStart>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (StartState obj in Object.FindObjectsByType<StartState>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             {
-                item.close();
+                obj.gameObject.SetActive(obj.startState);
             }
         }
     }
