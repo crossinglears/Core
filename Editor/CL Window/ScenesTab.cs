@@ -93,8 +93,16 @@ namespace CrossingLearsEditor
                     }
                     
                     GUI.color = isOpen ? Color.cyan : previousColor;
-                    // EditorGUILayout.LabelField(key, GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
-                    EditorGUILayout.LabelField(new GUIContent(key, path), GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
+                    Rect rect = EditorGUILayout.GetControlRect(GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
+                    EditorGUI.LabelField(rect, new GUIContent(key, path));
+
+                    if (Event.current.type == EventType.ContextClick && rect.Contains(Event.current.mousePosition))
+                    {
+                        GenericMenu menu = new GenericMenu();
+                        menu.AddItem(new GUIContent("Copy Path"), false, () => EditorGUIUtility.systemCopyBuffer = path);
+                        menu.ShowAsContext();
+                        Event.current.Use();
+                    }
 
                     if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20)))
                     {
