@@ -26,6 +26,7 @@ namespace CrossingLearsEditor
         public List<Path> TemplatesPath = new()
         {
             new("Script Template", EditorApplication.applicationContentsPath + "/Resources/ScriptTemplates/"),
+            new("Manifest Template", EditorApplication.applicationPath.Replace("Unity.exe", "") + @"Data\Resources\PackageManager\Editor\manifest.json"),
         };
 
 
@@ -47,7 +48,7 @@ namespace CrossingLearsEditor
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(20);
-                GUILayout.Label(item.Name, EditorStyles.boldLabel, GUILayout.Width(100));
+                GUILayout.Label(item.Name, EditorStyles.boldLabel, GUILayout.Width(130));
 
                 GUILayout.Label(item.DirectoryPath, GUILayout.MinWidth(20));
                 if(GUILayout.Button("Open", GUILayout.Width(50)))
