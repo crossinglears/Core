@@ -95,6 +95,7 @@ namespace CrossingLearsEditor
                 sceneMethods = RebuildMethods(sceneMethodIDs, MethodType.SceneObject);
                 sceneMethodsBuilt = true;
             }
+            GUILayout.Space(10);
 
             GUILayout.Label("Asset Commands", EditorStyles.boldLabel);
             if (assetMethods.Count > 0)
@@ -110,6 +111,7 @@ namespace CrossingLearsEditor
 
             GUILayout.Space(10);
             EditorGUILayout.HelpBox("Finds all method with \"CL_Command\" attribute inside all classes that have \"CL_CommandHolder\" attribute", MessageType.Info, true);
+            GUILayout.Space(40);
         }
 
         private List<(MethodInfo, CL_CommandAttribute)> FindCommandMethods(MethodType type)
@@ -153,6 +155,7 @@ namespace CrossingLearsEditor
                 
                 // Label showing the class name
                 // GUILayout.Label(method.DeclaringType.Name, GUILayout.Width(60));
+                GUILayout.Space(10);
                 GUILayout.Label(method.DeclaringType.Name, GUILayout.Width(60), GUILayout.ExpandWidth(false));
                 
                 // Button for the method
@@ -171,7 +174,8 @@ namespace CrossingLearsEditor
                     }
                     else if (type == MethodType.SceneObject)
                     {
-                        var instances = UnityEngine.Object.FindObjectsOfType(method.DeclaringType);
+                        UnityEngine.Object[] instances = UnityEngine.Object.FindObjectsByType(method.DeclaringType, FindObjectsInactive.Include, FindObjectsSortMode.None);
+
                         foreach (var instance in instances)
                         {
                             method.Invoke(instance, null);
@@ -180,7 +184,7 @@ namespace CrossingLearsEditor
                     }
                 }
                 
-                GUILayout.EndHorizontal(); // End the horizontal layout
+                GUILayout.EndHorizontal();
             }
         }
     }

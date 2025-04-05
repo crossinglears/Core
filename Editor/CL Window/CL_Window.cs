@@ -47,7 +47,6 @@ namespace CrossingLearsEditor
 
         private void Awake()
         {
-            Debug.Log("Awake");
             foreach(var item in tabs)
             {
                 item.Awake();
