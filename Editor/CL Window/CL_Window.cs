@@ -13,6 +13,8 @@ namespace CrossingLearsEditor
         public virtual int Order => 0;
         public virtual void OnFocus() { }
         public virtual void OnEnable() { }
+        public virtual void Awake() { }
+        public virtual void OnDisable() { }
     }
 
     public class CL_Window : EditorWindow
@@ -26,7 +28,7 @@ namespace CrossingLearsEditor
         private static Texture2D cachedTexture;
 
         internal List<string> IgnoredTabs = new();
-        const string IGNOREDTABSKEY = "IgnoredTabs";
+        const string IGNOREDTABSKEY = "CL_Window.IgnoredTabs";
 
         [MenuItem("Crossing Lears/Open Window")]
         public static void ShowWindow()
@@ -34,9 +36,29 @@ namespace CrossingLearsEditor
             current = GetWindow<CL_Window>("Crossing Lears");
         }
 
+        [InitializeOnLoadMethod]
+        static void OnScriptReloaded()
+        {
+            EditorApplication.delayCall += () =>
+            {
+                current?.Awake();
+            };
+        }
+
+        private void Awake()
+        {
+            Debug.Log("Awake");
+            foreach(var item in tabs)
+            {
+                item.Awake();
+            }
+        }
+
         private void OnDisable()
         {
             EditorPrefs.SetString(IGNOREDTABSKEY, string.Join("+", IgnoredTabs));
+            if (tabs.Count > 0)
+                tabs[selectedTab].OnDisable();
         }
 
         private void OnEnable()

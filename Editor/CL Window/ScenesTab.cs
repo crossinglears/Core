@@ -59,7 +59,7 @@ namespace CrossingLearsEditor
             foreach (var kvp in GroupedScenes)
             {
                 GUILayout.Label(kvp.Key, EditorStyles.boldLabel);
-
+                
                 foreach (string path in kvp.Value)
                 {
                     bool isOpen = openScenes.Contains(path);
@@ -93,7 +93,8 @@ namespace CrossingLearsEditor
                     }
                     
                     GUI.color = isOpen ? Color.cyan : previousColor;
-                    EditorGUILayout.LabelField(key, GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
+                    // EditorGUILayout.LabelField(key, GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
+                    EditorGUILayout.LabelField(new GUIContent(key, path), GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
 
                     if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20)))
                     {

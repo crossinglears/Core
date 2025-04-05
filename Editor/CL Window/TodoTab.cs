@@ -116,7 +116,6 @@ namespace CrossingLearsEditor
             reorderableList.DoLayoutList(); // Display the reorderable list
 
             GUILayout.Space(10);
-            
             DrawDoneTasks();
             
             EditorGUILayout.EndVertical();
@@ -142,6 +141,7 @@ namespace CrossingLearsEditor
                         todoTasks.Add(item);
                         finishedTasks.RemoveAt(i);
                         SaveTasks();
+                        EditorGUILayout.EndHorizontal();
                         break;
                     }
 
@@ -149,6 +149,7 @@ namespace CrossingLearsEditor
                     {
                         finishedTasks.RemoveAt(i);
                         SaveTasks();
+                        EditorGUILayout.EndHorizontal();
                         break;
                     }
 
