@@ -39,6 +39,57 @@ namespace CrossingLearsEditor
 
         private bool AutoReload;
 
+        public void CallAll(string commandName)
+        {
+            // Call methods from asset methods
+            foreach (var (method, attr) in assetMethods)
+            {
+                if (attr.Key == commandName || string.IsNullOrEmpty(attr.Key) && ObjectNames.NicifyVariableName(method.Name) == commandName)
+                {
+                    var instances = AssetDatabase.FindAssets($"t:{method.DeclaringType.Name}")
+                        .Select(guid => AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), method.DeclaringType));
+
+                    foreach (var instance in instances)
+                    {
+                        method.Invoke(instance, null);
+                        EditorUtility.SetDirty(instance);
+                    }
+                }
+            }
+
+            // Call methods from scene methods
+            foreach (var (method, attr) in sceneMethods)
+            {
+                if (attr.Key == commandName || string.IsNullOrEmpty(attr.Key) && ObjectNames.NicifyVariableName(method.Name) == commandName)
+                {
+                    UnityEngine.Object[] sceneInstances = UnityEngine.Object.FindObjectsByType(method.DeclaringType, FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+                    foreach (var instance in sceneInstances)
+                    {
+                        method.Invoke(instance, null);
+                        EditorSceneManager.MarkSceneDirty(((Component)instance).gameObject.scene);
+                    }
+                }
+            }
+
+            // Call static methods
+            foreach (var (method, attr) in staticMethods)
+            {
+                if (attr.Key == commandName || string.IsNullOrEmpty(attr.Key) && ObjectNames.NicifyVariableName(method.Name) == commandName)
+                {
+                    if (method.IsStatic)
+                    {
+                        method.Invoke(null, null);
+                    }
+                    else
+                    {
+                        Debug.LogError("Method should have static keyword");
+                    }
+                }
+            }
+        }
+
+
         public override void Awake()
         {
             base.Awake();
@@ -130,6 +181,9 @@ namespace CrossingLearsEditor
 
             GUILayout.Space(10);
             EditorGUILayout.HelpBox("Finds all method with \"CL_Command\" attribute inside all classes that have \"CL_CommandHolder\" attribute", MessageType.Info, true);
+
+            GUILayout.Space(5);
+            EditorGUILayout.HelpBox("Special Names:\nOnPlay - Called when game started\nOnScriptReload - Called when scripts are reloaded", MessageType.None, true);
             GUILayout.Space(40);
         }
 
@@ -213,7 +267,14 @@ namespace CrossingLearsEditor
                             }
                             break;
                     }
-                }                
+                }
+                if(attr.CanCallAll)
+                {
+                    if(GUILayout.Button("Call All", GUILayout.Width(60)))
+                    {
+                        CallAll(attr.Key);
+                    }
+                }          
                 GUILayout.EndHorizontal();
             }
         }
@@ -224,15 +285,18 @@ namespace CrossingLearsEditor
     {
         public string Key { get; set; }
         public MethodType m_type { get; set; } = MethodType.Asset;
+        public bool CanCallAll { get; set; }
 
-        public CL_CommandAttribute(string key, MethodType methodType)
+        public CL_CommandAttribute(string key, MethodType methodType, bool CanCallAll = false)
         {
             Key = key;
             m_type = methodType;
+            this.CanCallAll = CanCallAll;
         }
 
-        public CL_CommandAttribute(MethodType methodType)
+        public CL_CommandAttribute(MethodType methodType, bool CanCallAll = false)
         {
+            this.CanCallAll = CanCallAll;
             m_type = methodType;
         }
     }
