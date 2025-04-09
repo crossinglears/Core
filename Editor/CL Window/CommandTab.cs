@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace CrossingLearsEditor
 {
-    public class MethodTab : CL_WindowTab
+    public class CommandTab : CL_WindowTab
     {
         public override string TabName => "Command";
 
@@ -27,12 +27,15 @@ namespace CrossingLearsEditor
 
         private List<(MethodInfo method, CL_CommandAttribute attr)> assetMethods = new();
         private List<(MethodInfo method, CL_CommandAttribute attr)> sceneMethods = new();
+        private List<(MethodInfo method, CL_CommandAttribute attr)> staticMethods = new();
 
         private List<MethodIdentifier> assetMethodIDs = new();
         private List<MethodIdentifier> sceneMethodIDs = new();
+        private List<MethodIdentifier> staticMethodIDs = new();
 
         private bool assetMethodsBuilt = false;
         private bool sceneMethodsBuilt = false;
+        private bool staticMethodsBuilt = false;
 
         private bool AutoReload;
 
@@ -61,6 +64,10 @@ namespace CrossingLearsEditor
             sceneMethods = FindCommandMethods(MethodType.SceneObject);
             sceneMethodIDs = sceneMethods.Select(m => new MethodIdentifier(m.method.DeclaringType.FullName, m.method.Name)).ToList();
             sceneMethodsBuilt = true;
+
+            staticMethods = FindCommandMethods(MethodType.Static);
+            staticMethodIDs = sceneMethods.Select(m => new MethodIdentifier(m.method.DeclaringType.FullName, m.method.Name)).ToList();
+            staticMethodsBuilt = true;
         }
 
         public override void DrawContent()
@@ -95,6 +102,13 @@ namespace CrossingLearsEditor
                 sceneMethods = RebuildMethods(sceneMethodIDs, MethodType.SceneObject);
                 sceneMethodsBuilt = true;
             }
+
+            if (!staticMethodsBuilt && staticMethodIDs.Count > 0)
+            {
+                staticMethods = RebuildMethods(sceneMethodIDs, MethodType.SceneObject);
+                staticMethodsBuilt = true;
+            }
+
             GUILayout.Space(10);
 
             GUILayout.Label("Asset Commands", EditorStyles.boldLabel);
@@ -103,10 +117,15 @@ namespace CrossingLearsEditor
             else GUILayout.Label("\tNone");
 
             GUILayout.Space(10);
-
             GUILayout.Label("Scene Commands", EditorStyles.boldLabel);
             if (sceneMethods.Count > 0)
                 DrawCommandButtons(sceneMethods, MethodType.SceneObject);
+            else GUILayout.Label("\tNone");
+
+            GUILayout.Space(10);
+            GUILayout.Label("Static Commands", EditorStyles.boldLabel);
+            if (staticMethods.Count > 0)
+                DrawCommandButtons(staticMethods, MethodType.Static);
             else GUILayout.Label("\tNone");
 
             GUILayout.Space(10);
@@ -130,14 +149,14 @@ namespace CrossingLearsEditor
 
         private List<(MethodInfo, CL_CommandAttribute)> RebuildMethods(List<MethodIdentifier> ids, MethodType type)
         {
-            var results = new List<(MethodInfo, CL_CommandAttribute)>();
+            List<(MethodInfo, CL_CommandAttribute)> results = new List<(MethodInfo, CL_CommandAttribute)>();
             foreach (var id in ids)
             {
-                var typeObj = Type.GetType(id.TypeName);
+                Type typeObj = Type.GetType(id.TypeName);
                 if (typeObj == null) continue;
-                var method = typeObj.GetMethod(id.MethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                MethodInfo method = typeObj.GetMethod(id.MethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                 if (method == null) continue;
-                var attr = method.GetCustomAttributes(typeof(CL_CommandAttribute), false)
+                CL_CommandAttribute attr = method.GetCustomAttributes(typeof(CL_CommandAttribute), false)
                                  .Cast<CL_CommandAttribute>()
                                  .FirstOrDefault(a => a.m_type == type);
                 if (attr != null)
@@ -154,36 +173,47 @@ namespace CrossingLearsEditor
                 GUILayout.BeginHorizontal();
                 
                 // Label showing the class name
-                // GUILayout.Label(method.DeclaringType.Name, GUILayout.Width(60));
                 GUILayout.Space(10);
-                GUILayout.Label(method.DeclaringType.Name, GUILayout.Width(60), GUILayout.ExpandWidth(false));
-                
+                GUILayout.Label(new GUIContent(method.DeclaringType.Name, method.DeclaringType.Name), GUILayout.Width(70), GUILayout.ExpandWidth(false));
+                                
                 // Button for the method
                 if (GUILayout.Button(string.IsNullOrEmpty(attr.Key) ? ObjectNames.NicifyVariableName(method.Name) : attr.Key, GUILayout.MinWidth(100)))
                 {
-                    if (type == MethodType.Asset)
+                    switch (type)
                     {
-                        var instances = AssetDatabase.FindAssets($"t:{method.DeclaringType.Name}")
-                            .Select(guid => AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), method.DeclaringType));
+                        case MethodType.Asset:
+                            var instances = AssetDatabase.FindAssets($"t:{method.DeclaringType.Name}")
+                                .Select(guid => AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), method.DeclaringType));
 
-                        foreach (var instance in instances)
-                        {
-                            method.Invoke(instance, null);
-                            EditorUtility.SetDirty(instance);
-                        }
-                    }
-                    else if (type == MethodType.SceneObject)
-                    {
-                        UnityEngine.Object[] instances = UnityEngine.Object.FindObjectsByType(method.DeclaringType, FindObjectsInactive.Include, FindObjectsSortMode.None);
+                            foreach (var instance in instances)
+                            {
+                                method.Invoke(instance, null);
+                                EditorUtility.SetDirty(instance);
+                            }
+                            break;
 
-                        foreach (var instance in instances)
-                        {
-                            method.Invoke(instance, null);
-                            EditorSceneManager.MarkSceneDirty(((Component)instance).gameObject.scene);
-                        }
+                        case MethodType.SceneObject:
+                            UnityEngine.Object[] sceneInstances = UnityEngine.Object.FindObjectsByType(method.DeclaringType, FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+                            foreach (var instance in sceneInstances)
+                            {
+                                method.Invoke(instance, null);
+                                EditorSceneManager.MarkSceneDirty(((Component)instance).gameObject.scene);
+                            }
+                            break;
+
+                        case MethodType.Static:
+                            if (method.IsStatic)
+                            {
+                                method.Invoke(null, null);
+                            }
+                            else
+                            {
+                                Debug.LogError("Method should have static keyword");
+                            }
+                            break;
                     }
-                }
-                
+                }                
                 GUILayout.EndHorizontal();
             }
         }
@@ -217,6 +247,7 @@ namespace CrossingLearsEditor
     {
         Asset,
         SceneObject,
+        Static
     }
 }
 
