@@ -182,8 +182,6 @@ namespace CrossingLearsEditor
             GUILayout.Space(10);
             EditorGUILayout.HelpBox("Finds all method with \"CL_Command\" attribute inside all classes that have \"CL_CommandHolder\" attribute", MessageType.Info, true);
 
-            GUILayout.Space(5);
-            EditorGUILayout.HelpBox("Special Names:\nOnPlay - Called when game started\nOnScriptReload - Called when scripts are reloaded", MessageType.None, true);
             GUILayout.Space(40);
         }
 
