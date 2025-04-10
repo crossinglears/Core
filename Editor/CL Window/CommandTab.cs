@@ -90,7 +90,6 @@ namespace CrossingLearsEditor
             }
         }
 
-
         public override void Awake()
         {
             base.Awake();

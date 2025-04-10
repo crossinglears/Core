@@ -10,6 +10,16 @@ namespace CrossingLearsEditor
         public override string TabName => "Scenes";
 
         private string[] AllScenePaths;
+        
+        public override void Awake()
+        {
+            base.Awake();
+            GroupedScenes = new();
+            AllScenePaths = AssetDatabase.FindAssets("t:Scene")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .ToArray();
+            Prevalidate();
+        }
 
         public override void OnFocus()
         {
