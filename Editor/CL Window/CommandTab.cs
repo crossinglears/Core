@@ -221,19 +221,16 @@ namespace CrossingLearsEditor
         {
             foreach (var (method, attr) in methods)
             {
-                // Create a horizontal layout to hold the label and the button
                 GUILayout.BeginHorizontal();
                 
-                // Label showing the class name
                 GUILayout.Space(10);
                 GUILayout.Label(new GUIContent(method.DeclaringType.Name, method.DeclaringType.Name), GUILayout.Width(70), GUILayout.ExpandWidth(false));
                                 
                 if (LastAll == attr.Key)
                 {
-                    GUI.contentColor = Color.cyan; // Set font color to cyan
+                    GUI.contentColor = Color.cyan;
                 }
 
-                // Button for the method
                 if (GUILayout.Button(string.IsNullOrEmpty(attr.Key) ? ObjectNames.NicifyVariableName(method.Name) : attr.Key, GUILayout.MinWidth(100)))
                 {
                     switch (type)
@@ -300,6 +297,5 @@ namespace CrossingLearsEditor
         }
         public string LastAll = "CommandTabLastAll";
     }
-
 }
 

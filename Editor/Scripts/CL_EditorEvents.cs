@@ -14,7 +14,7 @@ namespace CrossingLearsEditor
         }
     }
     
-    class CrossingLearsBuildProcessor : IPreprocessBuildWithReport
+    public class CrossingLearsBuildProcessor : IPreprocessBuildWithReport
     {
         public int callbackOrder { get { return 0; } }
         public void OnPreprocessBuild(BuildReport report) 
