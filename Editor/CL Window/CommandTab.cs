@@ -228,6 +228,11 @@ namespace CrossingLearsEditor
                 GUILayout.Space(10);
                 GUILayout.Label(new GUIContent(method.DeclaringType.Name, method.DeclaringType.Name), GUILayout.Width(70), GUILayout.ExpandWidth(false));
                                 
+                if (LastAll == attr.Key)
+                {
+                    GUI.contentColor = Color.cyan; // Set font color to cyan
+                }
+
                 // Button for the method
                 if (GUILayout.Button(string.IsNullOrEmpty(attr.Key) ? ObjectNames.NicifyVariableName(method.Name) : attr.Key, GUILayout.MinWidth(100)))
                 {
@@ -266,16 +271,35 @@ namespace CrossingLearsEditor
                             break;
                     }
                 }
+                if (GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition) && Event.current.type == EventType.Repaint)
+                {
+                    LastAll = "CommandTabLastAll";
+                }
+
                 if(attr.CanCallAll)
                 {
-                    if(GUILayout.Button("Call All", GUILayout.Width(60)))
+                    if (GUILayout.Button("Call All", GUILayout.Width(60)))
                     {
                         CallAll(attr.Key);
                     }
+
+                    // Set LastAll when the button is hovered
+                    if (GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition) && Event.current.type == EventType.Repaint)
+                    {
+                        if(string.IsNullOrEmpty(attr.Key))
+                        {
+                            LastAll = ObjectNames.NicifyVariableName(method.Name);
+                        }
+                        else
+                            LastAll = attr.Key;
+                    }
                 }          
+                GUI.contentColor = Color.white; // Set font color to white
                 GUILayout.EndHorizontal();
             }
         }
+        public string LastAll = "CommandTabLastAll";
     }
+
 }
 
