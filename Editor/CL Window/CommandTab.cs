@@ -202,7 +202,7 @@ namespace CrossingLearsEditor
         private List<(MethodInfo, CL_CommandAttribute)> RebuildMethods(List<MethodIdentifier> ids, MethodType type)
         {
             List<(MethodInfo, CL_CommandAttribute)> results = new List<(MethodInfo, CL_CommandAttribute)>();
-            foreach (var id in ids)
+            foreach (MethodIdentifier id in ids)
             {
                 Type typeObj = Type.GetType(id.TypeName);
                 if (typeObj == null) continue;
