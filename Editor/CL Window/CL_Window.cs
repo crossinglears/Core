@@ -15,6 +15,8 @@ namespace CrossingLearsEditor
         public virtual void OnEnable() { }
         public virtual void Awake() { }
         public virtual void OnDisable() { }
+
+        public virtual void DrawTitle() { GUILayout.Label(TabName, EditorStyles.boldLabel); }
     }
 
     public class CL_Window : EditorWindow
@@ -128,6 +130,7 @@ namespace CrossingLearsEditor
                 {
                     if (selectedTab != i)
                     {
+                        item.OnDisable();
                         selectedTab = i;
                         item.OnEnable();
                         item.OnFocus();
@@ -151,7 +154,8 @@ namespace CrossingLearsEditor
         {
             EditorGUILayout.BeginVertical();
             GUILayout.Space(10);
-            GUILayout.Label(tabs[selectedTab].TabName, EditorStyles.boldLabel);
+            
+            tabs[selectedTab].DrawTitle();
             EditorGUILayout.Space();
 
             EditorGUILayout.BeginHorizontal();

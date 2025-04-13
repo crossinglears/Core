@@ -21,6 +21,16 @@ namespace CrossingLearsEditor
             Prevalidate();
         }
 
+        public List<string> AlwaysActive = new(); // These paths will always be active
+
+        private const string AlwaysActiveEditorPrefsKey = "CLWindow.ScenesTab.AlwaysActive";
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+            EditorPrefs.SetString(AlwaysActiveEditorPrefsKey, string.Join(";", AlwaysActive));
+        }
+
         public override void OnFocus()
         {
             base.OnFocus();
@@ -29,6 +39,11 @@ namespace CrossingLearsEditor
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .ToArray();
             Prevalidate();
+
+            if (EditorPrefs.HasKey(AlwaysActiveEditorPrefsKey))
+            {
+                AlwaysActive = EditorPrefs.GetString(AlwaysActiveEditorPrefsKey).Split(';').ToList();
+            }
         }
 
         private Dictionary<string, List<string>> GroupedScenes = new();
@@ -110,8 +125,25 @@ namespace CrossingLearsEditor
                     {
                         GenericMenu menu = new GenericMenu();
                         menu.AddItem(new GUIContent("Copy Path"), false, () => EditorGUIUtility.systemCopyBuffer = path);
+                        
+                        if(AlwaysActive.Contains(path))
+                        {
+                            menu.AddItem(new GUIContent("Remove Always Active"), false, () => AlwaysActive.Remove(path));
+                        }
+                        else
+                        {
+                            menu.AddItem(new GUIContent("Add to Always Active"), false, () => 
+                            {
+                                AlwaysActive.Add(path);
+                                IncludeAllRequiredScenes();
+                            });
+                        }
                         menu.ShowAsContext();
                         Event.current.Use();
+                    }
+                    if(AlwaysActive.Contains(path))
+                    {
+                        GUILayout.Label(new GUIContent("A", "Always Active"), GUILayout.Width(20));
                     }
 
                     if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20)))
@@ -140,7 +172,8 @@ namespace CrossingLearsEditor
                             {
                                 UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
                             }
-                        }
+                        }                        
+                        IncludeAllRequiredScenes();
                     }
 
                     if(isOpen)
@@ -187,6 +220,45 @@ namespace CrossingLearsEditor
                 GUILayout.Space(10);
             }
             EditorGUIUtility.labelWidth = 0;
+        }
+
+        // public List<string> AlwaysActive = new(); // These paths will always be active
+        private void IncludeAllRequiredScenes()
+        {
+            // Always active
+            // loop the path list, if the scene is not loaded, load it additively
+            
+            foreach (string path in AlwaysActive)
+            {
+                Debug.Log(path);
+                if (!UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path).isLoaded)
+                {
+                    if (EditorApplication.isPlaying)
+                    {
+                        UnityEngine.SceneManagement.SceneManager.LoadScene(path, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+                    }
+                    else
+                    {
+                        if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                        {
+                            UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
+                        }
+                    }
+                }
+            }
+        }
+
+        public override void DrawTitle()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(TabName, EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            if(GUILayout.Button("Reset Always Active"))
+            {
+                EditorPrefs.DeleteKey(AlwaysActiveEditorPrefsKey);
+                AlwaysActive.Clear();
+            }
+            GUILayout.EndHorizontal();
         }
     }
 }
