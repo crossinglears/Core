@@ -14,11 +14,7 @@ namespace CrossingLearsEditor
         public override void Awake()
         {
             base.Awake();
-            GroupedScenes = new();
-            AllScenePaths = AssetDatabase.FindAssets("t:Scene")
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .ToArray();
-            Prevalidate();
+            LoadData();
         }
 
         public List<string> AlwaysActive = new(); // These paths will always be active
@@ -31,9 +27,8 @@ namespace CrossingLearsEditor
             EditorPrefs.SetString(AlwaysActiveEditorPrefsKey, string.Join(";", AlwaysActive));
         }
 
-        public override void OnFocus()
+        private void LoadData()
         {
-            base.OnFocus();
             GroupedScenes = new();
             AllScenePaths = AssetDatabase.FindAssets("t:Scene")
                 .Select(AssetDatabase.GUIDToAssetPath)
@@ -44,6 +39,12 @@ namespace CrossingLearsEditor
             {
                 AlwaysActive = EditorPrefs.GetString(AlwaysActiveEditorPrefsKey).Split(';').ToList();
             }
+        }
+
+        public override void OnFocus()
+        {
+            base.OnFocus();
+            LoadData();
         }
 
         private Dictionary<string, List<string>> GroupedScenes = new();
