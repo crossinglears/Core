@@ -8,6 +8,8 @@ namespace CrossingLears
         public T original;
         private Queue<T> pool;
 
+        public bool ReturnOriginalAtAwake = true;
+
         public static Pool<T> Instance;
 
         void Awake()
@@ -15,8 +17,12 @@ namespace CrossingLears
             Instance = this;
 
             pool = new Queue<T>();
-            Return(original);
-            original.close();
+
+            if(ReturnOriginalAtAwake)
+            {
+                Return(original);
+                original.close();
+            }
         }
 
         public T Get()
