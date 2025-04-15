@@ -35,10 +35,10 @@ namespace CrossingLears
             }
         }
 
-        public void Return(T obj)
+        public static void Return(T obj)
         {
             obj.close();
-            pool.Enqueue(obj);
+            Instance.pool.Enqueue(obj);
         }
     }
 }
