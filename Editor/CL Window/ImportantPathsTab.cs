@@ -25,8 +25,8 @@ namespace CrossingLearsEditor
 
         public List<Path> TemplatesPath = new()
         {
-            new("Script Template", EditorApplication.applicationContentsPath + "/Resources/ScriptTemplates/"),
-            new("Manifest Template", EditorApplication.applicationPath.Replace("Unity.exe", "") + @"Data\Resources\PackageManager\Editor\manifest.json"),
+            new("Script Templates", EditorApplication.applicationContentsPath + "/Resources/ScriptTemplates/"),
+            new("Project Templates", EditorApplication.applicationPath.Replace("Unity.exe", "") + @"Data\Resources\PackageManager\ProjectTemplates\"),
         };
 
 

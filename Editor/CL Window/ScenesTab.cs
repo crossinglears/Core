@@ -37,7 +37,13 @@ namespace CrossingLearsEditor
 
             if (EditorPrefs.HasKey(AlwaysActiveEditorPrefsKey))
             {
-                AlwaysActive = EditorPrefs.GetString(AlwaysActiveEditorPrefsKey).Split(';').ToList();
+                AlwaysActive = EditorPrefs.GetString(AlwaysActiveEditorPrefsKey).Split(';').Where(x => !string.IsNullOrEmpty(x)).ToList();
+                Debug.Log($"has key {AlwaysActiveEditorPrefsKey}");
+            }
+            else
+            {
+                AlwaysActive = new();
+                Debug.Log($"no key {AlwaysActiveEditorPrefsKey}");
             }
         }
 
@@ -230,8 +236,7 @@ namespace CrossingLearsEditor
             // loop the path list, if the scene is not loaded, load it additively
             
             foreach (string path in AlwaysActive)
-            {
-                Debug.Log(path);
+            {                
                 if (!UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path).isLoaded)
                 {
                     if (EditorApplication.isPlaying)
@@ -254,6 +259,15 @@ namespace CrossingLearsEditor
             GUILayout.BeginHorizontal();
             GUILayout.Label(TabName, EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
+
+            if(GUILayout.Button("Log All Always Active"))
+            {
+                foreach(var item in AlwaysActive)
+                {
+                    Debug.Log(item);
+                }
+            }
+
             if(GUILayout.Button("Reset Always Active"))
             {
                 EditorPrefs.DeleteKey(AlwaysActiveEditorPrefsKey);

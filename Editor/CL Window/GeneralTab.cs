@@ -17,9 +17,15 @@ namespace CrossingLearsEditor
         private Vector2 scrollPos;
         private const int maxVisibleLines = 5;
 
+        public override void DrawTitle()
+        {
+            base.DrawTitle();
+            InstallCorePackageButton();
+        }
+
         public override void DrawContent()
         {
-            InstallCorePackageButton();
+            // InstallCorePackageButton();
 
             GUILayout.Space(10);
             TabsChecklist();
