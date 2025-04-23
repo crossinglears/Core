@@ -5,6 +5,7 @@ using System.IO.Compression;
 
 public class ZipImporter : AssetPostprocessor
 {
+    // TODO: Optimize this by using ScriptedImporter
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
     {
         foreach (string assetPath in importedAssets)
