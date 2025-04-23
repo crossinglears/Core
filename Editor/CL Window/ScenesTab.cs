@@ -24,27 +24,30 @@ namespace CrossingLearsEditor
         public override void OnDisable()
         {
             base.OnDisable();
-            EditorPrefs.SetString(AlwaysActiveEditorPrefsKey, string.Join(";", AlwaysActive));
+            if(AlwaysActive.Count > 0)
+                EditorPrefs.SetString(AlwaysActiveEditorPrefsKey, string.Join(";", AlwaysActive));
+            else
+                EditorPrefs.DeleteKey(AlwaysActiveEditorPrefsKey);
         }
 
         private void LoadData()
         {
             GroupedScenes = new();
+            // AllScenePaths = AssetDatabase.FindAssets("t:Scene")
+            //     .Select(AssetDatabase.GUIDToAssetPath)
+            //     .ToArray();
+            // Prevalidate();
+
             AllScenePaths = AssetDatabase.FindAssets("t:Scene")
                 .Select(AssetDatabase.GUIDToAssetPath)
+                .Where(path => AssetDatabase.IsOpenForEdit(path))
                 .ToArray();
             Prevalidate();
 
             if (EditorPrefs.HasKey(AlwaysActiveEditorPrefsKey))
-            {
-                AlwaysActive = EditorPrefs.GetString(AlwaysActiveEditorPrefsKey).Split(';').Where(x => !string.IsNullOrEmpty(x)).ToList();
-                Debug.Log($"has key {AlwaysActiveEditorPrefsKey}");
-            }
+                AlwaysActive = EditorPrefs.GetString(AlwaysActiveEditorPrefsKey).Split(';').ToList();
             else
-            {
                 AlwaysActive = new();
-                Debug.Log($"no key {AlwaysActiveEditorPrefsKey}");
-            }
         }
 
         public override void OnFocus()
