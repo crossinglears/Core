@@ -7,7 +7,6 @@ public class ZipImporter : AssetPostprocessor
 {
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
     {
-        Debug.Log("ZipImporter");
         foreach (string assetPath in importedAssets)
         {
             if (assetPath.EndsWith(".zip"))
@@ -24,11 +23,7 @@ public class ZipImporter : AssetPostprocessor
                 }
                 else
                 {
-                    EditorUtility.DisplayDialog(
-                        "Zip Import",
-                        $"Directory '{Path.GetFileName(extractPath)}' already exists. Zip was not extracted.",
-                        "OK"
-                    );
+                    Debug.Log($"Directory '{Path.GetFileName(extractPath)}' already exists. Zip was not extracted.");
                 }
             }
         }
