@@ -22,8 +22,8 @@ namespace CrossingLearsEditor
                 Attribute attribute = Attribute.GetCustomAttribute(method, typeof(ButtonAttribute));
 
                 if (attribute != null)
-                {             
-                    var button = (ButtonAttribute)attribute;         
+                {
+                    ButtonAttribute button = (ButtonAttribute)attribute;         
                     string name = string.IsNullOrEmpty(button.Name) ? ObjectNames.NicifyVariableName(method.Name) : button.Name;
                     
                     // if (GUILayout.Button(name))
@@ -38,7 +38,7 @@ namespace CrossingLearsEditor
                     {
                         foreach (var t in editor.targets)
                         {
-                            var result = method.Invoke(t, null);
+                            object result = method.Invoke(t, null);
                             if (result is IEnumerator enumerator && t is MonoBehaviour mb)
                             {
                                 mb.StartCoroutine(enumerator);
