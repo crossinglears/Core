@@ -1,31 +1,39 @@
-#if UNITY_EDITOR
 using UnityEngine;
+using System;
+
+#if UNITY_EDITOR
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
-using System.Reflection;
-using System;
+#endif
 
 namespace CrossingLears
 {
-    public class PlatformDependent : MonoBehaviour, IPreprocessBuildWithReport
+    public partial class PlatformDependent : MonoBehaviour
     {
+        #if UNITY_EDITOR
         public BuildTarget[] targetPlatform;
+        #endif
+    }
+
+#if UNITY_EDITOR
+    public partial class PlatformDependent : IPreprocessBuildWithReport
+    {
         public int callbackOrder => 0;
-        
+
         [Button("Add All")]
         public void AddAllPlatforms()
         {
-            // Only for testing purposes
             targetPlatform = Enum.GetValues(typeof(BuildTarget))
                 .Cast<BuildTarget>()
                 .Where(t => t != BuildTarget.NoTarget && !IsObsolete(t))
                 .ToArray();
         }
-        
+
         private static bool IsObsolete(BuildTarget target)
         {
             FieldInfo field = typeof(BuildTarget).GetField(target.ToString());
@@ -35,17 +43,17 @@ namespace CrossingLears
         public void OnPreprocessBuild(BuildReport report)
         {
             Debug.Log($"Build Platform: {report.summary.platform}");
-            
+
             string activeScenePath = SceneManager.GetActiveScene().path;
 
             EditorBuildSettingsScene[] scenes = EditorBuildSettings.scenes;
             foreach (var scene in scenes)
             {
-                if (!scene.enabled) continue; // Skip disabled scenes
+                if (!scene.enabled) continue;
 
                 Scene loadedScene = EditorSceneManager.OpenScene(scene.path, OpenSceneMode.Single);
                 ProcessSceneObjects(report);
-                EditorSceneManager.SaveScene(loadedScene); // Save changes oer scene
+                EditorSceneManager.SaveScene(loadedScene);
             }
 
             if (!string.IsNullOrEmpty(activeScenePath))
@@ -63,14 +71,14 @@ namespace CrossingLears
                 if (!item.targetPlatform.Contains(report.summary.platform))
                 {
                     Debug.Log($"[PlatformDependent] Excluding {item.gameObject.name} from build (Target: {string.Join(", ", item.targetPlatform)}, Build: {report.summary.platform})");
-                    item.gameObject.hideFlags = HideFlags.DontSaveInBuild; // Exclude from build
+                    item.gameObject.hideFlags = HideFlags.DontSaveInBuild;
                 }
                 else
                 {
-                    item.gameObject.hideFlags = HideFlags.None; // Include in build
+                    item.gameObject.hideFlags = HideFlags.None;
                 }
             }
         }
     }
-}
 #endif
+}
