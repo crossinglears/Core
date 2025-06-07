@@ -2,11 +2,11 @@ using UnityEngine;
 
 namespace CrossingLears
 {
-    public static class ObjectExtensions 
+    public static class ObjectExtensions
     {
         public static T instantiate<T>(this T go) where T : Object =>
             Object.Instantiate(go);
-            
+
         public static T instantiate<T>(this T original, Transform parent, bool worldPositionStays = false) where T : Object =>
             (T)Object.Instantiate((Object)original, parent, worldPositionStays);
 
@@ -20,8 +20,31 @@ namespace CrossingLears
         public static void close(this Component go) => go.gameObject.SetActive(false);
 
         public static void destroy(this Object go) => Object.Destroy(go);
-        public static void destroyChildObjects(this Transform tr) {foreach(Transform child in tr) child.gameObject.destroy();}
-        public static void closeChildObjects(this Transform tr) {foreach(Transform child in tr) child.gameObject.close();}
+        public static void destroyChildObjects(this Transform tr)
+        {
+            for (int i = tr.childCount - 1; i >= 0; i--)
+            {
+                Transform child = tr.GetChild(i);
+#if UNITY_EDITOR
+                if (Application.isPlaying)
+                    Object.Destroy(child.gameObject);
+                else
+                    Object.DestroyImmediate(child.gameObject);
+#else
+                Object.Destroy(child.gameObject);
+#endif
+            }
+        }
+
+
+        public static void closeChildObjects(this Transform tr) { foreach (Transform child in tr) child.gameObject.close(); }
+        
+        public static void alphaChange(SpriteRenderer spriteRenderer, float alpha)
+        {
+            Color color = spriteRenderer.color;
+            color.a = alpha;
+            spriteRenderer.color = color;
+        }
     }
 
     public static class VectorExtensions 
