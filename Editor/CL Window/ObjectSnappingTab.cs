@@ -97,15 +97,14 @@ namespace CrossingLearsEditor
         // }
 
         private void DrawSnapRow(string label, ref float value, System.Action onSnap)
-{
-    EditorGUILayout.BeginHorizontal();
-    GUILayout.Label(label, GUILayout.Width(20));
-    value = EditorGUILayout.FloatField(value);
-    if (GUILayout.Button($"Snap {label}", GUILayout.Width(100)))
-        onSnap.Invoke();
-    EditorGUILayout.EndHorizontal();
-}
-
+        {
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label(label, GUILayout.Width(20));
+            value = EditorGUILayout.FloatField(value);
+            if (GUILayout.Button($"Snap {label}", GUILayout.Width(100)))
+                onSnap.Invoke();
+            EditorGUILayout.EndHorizontal();
+        }
 
         private void SnapPosX()
         {
