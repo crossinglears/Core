@@ -24,10 +24,14 @@ namespace CrossingLearsEditor
             }
         }
 
-        [InitializeOnLoadMethod]
-        private static void Init()
+        override void OnEnable()
         {
             SceneView.duringSceneGui += OnSceneGUI;
+        }
+
+        override void OnDisable()
+        {
+            SceneView.duringSceneGui -= OnSceneGUI;
         }
 
         private static bool isGloballyEnabled => EditorWindowTabs.SmartBumpSnapInstance?.isEnabled == true;
