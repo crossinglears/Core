@@ -12,6 +12,8 @@ namespace CrossingLearsEditor
         public abstract void DrawContent();
         public virtual int Order => 0;
         public virtual void OnFocus() { }
+        public virtual void OnUnfocus() { }
+
         public virtual void OnEnable() { }
         public virtual void Awake() { }
         public virtual void OnDisable() { }
@@ -49,7 +51,7 @@ namespace CrossingLearsEditor
 
         private void Awake()
         {
-            foreach(var item in tabs)
+            foreach (var item in tabs)
             {
                 item.Awake();
             }
@@ -100,6 +102,8 @@ namespace CrossingLearsEditor
             DrawSeparator();
             DrawRightPanel();
             EditorGUILayout.EndHorizontal();
+
+            Repaint();
         }
             
         private void DrawLeftPanel()
@@ -130,6 +134,7 @@ namespace CrossingLearsEditor
                 {
                     if (selectedTab != i)
                     {
+                        tabs[selectedTab]?.OnUnfocus();
                         item.OnDisable();
                         selectedTab = i;
                         item.OnEnable();

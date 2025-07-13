@@ -7,68 +7,175 @@ namespace CrossingLearsEditor
     {
         public override string TabName => "Smart Bump Snap";
 
-        private bool isEnabled = false;
+        private static bool isEnabled = false;
+        private static float snapDistance = 1f;
 
         public override void DrawContent()
         {
             string label = isEnabled ? "Disable Smart Bump Snap" : "Enable Smart Bump Snap";
             if (GUILayout.Button(label, GUILayout.Height(30)))
             {
-                isEnabled = !isEnabled;
+                Tools.hidden = isEnabled = !isEnabled;
+
+                if (isEnabled)
+                {
+                    // Enabled
+                    TurnOn();
+                }
+                else
+                    SceneView.duringSceneGui -= OnSceneGUI;
+
                 SceneView.RepaintAll();
             }
+
+            if (GUILayout.Button("Disable Tools", GUILayout.Height(30)))
+            {
+                Tools.hidden = true;
+            }
+
+            if (GUILayout.Button("Enable Tools", GUILayout.Height(30)))
+            {
+                Tools.hidden = false;
+            }
+
+            if (GUILayout.Button("Enable Tools", GUILayout.Height(30)))
+            {
+                Tools.hidden = false;
+            }
+
+            snapDistance = EditorGUILayout.FloatField("Snap Distance", snapDistance);
 
             if (isEnabled)
             {
                 GUILayout.Label("Smart Bump Snapping is ACTIVE", EditorStyles.helpBox);
+                EditorGUILayout.Vector3Field("Last Position", lastPosition);
+                EditorGUILayout.Vector3Field("Meto Position", XXXXXXXXXPosition);
+                PositionWithConfirmedHit = EditorGUILayout.Vector3Field(
+                    "Position With Confirmed Hit",
+                    PositionWithConfirmedHit.HasValue ? PositionWithConfirmedHit.Value : new Vector3(float.NaN, float.NaN, float.NaN)
+                );
             }
         }
 
-        override void OnEnable()
+        private void TurnOn()
         {
+            PositionWithConfirmedHit = null;
+            lastPosition = Selection.activeTransform.position;
             SceneView.duringSceneGui += OnSceneGUI;
         }
 
-        override void OnDisable()
+        public override void OnUnfocus()
         {
+            isEnabled = false;
+            Tools.hidden = false;
             SceneView.duringSceneGui -= OnSceneGUI;
         }
 
-        private static bool isGloballyEnabled => EditorWindowTabs.SmartBumpSnapInstance?.isEnabled == true;
+        private static Vector3 lastPosition;
+        private static Vector3? PositionWithConfirmedHit;
+        private static Transform lastTransform;
+
+        public static Vector3 newPosition;
+
+        private static Vector3 XXXXXXXXXPosition;
 
         private static void OnSceneGUI(SceneView sceneView)
         {
-            if (!isGloballyEnabled) return;
-
-            if (Selection.activeTransform == null) return;
-
             Transform t = Selection.activeTransform;
+            if (t == null) return;
 
-            Handles.color = Color.red;
-            Handles.DrawWireCube(t.position, t.GetComponent<Renderer>()?.bounds.size ?? Vector3.one);
-
-            // Simulated bump detection (non-physics based)
-            Collider[] hits = Physics.OverlapBox(t.position, Vector3.one * 0.5f);
-            foreach (Collider hit in hits)
+            if (t != lastTransform)
             {
-                if (hit.transform != t)
-                {
-                    Vector3 dir = (t.position - hit.ClosestPoint(t.position)).normalized;
-                    t.position += dir * 0.01f; // Nudge away slightly
-                    break;
-                }
+                // new Transform selected
+                lastPosition = t.transform.position;
+                lastTransform = t;
+                PositionWithConfirmedHit = null;
             }
 
+            Renderer renderer = t.GetComponent<Renderer>();
+            if (renderer == null) return;
+
+            EditorGUI.BeginChangeCheck();
+            newPosition = Handles.PositionHandle(lastPosition, t.rotation);
+            XXXXXXXXXPosition = newPosition;
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(t, "Move with Smart Bump Snap");
+
+                Vector3 delta = newPosition - lastPosition;
+
+                Vector3 dir = Vector3.zero;
+
+                if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y) && Mathf.Abs(delta.x) > Mathf.Abs(delta.z))
+                    dir = delta.x > 0 ? Vector3.right : Vector3.left;
+                else if (Mathf.Abs(delta.y) > Mathf.Abs(delta.x) && Mathf.Abs(delta.y) > Mathf.Abs(delta.z))
+                    dir = delta.y > 0 ? Vector3.up : Vector3.down;
+                else if (Mathf.Abs(delta.z) > Mathf.Abs(delta.x) && Mathf.Abs(delta.z) > Mathf.Abs(delta.y))
+                    dir = delta.z > 0 ? Vector3.forward : Vector3.back;
+
+                Vector3 size = renderer.bounds.size;
+                Vector3 center = renderer.bounds.center;
+                Vector3 halfExtents = size * 0.5f;
+
+                Handles.color = Color.red;
+                Handles.DrawWireCube(center, size);
+
+                var coll = t.GetComponent<Collider>();
+
+                if(coll != null) coll.enabled = false;
+                RaycastHit[] hits = Physics.BoxCastAll(center, halfExtents * 0.5f, dir, Quaternion.identity, snapDistance);
+                if(coll != null) coll.enabled = true;
+
+                float closestDistance = Mathf.Infinity;
+                Vector3 adjustedPosition = newPosition;
+
+
+                foreach (RaycastHit h in hits)
+                {
+                    if (h.transform == t) continue;
+
+                    float dist = h.distance;
+                    if (dist < closestDistance)
+                    {
+                        closestDistance = dist;
+
+                        Bounds bounds = renderer.bounds;
+
+                        if (dir == Vector3.right)
+                            adjustedPosition.x = h.point.x - bounds.extents.x;
+                        else if (dir == Vector3.left)
+                            adjustedPosition.x = h.point.x + bounds.extents.x;
+                        else if (dir == Vector3.up)
+                            adjustedPosition.y = h.point.y - bounds.extents.y;
+                        else if (dir == Vector3.down)
+                            adjustedPosition.y = h.point.y + bounds.extents.y;
+                        else if (dir == Vector3.forward)
+                            adjustedPosition.z = h.point.z - bounds.extents.z;
+                        else if (dir == Vector3.back)
+                            adjustedPosition.z = h.point.z + bounds.extents.z;
+                    }
+                }
+
+                if (closestDistance < Mathf.Infinity)
+                {
+                    newPosition = adjustedPosition;
+                    PositionWithConfirmedHit = newPosition;
+                }
+
+                if (newPosition != lastPosition)
+                {
+                    if (PositionWithConfirmedHit != null && Vector3.Distance(PositionWithConfirmedHit.Value, newPosition) < snapDistance)
+                    {
+                        t.position = PositionWithConfirmedHit.Value;
+                        lastPosition = newPosition;
+                    }
+                    else
+                    {
+                        lastPosition = t.position = newPosition;
+                    }
+                }
+            }
             SceneView.RepaintAll();
         }
-
-        // Used to access isEnabled from static method
-        public static SmartBumpSnapTab Instance => EditorWindowTabs.SmartBumpSnapInstance as SmartBumpSnapTab;
-    }
-
-    // Optional: if you use a central tab manager
-    public static class EditorWindowTabs
-    {
-        public static CL_WindowTab SmartBumpSnapInstance;
     }
 }

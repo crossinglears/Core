@@ -36,9 +36,9 @@ namespace CrossingLearsEditor
             }
 
             GUILayout.Space(5);
-            DrawSnapRow("X", ref gridX, SnapPosX);
-            DrawSnapRow("Y", ref gridY, SnapPosY);
-            DrawSnapRow("Z", ref gridZ, SnapPosZ);
+            DrawSnapRow("X", ref gridX, SnapPosX, Handles.xAxisColor);
+            DrawSnapRow("Y", ref gridY, SnapPosY, Handles.yAxisColor);
+            DrawSnapRow("Z", ref gridZ, SnapPosZ, Handles.zAxisColor);
 
             GUILayout.Space(15);
             GUILayout.Label("Rotation", EditorStyles.boldLabel);
@@ -88,6 +88,20 @@ namespace CrossingLearsEditor
             value = EditorGUILayout.FloatField(value);
             if (GUILayout.Button($"Snap {label}", GUILayout.Width(100)))
                 onSnap.Invoke();
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawSnapRow(string label, ref float value, System.Action onSnap, Color color)
+        {
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label(label, GUILayout.Width(20));
+            value = EditorGUILayout.FloatField(value);
+            
+            GUI.color = color;
+            if (GUILayout.Button($"Snap {label}", GUILayout.Width(100)))
+                onSnap.Invoke();
+
+            GUI.color = Color.white;
             EditorGUILayout.EndHorizontal();
         }
 
