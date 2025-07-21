@@ -8,6 +8,7 @@ namespace CrossingLearsEditor
     public class GeneralTab : CL_WindowTab
     {
         public override string TabName => "General";
+        public string WebsiteLink => "https://crossinglears.com/";
         public override int Order => -1000;
 
         private AddRequest addRequest;
@@ -41,9 +42,9 @@ namespace CrossingLearsEditor
 
             if (GUILayout.Button("Visit Website"))
             {
-                if (EditorUtility.DisplayDialog("Open URL", "Open \"https://crossinglears.carrd.co/\" with your browser?", "Yes", "No"))
+                if (EditorUtility.DisplayDialog("Open URL", $"Open \"{WebsiteLink}\" with your browser?", "Yes", "No"))
                 {
-                    Application.OpenURL("https://crossinglears.carrd.co/");
+                    Application.OpenURL(WebsiteLink);
                 }
             }
 

@@ -34,7 +34,7 @@ namespace CrossingLearsEditor
         internal List<string> IgnoredTabs = new();
         const string IGNOREDTABSKEY = "CL_Window.IgnoredTabs";
 
-        [MenuItem("Crossing Lears/Open Window")]
+        [MenuItem("Tools/Crossing Lears Window")]
         public static void ShowWindow()
         {
             current = GetWindow<CL_Window>("Crossing Lears");
