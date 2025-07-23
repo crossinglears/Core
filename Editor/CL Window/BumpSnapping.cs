@@ -5,6 +5,21 @@ namespace CrossingLearsEditor
 {
     public class BumpSnapping : CL_WindowTab
     {
+        // public override void DrawTitle() { GUILayout.Label(TabName, EditorStyles.boldLabel); }
+        
+        public override void DrawTitle()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(TabName, EditorStyles.boldLabel);
+
+            GUI.contentColor = Color.yellow;
+            GUILayout.Label("⚠️ Feature in development", EditorStyles.boldLabel);
+            GUI.contentColor = Color.white;
+
+            GUILayout.EndHorizontal();
+        }
+
+
         public override string TabName => "Smart Bump Snap";
 
         private static bool isEnabled = false;
@@ -60,7 +75,10 @@ namespace CrossingLearsEditor
         private void TurnOn()
         {
             PositionWithConfirmedHit = null;
-            lastPosition = Selection.activeTransform.position;
+            if (Selection.activeTransform)
+            {
+                lastPosition = Selection.activeTransform.position;
+            }
             SceneView.duringSceneGui += OnSceneGUI;
         }
 

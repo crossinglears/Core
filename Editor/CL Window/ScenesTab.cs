@@ -260,7 +260,8 @@ namespace CrossingLearsEditor
         public override void DrawTitle()
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label(TabName, EditorStyles.boldLabel);
+            // GUILayout.Label(TabName, EditorStyles.boldLabel);
+            base.DrawTitle();
             GUILayout.FlexibleSpace();
 
             if(GUILayout.Button("Log All Always Active"))
