@@ -3,23 +3,8 @@ using UnityEngine;
 
 namespace CrossingLearsEditor
 {
-    public class BumpSnapping : CL_WindowTab
+    public class BumpSnapping : CL_WindowTab_WIP
     {
-        // public override void DrawTitle() { GUILayout.Label(TabName, EditorStyles.boldLabel); }
-        
-        public override void DrawTitle()
-        {
-            GUILayout.BeginHorizontal();
-            GUILayout.Label(TabName, EditorStyles.boldLabel);
-
-            GUI.contentColor = Color.yellow;
-            GUILayout.Label("⚠️ Feature in development", EditorStyles.boldLabel);
-            GUI.contentColor = Color.white;
-
-            GUILayout.EndHorizontal();
-        }
-
-
         public override string TabName => "Smart Bump Snap";
 
         private static bool isEnabled = false;

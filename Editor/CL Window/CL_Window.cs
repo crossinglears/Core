@@ -21,10 +21,25 @@ namespace CrossingLearsEditor
         public virtual void DrawTitle() { GUILayout.Label(TabName, EditorStyles.boldLabel); }
     }
 
+    public abstract class CL_WindowTab_WIP : CL_WindowTab
+    {
+        public override void DrawTitle()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(TabName, EditorStyles.boldLabel);
+
+            GUI.contentColor = Color.yellow;
+            GUILayout.Label("⚠️ Feature in development", EditorStyles.boldLabel);
+            GUI.contentColor = Color.white;
+
+            GUILayout.EndHorizontal();
+        }
+    }
+
     public class CL_Window : EditorWindow
     {
         internal static CL_Window current;
-        
+
         private int selectedTab = 0;
         internal List<CL_WindowTab> tabs = new List<CL_WindowTab>();
         private Vector2 leftScrollPos;
@@ -105,7 +120,7 @@ namespace CrossingLearsEditor
 
             Repaint();
         }
-            
+
         private void DrawLeftPanel()
         {
             EditorGUILayout.BeginVertical(GUILayout.Width(120));
@@ -159,7 +174,7 @@ namespace CrossingLearsEditor
         {
             EditorGUILayout.BeginVertical();
             GUILayout.Space(10);
-            
+
             tabs[selectedTab].DrawTitle();
             EditorGUILayout.Space();
 
