@@ -26,6 +26,10 @@ namespace CrossingLearsEditor
             GUILayout.Space(10);
 
             FreeMoveButton();
+
+            GUILayout.Space(10);
+
+            InformationArea();
         }
     }
 }

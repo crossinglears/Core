@@ -116,7 +116,11 @@ namespace CrossingLearsEditor
             if (freeMoveEnabled)
             {
                 freeMoveSpeed = EditorGUILayout.FloatField("Move Speed", freeMoveSpeed);
+
+                GUI.enabled = false;
                 EditorGUILayout.Vector3Field("Target Pivot", freeMoveTargetPivot);
+                EditorGUILayout.Toggle("Free Move Active", isFreeMoveActive);
+                GUI.enabled = true;
             }
         }
     }
