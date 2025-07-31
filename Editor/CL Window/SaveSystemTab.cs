@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace CrossingLearsEditor
 {
-    public class SaveSystemTab : CL_WindowTab
+    public class SaveSystemTab : CL_WindowTab_WIP
     {
         public override string TabName => "Save System";
 

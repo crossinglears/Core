@@ -6,15 +6,15 @@ namespace CrossingLearsEditor
 {
     public partial class LevelDesignTab : CL_WindowTab_WIP
     {
-        private bool roamingFoldout = false;
-        private float roamingSpeed = 0.5f;
+        private bool freeMoveEnabled = false;
+        private float freeMoveSpeed = 0.5f;
 
-        private Vector3 roamingTargetPivot;
-        private bool isRoamingMoving = false;
+        private Vector3 freeMoveTargetPivot;
+        private bool isFreeMoveActive = false;
 
         private readonly HashSet<KeyCode> keysDown = new HashSet<KeyCode>();
 
-        private void FreeCamUpdate(SceneView sceneView)
+        private void FreeMoveUpdate(SceneView sceneView)
         {
             Event e = Event.current;
 
@@ -50,7 +50,6 @@ namespace CrossingLearsEditor
                     case KeyCode.E: move += sceneView.camera.transform.up; break;
                     case KeyCode.LeftShift:
                     case KeyCode.RightShift:
-                        // Shift handled below as multiplier
                         break;
                 }
             }
@@ -58,95 +57,55 @@ namespace CrossingLearsEditor
             if (move != Vector3.zero)
             {
                 float speedMultiplier = (keysDown.Contains(KeyCode.LeftShift) || keysDown.Contains(KeyCode.RightShift)) ? 3f : 1f;
-                roamingTargetPivot += move.normalized * roamingSpeed * speedMultiplier;
-                isRoamingMoving = true;
+                freeMoveTargetPivot = sceneView.pivot + move.normalized * freeMoveSpeed * speedMultiplier;
+                isFreeMoveActive = true;
             }
         }
 
-        private void UpdateRoamingMovement(SceneView sceneView)
+        private void UpdateFreeMove(SceneView sceneView)
         {
-            if (!isRoamingMoving) return;
+            if (!isFreeMoveActive) return;
 
             Vector3 current = sceneView.pivot;
-            Vector3 next = Vector3.Lerp(current, roamingTargetPivot, 0.1f);
+            Vector3 next = Vector3.Lerp(current, freeMoveTargetPivot, 0.1f);
             sceneView.pivot = next;
             sceneView.Repaint();
 
-            if ((next - roamingTargetPivot).sqrMagnitude < 0.0001f)
+            if ((next - freeMoveTargetPivot).sqrMagnitude < 0.0001f)
             {
-                sceneView.pivot = roamingTargetPivot;
-                isRoamingMoving = false;
+                sceneView.pivot = freeMoveTargetPivot;
+                isFreeMoveActive = false;
             }
         }
 
-        //     void FreeCamFoldout()
-        //     {
-        //         Rect foldoutRect = GUILayoutUtility.GetRect(16f, 22f, GUILayout.ExpandWidth(true));
-
-        //         if (Event.current.type == EventType.MouseDown && foldoutRect.Contains(Event.current.mousePosition))
-        //         {
-        //             roamingFoldout = !roamingFoldout;
-        //             Event.current.Use();
-
-        //             if (roamingFoldout)
-        //             {
-        //                 SceneView.duringSceneGui -= FreeCamUpdate;
-        //                 SceneView.duringSceneGui += FreeCamUpdate;
-
-        //                 SceneView.duringSceneGui -= UpdateRoamingMovement;
-        //                 SceneView.duringSceneGui += UpdateRoamingMovement;
-
-        //                 Tools.current = Tool.None;
-        //                 SceneView.FocusWindowIfItsOpen<SceneView>();
-
-        //                 roamingTargetPivot = SceneView.lastActiveSceneView.pivot;
-        //             }
-        //             else
-        //             {
-        //                 SceneView.duringSceneGui -= FreeCamUpdate;
-        //                 SceneView.duringSceneGui -= UpdateRoamingMovement;
-        //                 Tools.current = Tool.Move;
-        //                 keysDown.Clear(); // Clear any stuck keys
-        //             }
-        //         }
-
-        //         EditorGUI.Foldout(foldoutRect, roamingFoldout, "Roaming Mode", true);
-
-        //         if (roamingFoldout)
-        //         {
-        //             roamingSpeed = EditorGUILayout.FloatField("Move Speed", roamingSpeed);
-        //         }
-        //     }
-        // }
-
-        void FreeCamFoldout()
+        void FreeMoveButton()
         {
-            bool isActive = roamingFoldout;
+            bool isActive = freeMoveEnabled;
 
             GUI.backgroundColor = isActive ? ActiveColor : DefaultColor;
 
-            string buttonLabel = isActive ? "Roaming Mode (ACTIVE)" : "Roaming Mode";
+            string buttonLabel = isActive ? "Free Move Mode (ACTIVE)" : "Free Move Mode";
             if (GUILayout.Button(buttonLabel))
             {
-                roamingFoldout = !roamingFoldout;
+                freeMoveEnabled = !freeMoveEnabled;
 
-                if (roamingFoldout)
+                if (freeMoveEnabled)
                 {
-                    SceneView.duringSceneGui -= FreeCamUpdate;
-                    SceneView.duringSceneGui += FreeCamUpdate;
+                    SceneView.duringSceneGui -= FreeMoveUpdate;
+                    SceneView.duringSceneGui += FreeMoveUpdate;
 
-                    SceneView.duringSceneGui -= UpdateRoamingMovement;
-                    SceneView.duringSceneGui += UpdateRoamingMovement;
+                    SceneView.duringSceneGui -= UpdateFreeMove;
+                    SceneView.duringSceneGui += UpdateFreeMove;
 
                     Tools.current = Tool.None;
                     SceneView.FocusWindowIfItsOpen<SceneView>();
 
-                    roamingTargetPivot = SceneView.lastActiveSceneView.pivot;
+                    freeMoveTargetPivot = SceneView.lastActiveSceneView.pivot;
                 }
                 else
                 {
-                    SceneView.duringSceneGui -= FreeCamUpdate;
-                    SceneView.duringSceneGui -= UpdateRoamingMovement;
+                    SceneView.duringSceneGui -= FreeMoveUpdate;
+                    SceneView.duringSceneGui -= UpdateFreeMove;
                     Tools.current = Tool.Move;
                     keysDown.Clear();
                 }
@@ -154,9 +113,10 @@ namespace CrossingLearsEditor
 
             GUI.backgroundColor = DefaultColor;
 
-            if (roamingFoldout)
+            if (freeMoveEnabled)
             {
-                roamingSpeed = EditorGUILayout.FloatField("Move Speed", roamingSpeed);
+                freeMoveSpeed = EditorGUILayout.FloatField("Move Speed", freeMoveSpeed);
+                EditorGUILayout.Vector3Field("Target Pivot", freeMoveTargetPivot);
             }
         }
     }

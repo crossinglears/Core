@@ -10,8 +10,8 @@ namespace CrossingLearsEditor
         public override void OnUnfocus()
         {
             base.OnUnfocus();
-            roamingFoldout = false;
-            SceneView.duringSceneGui -= FreeCamUpdate;
+            freeMoveEnabled = false;
+            SceneView.duringSceneGui -= FreeMoveUpdate;
         }
 
         public Color ActiveColor = Color.cyan;
@@ -21,28 +21,11 @@ namespace CrossingLearsEditor
         {
             GUILayout.Space(10);
 
-            bool isIsolated = SceneVisibilityManager.instance.IsCurrentStageIsolated();
-            string isolateLabel = isIsolated ? "Unisolate" : "Isolate";
-
-            if (GUILayout.Button(isolateLabel))
-            {
-                if (isIsolated)
-                {
-                    SceneVisibilityManager.instance.ExitIsolation();
-                }
-                else
-                {
-                    foreach (GameObject obj in Selection.gameObjects)
-                    {
-                        SceneVisibilityManager.instance.Isolate(obj, true);
-                    }
-                }
-            }
+            IsolateButton();
 
             GUILayout.Space(10);
 
-            FreeCamFoldout();
+            FreeMoveButton();
         }
-
     }
 }
