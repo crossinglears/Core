@@ -14,6 +14,9 @@ namespace CrossingLearsEditor
             SceneView.duringSceneGui -= FreeCamUpdate;
         }
 
+        public Color ActiveColor = Color.cyan;
+        public Color DefaultColor = Color.white;
+
         public override void DrawContent()
         {
             GUILayout.Space(10);
