@@ -16,8 +16,8 @@ namespace CrossingLearsEditor
                 Transform t = selected.transform;
 
                 EditorGUILayout.LabelField("Name", selected.name);
-                EditorGUILayout.Vector3Field("World Position", t.position);
-                EditorGUILayout.Vector3Field("Local Position", t.localPosition);
+                t.position = EditorGUILayout.Vector3Field("World Position", t.position);
+                t.localPosition = EditorGUILayout.Vector3Field("Local Position", t.localPosition);
             }
             else
             {
