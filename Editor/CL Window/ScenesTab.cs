@@ -173,7 +173,7 @@ namespace CrossingLearsEditor
                     // Project View Button
                     if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20)))
                     {
-                        var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+                        Object asset = AssetDatabase.LoadAssetAtPath<Object>(path);
                         if (asset)
                         {
                             EditorApplication.ExecuteMenuItem("Window/General/Project");
