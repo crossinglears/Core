@@ -5,14 +5,14 @@ namespace CrossingLearsEditor
 {
     public class BumpSnapping : CL_WindowTab_WIP
     {
-        public override string TabName => "Smart Bump Snap";
+        public override string TabName => "Bump Snap";
 
         private static bool isEnabled = false;
         private static float snapDistance = 1f;
 
         public override void DrawContent()
         {
-            string label = isEnabled ? "Disable Smart Bump Snap" : "Enable Smart Bump Snap";
+            string label = isEnabled ? "Disable Bump Snap" : "Enable Bump Snap";
             if (GUILayout.Button(label, GUILayout.Height(30)))
             {
                 Tools.hidden = isEnabled = !isEnabled;

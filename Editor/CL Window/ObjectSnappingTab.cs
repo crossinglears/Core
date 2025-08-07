@@ -5,7 +5,7 @@ namespace CrossingLearsEditor
 {
     public class ObjectSnappingTab : CL_WindowTab
     {
-        public override string TabName => "Object Snapping";
+        public override string TabName => "Object Snap";
 
         private float gridX = 1f;
         private float gridY = 1f;

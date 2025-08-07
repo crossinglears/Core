@@ -11,8 +11,8 @@ namespace CrossingLearsEditor
 
         public List<Path> FilePaths = new()
         {
+            new("Asset Folder", Application.dataPath),
             new("Persistent Data", Application.persistentDataPath),
-            new("Data Path", Application.dataPath),
             new("Streaming Assets", Application.streamingAssetsPath),
             new("Cache Path", Application.temporaryCachePath),
             new("Log Path", Application.consoleLogPath)
