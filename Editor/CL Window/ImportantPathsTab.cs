@@ -50,13 +50,17 @@ private void DrawSeparator()
 
         private void DisplaySet(List<Path> paths)
         {
-            foreach(var item in paths)
+            foreach(Path item in paths)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(20);
                 GUILayout.Label(item.Name, EditorStyles.boldLabel, GUILayout.Width(130));
 
                 GUILayout.Label(item.DirectoryPath, GUILayout.MinWidth(20));
+                if(GUILayout.Button("Copy", GUILayout.Width(50)))
+                {
+                    EditorGUIUtility.systemCopyBuffer = item.DirectoryPath;
+                }
                 if(GUILayout.Button("Open", GUILayout.Width(50)))
                 {
                     item.OpenFileViewer();
