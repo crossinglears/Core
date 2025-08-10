@@ -252,7 +252,10 @@ namespace CrossingLearsEditor
                             foreach (var instance in sceneInstances)
                             {
                                 method.Invoke(instance, null);
-                                EditorSceneManager.MarkSceneDirty(((Component)instance).gameObject.scene);
+                                if (!Application.isPlaying)
+                                {
+                                    EditorSceneManager.MarkSceneDirty(((Component)instance).gameObject.scene);
+                                }
                             }
                             break;
 
