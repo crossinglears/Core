@@ -12,7 +12,18 @@ namespace CrossingLears
 
             foreach (StartState obj in Object.FindObjectsByType<StartState>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             {
-                obj.gameObject.SetActive(obj.startState);
+                switch (obj.startState)
+                {
+                    case StartState.StartStateEnum.Destroy:
+                        obj.destroy();
+                        break;
+                    case StartState.StartStateEnum.Open:
+                        obj.open();
+                        break;
+                    case StartState.StartStateEnum.Close:
+                        obj.close();
+                        break;
+                }
             }
         }
     }

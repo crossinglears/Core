@@ -2,8 +2,16 @@ using UnityEngine;
 
 namespace CrossingLears
 {
-    public class StartState : MonoBehaviour 
+
+    public class StartState : MonoBehaviour
     {
-        public bool startState = false;
+        public enum StartStateEnum
+        {
+            Close,
+            Open,
+            Destroy,
+        }
+
+        public StartStateEnum startState;
     }
 }
