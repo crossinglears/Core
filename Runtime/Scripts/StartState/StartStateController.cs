@@ -32,6 +32,7 @@ namespace CrossingLears
         }
         #endif
 
+        [Button("Trigger All StartState")]
         void Start()
         {
             foreach (StartState obj in startStates)
