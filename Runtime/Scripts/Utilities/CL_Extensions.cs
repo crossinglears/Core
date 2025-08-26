@@ -19,20 +19,24 @@ namespace CrossingLears
         public static void open(this Component go) => go.gameObject.SetActive(true);
         public static void close(this Component go) => go.gameObject.SetActive(false);
 
-        public static void destroy(this Object go) => Object.Destroy(go);
+        public static void destroy(this Object obj)
+        {
+            #if UNITY_EDITOR
+                if (Application.isPlaying)
+                    Object.Destroy(obj);
+                else
+                    Object.DestroyImmediate(obj);
+            #else
+                Object.Destroy(child.gameObject);
+            #endif
+        }
+
         public static void destroyChildObjects(this Transform tr)
         {
             for (int i = tr.childCount - 1; i >= 0; i--)
             {
                 Transform child = tr.GetChild(i);
-#if UNITY_EDITOR
-                if (Application.isPlaying)
-                    Object.Destroy(child.gameObject);
-                else
-                    Object.DestroyImmediate(child.gameObject);
-#else
-                Object.Destroy(child.gameObject);
-#endif
+                child.gameObject.destroy();
             }
         }
 
