@@ -1,7 +1,6 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
@@ -23,7 +22,7 @@ namespace CrossingLearsEditor
         private const float cooldownDuration = 5f;
         private Vector2 scrollPos;
         private const int maxVisibleLines = 5;
-        
+
         public override void DrawTitle()
         {
             // base.DrawTitle();
@@ -156,7 +155,79 @@ namespace CrossingLearsEditor
                 GUILayout.EndHorizontal();
             }
         }
-        
+
+        //     private async void GetVersion()
+        //     {
+        //         string url = "https://github.com/crossinglears/Core.git#main";
+
+        //         string[] parts = url.Split(new[] { '/', '.', '#' }, StringSplitOptions.RemoveEmptyEntries);
+        //         string owner = parts[3];
+        //         string repo = parts[4];
+        //         string branch = parts[^1];
+
+        //         string apiUrl = $"https://api.github.com/repos/{owner}/{repo}/commits/{branch}";
+
+        //         using (HttpClient client = new HttpClient())
+        //         {
+        //             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("UnityApp", "1.0"));
+
+        //             try
+        //             {
+        //                 HttpResponseMessage response = await client.GetAsync(apiUrl);
+        //                 response.EnsureSuccessStatusCode();
+
+        //                 string json = await response.Content.ReadAsStringAsync();
+        //                 JObject data = JObject.Parse(json);
+
+        //                 string commitDateUtc = data["commit"]["committer"]["date"].ToString();
+
+        //                 DateTime utcDate = DateTime.Parse(commitDateUtc, null, System.Globalization.DateTimeStyles.AdjustToUniversal);
+        //                 DateTime localDate = utcDate.ToLocalTime();
+
+        //                 TimeSpan difference = DateTime.Now - localDate;
+        //                 string timeAgo;
+
+        //                 if (difference.TotalSeconds < 60)
+        //                     timeAgo = $"{Math.Floor(difference.TotalSeconds)} seconds ago";
+        //                 else if (difference.TotalMinutes < 60)
+        //                     timeAgo = $"{Math.Floor(difference.TotalMinutes)} minutes ago";
+        //                 else if (difference.TotalHours < 24)
+        //                     timeAgo = $"{Math.Floor(difference.TotalHours)} hours ago";
+        //                 else if (difference.TotalDays < 30)
+        //                     timeAgo = $"{Math.Floor(difference.TotalDays)} days ago";
+        //                 else if (difference.TotalDays < 365)
+        //                     timeAgo = $"{Math.Floor(difference.TotalDays / 30)} months ago";
+        //                 else
+        //                     timeAgo = $"{Math.Floor(difference.TotalDays / 365)} years ago";
+
+        //                 VersionTime = $"({timeAgo}) {localDate:yyyy-MM-dd}";
+        //             }
+        //             catch (Exception ex)
+        //             {
+        //                 Debug.LogError($"Error fetching commit date: {ex.Message}");
+        //             }
+        //         }
+        //     }
+        // }
+
+        [Serializable]
+        public class Committer
+        {
+            public string date;
+        }
+
+        [Serializable]
+        public class Commit
+        {
+            public Committer committer;
+        }
+
+        [Serializable]
+        public class CommitResponse
+        {
+            public Commit commit;
+        }
+
         private async void GetVersion()
         {
             string url = "https://github.com/crossinglears/Core.git#main";
@@ -178,30 +249,37 @@ namespace CrossingLearsEditor
                     response.EnsureSuccessStatusCode();
 
                     string json = await response.Content.ReadAsStringAsync();
-                    JObject data = JObject.Parse(json);
+                    CommitResponse data = JsonUtility.FromJson<CommitResponse>(json);
 
-                    string commitDateUtc = data["commit"]["committer"]["date"].ToString();
+                    if (data != null && data.commit != null && data.commit.committer != null)
+                    {
+                        string commitDateUtc = data.commit.committer.date;
 
-                    DateTime utcDate = DateTime.Parse(commitDateUtc, null, System.Globalization.DateTimeStyles.AdjustToUniversal);
-                    DateTime localDate = utcDate.ToLocalTime();
+                        DateTime utcDate = DateTime.Parse(commitDateUtc, null, System.Globalization.DateTimeStyles.AdjustToUniversal);
+                        DateTime localDate = utcDate.ToLocalTime();
 
-                    TimeSpan difference = DateTime.Now - localDate;
-                    string timeAgo;
+                        TimeSpan difference = DateTime.Now - localDate;
+                        string timeAgo;
 
-                    if (difference.TotalSeconds < 60)
-                        timeAgo = $"{Math.Floor(difference.TotalSeconds)} seconds ago";
-                    else if (difference.TotalMinutes < 60)
-                        timeAgo = $"{Math.Floor(difference.TotalMinutes)} minutes ago";
-                    else if (difference.TotalHours < 24)
-                        timeAgo = $"{Math.Floor(difference.TotalHours)} hours ago";
-                    else if (difference.TotalDays < 30)
-                        timeAgo = $"{Math.Floor(difference.TotalDays)} days ago";
-                    else if (difference.TotalDays < 365)
-                        timeAgo = $"{Math.Floor(difference.TotalDays / 30)} months ago";
+                        if (difference.TotalSeconds < 60)
+                            timeAgo = $"{Math.Floor(difference.TotalSeconds)} seconds ago";
+                        else if (difference.TotalMinutes < 60)
+                            timeAgo = $"{Math.Floor(difference.TotalMinutes)} minutes ago";
+                        else if (difference.TotalHours < 24)
+                            timeAgo = $"{Math.Floor(difference.TotalHours)} hours ago";
+                        else if (difference.TotalDays < 30)
+                            timeAgo = $"{Math.Floor(difference.TotalDays)} days ago";
+                        else if (difference.TotalDays < 365)
+                            timeAgo = $"{Math.Floor(difference.TotalDays / 30)} months ago";
+                        else
+                            timeAgo = $"{Math.Floor(difference.TotalDays / 365)} years ago";
+
+                        VersionTime = $"({timeAgo}) {localDate:yyyy-MM-dd}";
+                    }
                     else
-                        timeAgo = $"{Math.Floor(difference.TotalDays / 365)} years ago";
-
-                    VersionTime = $"({timeAgo}) {localDate:yyyy-MM-dd}";
+                    {
+                        Debug.LogError("Invalid JSON structure.");
+                    }
                 }
                 catch (Exception ex)
                 {
