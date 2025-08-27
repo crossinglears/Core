@@ -27,7 +27,7 @@ namespace CrossingLears
                 else
                     Object.DestroyImmediate(obj);
             #else
-                Object.Destroy(child.gameObject);
+                Object.Destroy(obj);
             #endif
         }
 
