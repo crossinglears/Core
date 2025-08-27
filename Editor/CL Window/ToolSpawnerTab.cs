@@ -8,9 +8,15 @@ namespace CrossingLearsEditor
 {
     public class ToolSpawnerTab : CL_WindowTab_WIP
     {
-        public override string TabName => "Tool Spawner";
+        public override string TabName => "Core Methods";
 
         public override void DrawContent()
+        {
+            StartStateControllerButton();
+            UpgradeScrollRectButton();
+        }
+
+        void StartStateControllerButton()
         {
             if (!GUILayout.Button("StartState Controller")) return;
 
@@ -31,6 +37,19 @@ namespace CrossingLearsEditor
             {
                 StartStateController.SpawnStartStateController(scene);
             }
+        }
+
+        void UpgradeScrollRectButton()
+        {
+            if (Selection.activeGameObject == null)
+                GUI.enabled = false;
+
+            if (GUILayout.Button("Upgrade ScrollRect"))
+            {
+                SmoothScrollRect.ReplaceWithSmoothScrollRect(Selection.activeGameObject);
+            }
+
+            GUI.enabled = true;
         }
     }
 }
