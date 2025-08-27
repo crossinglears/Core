@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace CrossingLearsEditor
 {
-    public class ToolSpawnerTab : CL_WindowTab_WIP
+    public class ToolSpawnerTab : CL_WindowTab
     {
         public override string TabName => "Core Methods";
 

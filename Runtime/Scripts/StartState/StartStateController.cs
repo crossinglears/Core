@@ -29,6 +29,8 @@ namespace CrossingLears
             startStates = FindObjectsByType<StartState>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                 .Where(s => s.gameObject.scene == gameObject.scene)
                 .ToList();
+
+            UnityEditor.EditorUtility.SetDirty(this);
         }
 #endif
 

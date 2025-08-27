@@ -202,9 +202,6 @@ namespace CrossingLearsEditor
                         timeAgo = $"{Math.Floor(difference.TotalDays / 365)} years ago";
 
                     VersionTime = $"({timeAgo}) {localDate:yyyy-MM-dd}";
-
-                    Debug.Log($"Branch: {branch}");
-                    Debug.Log($"Commit Date: {VersionTime}");
                 }
                 catch (Exception ex)
                 {
