@@ -40,7 +40,6 @@ namespace CrossingLears
             }
         }
 
-
         public static void closeChildObjects(this Transform tr) { foreach (Transform child in tr) child.gameObject.close(); }
         
         public static void alphaChange(this SpriteRenderer spriteRenderer, float alpha)

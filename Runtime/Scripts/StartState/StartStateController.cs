@@ -30,24 +30,27 @@ namespace CrossingLears
                 .Where(s => s.gameObject.scene == gameObject.scene)
                 .ToList();
         }
-        #endif
+#endif
 
         [Button("Trigger All StartState")]
         void Start()
         {
             foreach (StartState obj in startStates)
             {
-                switch (obj.startState)
+                if (obj != null)
                 {
-                    case StartState.StartStateEnum.Destroy:
-                        obj.destroy();
-                        break;
-                    case StartState.StartStateEnum.Open:
-                        obj.open();
-                        break;
-                    case StartState.StartStateEnum.Close:
-                        obj.close();
-                        break;
+                    switch (obj.startState)
+                    {
+                        case StartState.StartStateEnum.Destroy:
+                            obj.destroy();
+                            break;
+                        case StartState.StartStateEnum.Open:
+                            obj.open();
+                            break;
+                        case StartState.StartStateEnum.Close:
+                            obj.close();
+                            break;
+                    }
                 }
             }
         }
