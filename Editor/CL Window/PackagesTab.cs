@@ -10,25 +10,150 @@ namespace CrossingLearsEditor
 {
     public class PackagesTab : CL_WindowTab
     {
+        static List<PackageEntry> cL_Packages = new(){
+            new ("Directory", "https://github.com/crossinglears/Directory.git"),
+            new ("Toolbar", "https://github.com/crossinglears/CustomToolbar.git"),
+            new ("Latest Menu", "https://github.com/crossinglears/Latest-Menu.git"),
+            new ("Latest Menu", "https://github.com/crossinglears/Latest-Menu.git"),
+        };
+        
         public override string TabName => "Packages";
 
         private AddRequest addRequest;
         private string newPackageName = "";
-        private static readonly string savePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "CrossingLears", "FavoritePackages.json");
+        private static readonly string savePath = Path.Combine(
+            System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData),
+            "CrossingLears",
+            "FavoritePackages.json"
+        );
 
-        private List<(string Name, string Url)> FavoriteTabs = new List<(string, string)>();
+        private List<PackageEntry> FavoriteTabs = new();
 
         public override void OnFocus()
         {
             base.OnFocus();
             LoadFavorites();
         }
-        
+
+        // void CrossingLearsPackages()
+        // {
+        //     EditorGUILayout.BeginVertical("helpbox");
+        //     GUIStyle centeredStyle = new GUIStyle(EditorStyles.boldLabel);
+        //     centeredStyle.alignment = TextAnchor.MiddleCenter;
+
+        //     GUILayout.Label("Crossing Lears Packages", centeredStyle, GUILayout.ExpandWidth(true));
+        //     EditorGUILayout.EndVertical();
+        //     EditorGUILayout.BeginVertical("helpbox");
+
+        //     foreach (var package in cL_Packages)
+        //     {
+        //         EditorGUILayout.BeginHorizontal();
+        //         GUILayout.FlexibleSpace();
+        //         EditorGUILayout.LabelField(package.Name, GUILayout.Width(80));
+        //         GUILayout.FlexibleSpace();
+
+        //         if (GUILayout.Button("Install", GUILayout.Width(60)))
+        //         {
+        //             InstallPackage(package.Url);
+        //         }
+        //         GUILayout.FlexibleSpace();
+        //         EditorGUILayout.EndHorizontal();
+        //     }
+        //     EditorGUILayout.EndVertical();
+        // }
+
+        void CrossingLearsPackages()
+        {
+            // Full container box
+            EditorGUILayout.BeginVertical("helpbox");
+            {
+                // Title bar rect
+                Rect rect = GUILayoutUtility.GetRect(0, 24, GUILayout.ExpandWidth(true));
+
+                // Draw colored bar
+                EditorGUI.DrawRect(rect, CL_Design.brown);
+
+                // Draw centered label
+                GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel)
+                {
+                    alignment = TextAnchor.MiddleCenter,
+                    normal = { textColor = Color.white }
+                };
+                EditorGUI.LabelField(rect, "Crossing Lears Packages", titleStyle);
+            }
+
+            {
+                Rect rect = EditorGUILayout.BeginVertical();
+                EditorGUI.DrawRect(rect, CL_Design.gold);
+                
+                GUILayout.Space(3);
+            }
+
+            // Content area
+            foreach (var package in cL_Packages)
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+
+                EditorGUILayout.LabelField(package.Name, CL_Design.BrownTextLabel, GUILayout.Width(80));
+
+                GUILayout.FlexibleSpace();
+
+                if (GUILayout.Button("Install", GUILayout.Width(60)))
+                {
+                    InstallPackage(package.Url);
+                }
+
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.EndHorizontal();
+            }
+            GUILayout.Space(3);
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndVertical();
+        }
+
+        void FavouritePackages()
+        {
+            GUILayout.Label("Favorite Packages", EditorStyles.boldLabel);
+
+            
+            EditorGUILayout.BeginVertical("helpbox");
+            if (FavoriteTabs.Count == 0)
+            {
+                EditorGUILayout.LabelField("None");
+            }
+            else
+            {
+                for (int i = 0; i < FavoriteTabs.Count; i++)
+                {
+                    var package = FavoriteTabs[i];
+                    EditorGUILayout.BeginHorizontal();
+
+                    EditorGUILayout.LabelField(package.Name, GUILayout.Width(80), GUILayout.MinWidth(0));
+                    package.Url = EditorGUILayout.TextField(package.Url, GUILayout.ExpandWidth(true), GUILayout.MinWidth(10));
+
+                    if (GUILayout.Button("Remove", GUILayout.Width(60)))
+                    {
+                        FavoriteTabs.RemoveAt(i);
+                        i--;
+                    }
+                    else if (GUILayout.Button("Install", GUILayout.Width(60)))
+                    {
+                        InstallPackage(package.Url);
+                    }
+
+                    EditorGUILayout.EndHorizontal();
+                }
+            }
+            EditorGUILayout.EndVertical();
+        }
+
         public override void DrawContent()
         {
-            EditorGUILayout.HelpBox("Enlist your frequently used packages to make it easier to install it on your future projects. The list is persistent and is stored in your computer.", MessageType.Info);
-            EditorGUIUtility.labelWidth = 80;
+            EditorGUILayout.HelpBox("Enlist your frequently used packages to make it easier to install them on your future projects. The list is persistent and is stored in your computer.", MessageType.Info);
 
+            // Save path display
             GUILayout.BeginHorizontal();
             GUI.enabled = false;
             EditorGUILayout.TextField("Save Path", savePath, EditorStyles.textField, GUILayout.ExpandWidth(true));
@@ -40,70 +165,53 @@ namespace CrossingLearsEditor
             }
             GUILayout.EndHorizontal();
 
-            EditorGUIUtility.labelWidth = 0;
-
             EditorGUILayout.Space(10);
-            GUILayout.Label("Favorite Packages", EditorStyles.boldLabel);
-            for (int i = 0; i < FavoriteTabs.Count; i++)
-            {
-                var package = FavoriteTabs[i];
-                EditorGUILayout.BeginHorizontal();
+            FavouritePackages();
 
-                EditorGUILayout.LabelField(package.Name, GUILayout.Width(80));
-                FavoriteTabs[i] = (package.Name, EditorGUILayout.TextField(package.Url, GUILayout.ExpandWidth(true), GUILayout.MinWidth(30)));
-                if (GUILayout.Button("Remove", GUILayout.Width(60)))
-                {
-                    FavoriteTabs.RemoveAt(i);
-                    i--;
-                }
-                if (GUILayout.Button("Install", GUILayout.Width(60)))
-                {
-                    InstallPackage(FavoriteTabs[i].Url);
-                }
-
-                EditorGUILayout.EndHorizontal();
-            }
-            
-            GUILayout.Space(10);
+            GUILayout.Space(3);
             EditorGUILayout.BeginHorizontal();
-
+            EditorGUILayout.LabelField("Name:", GUILayout.Width(45));
             newPackageName = EditorGUILayout.TextField(newPackageName, GUILayout.ExpandWidth(true));
 
             if (GUILayout.Button("Add Entry", GUILayout.Width(100)) && !string.IsNullOrWhiteSpace(newPackageName))
             {
-                FavoriteTabs.Add((newPackageName, ""));
+                FavoriteTabs.Add(new PackageEntry(newPackageName, ""));
                 newPackageName = "";
                 SaveFavorites();
             }
             EditorGUILayout.EndHorizontal();
-            
-            // GUILayout.Space(10);
+
+            // Reset & Save buttons
             EditorGUILayout.BeginHorizontal();
-            float buttonWidth = (EditorGUIUtility.currentViewWidth - 130) / 2; // Half width with spacing
+            float buttonWidth = (EditorGUIUtility.currentViewWidth - 130) / 2;
+
             if (GUILayout.Button("Reset List", GUILayout.Width(buttonWidth - 5)))
             {
-                if (EditorUtility.DisplayDialog("Reset Favorites", 
+                if (EditorUtility.DisplayDialog("Reset Favorites",
                     "Are you sure you want to reset the package list?", "Yes", "No"))
                 {
-                    FavoriteTabs = new List<(string, string)>
+                    FavoriteTabs = new List<PackageEntry>
                     {
-                        ("Core", "https://github.com/crossinglears/Core.git#main")
+                        new PackageEntry("Core", "https://github.com/crossinglears/Core.git#main")
                     };
                     SaveFavorites();
                 }
             }
 
-            GUILayout.Space(5); // Space between buttons
+            GUILayout.Space(5);
 
             if (GUILayout.Button("Save List", GUILayout.Width(buttonWidth - 5)))
             {
                 SaveFavorites();
             }
-            
+
             EditorGUILayout.EndHorizontal();
+            
+            EditorGUILayout.Space(10);
+            CrossingLearsPackages();
         }
 
-        private void InstallPackage(string githubUrl)
+        public void InstallPackage(string githubUrl)
         {
             addRequest = Client.Add(githubUrl);
             EditorApplication.update += PackageProgress;
@@ -116,7 +224,6 @@ namespace CrossingLearsEditor
                 if (addRequest.Status == StatusCode.Success)
                 {
                     Debug.Log("Package added successfully!");
-
                 }
                 else
                 {
@@ -137,16 +244,14 @@ namespace CrossingLearsEditor
             if (File.Exists(savePath))
             {
                 string json = File.ReadAllText(savePath);
-                FavoriteTabs = JsonUtility.FromJson<PackageListWrapper>(json)?.ToList() ?? new List<(string, string)>
-                {
-                    ("Core", "https://github.com/crossinglears/Core.git#main")
-                };
+                FavoriteTabs = JsonUtility.FromJson<PackageListWrapper>(json)?.Packages 
+                               ?? new List<PackageEntry> { new PackageEntry("Core", "https://github.com/crossinglears/Core.git#main") };
             }
             else
             {
-                FavoriteTabs = new List<(string, string)>
+                FavoriteTabs = new List<PackageEntry>
                 {
-                    ("Core", "https://github.com/crossinglears/Core.git#main")
+                    new PackageEntry("Core", "https://github.com/crossinglears/Core.git#main")
                 };
             }
             SaveFavorites(); // Ensure the loaded favorites are saved
@@ -157,14 +262,9 @@ namespace CrossingLearsEditor
         {
             public List<PackageEntry> Packages = new();
 
-            public PackageListWrapper(List<(string, string)> packages)
+            public PackageListWrapper(List<PackageEntry> packages)
             {
-                Packages = packages.Select(p => new PackageEntry { Name = p.Item1, Url = p.Item2 }).ToList();
-            }
-
-            public List<(string, string)> ToList()
-            {
-                return Packages.Select(p => (p.Name, p.Url)).ToList();
+                Packages = packages;
             }
         }
 
@@ -173,6 +273,12 @@ namespace CrossingLearsEditor
         {
             public string Name;
             public string Url;
+
+            public PackageEntry(string name, string url)
+            {
+                Name = name;
+                Url = url;
+            }
         }
     }
 }
