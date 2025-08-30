@@ -11,10 +11,11 @@ namespace CrossingLearsEditor
     public class PackagesTab : CL_WindowTab
     {
         static List<PackageEntry> cL_Packages = new(){
-            new ("Directory", "https://github.com/crossinglears/Directory.git"),
-            new ("Toolbar", "https://github.com/crossinglears/CustomToolbar.git"),
-            new ("Latest Menu", "https://github.com/crossinglears/Latest-Menu.git"),
-            new ("Latest Menu", "https://github.com/crossinglears/Latest-Menu.git"),
+            new ("Directory", "Find anything easier", "https://github.com/crossinglears/Directory.git"),
+            new ("Toolbar", "Extra tools in the editor", "https://github.com/crossinglears/CustomToolbar.git"),
+            new ("Latest Menu", "A simplified menu manager", "https://github.com/crossinglears/Latest-Menu.git"),
+            new ("UI", "A collection of UI tools", "https://github.com/crossinglears/UI.git"),
+            new ("Audio", "A simple Audio Manager", "https://github.com/crossinglears/Audio.git"),
         };
         
         public override string TabName => "Packages";
@@ -34,33 +35,6 @@ namespace CrossingLearsEditor
             base.OnFocus();
             LoadFavorites();
         }
-
-        // void CrossingLearsPackages()
-        // {
-        //     EditorGUILayout.BeginVertical("helpbox");
-        //     GUIStyle centeredStyle = new GUIStyle(EditorStyles.boldLabel);
-        //     centeredStyle.alignment = TextAnchor.MiddleCenter;
-
-        //     GUILayout.Label("Crossing Lears Packages", centeredStyle, GUILayout.ExpandWidth(true));
-        //     EditorGUILayout.EndVertical();
-        //     EditorGUILayout.BeginVertical("helpbox");
-
-        //     foreach (var package in cL_Packages)
-        //     {
-        //         EditorGUILayout.BeginHorizontal();
-        //         GUILayout.FlexibleSpace();
-        //         EditorGUILayout.LabelField(package.Name, GUILayout.Width(80));
-        //         GUILayout.FlexibleSpace();
-
-        //         if (GUILayout.Button("Install", GUILayout.Width(60)))
-        //         {
-        //             InstallPackage(package.Url);
-        //         }
-        //         GUILayout.FlexibleSpace();
-        //         EditorGUILayout.EndHorizontal();
-        //     }
-        //     EditorGUILayout.EndVertical();
-        // }
 
         void CrossingLearsPackages()
         {
@@ -90,21 +64,23 @@ namespace CrossingLearsEditor
             }
 
             // Content area
+            GUIStyle centeredStyle = new GUIStyle(CL_Design.ColoredLabel(CL_Design.brown));
+            centeredStyle.alignment = TextAnchor.MiddleCenter;
+            
             foreach (var package in cL_Packages)
             {
                 EditorGUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
+                GUILayout.Space(5);
+                EditorGUILayout.LabelField(package.Name, CL_Design.ColoredLabel(CL_Design.brown), GUILayout.Width(80));
 
-                EditorGUILayout.LabelField(package.Name, CL_Design.BrownTextLabel, GUILayout.Width(80));
+                EditorGUILayout.LabelField(package.Desc, centeredStyle, GUILayout.MinWidth(1));
 
-                GUILayout.FlexibleSpace();
 
                 if (GUILayout.Button("Install", GUILayout.Width(60)))
                 {
                     InstallPackage(package.Url);
                 }
-
-                GUILayout.FlexibleSpace();
+                GUILayout.Space(3);
                 EditorGUILayout.EndHorizontal();
             }
             GUILayout.Space(3);
@@ -273,9 +249,17 @@ namespace CrossingLearsEditor
         {
             public string Name;
             public string Url;
+            public string Desc;
 
             public PackageEntry(string name, string url)
             {
+                Name = name;
+                Url = url;
+            }
+
+            public PackageEntry(string name, string desc, string url)
+            {
+                Desc = desc;
                 Name = name;
                 Url = url;
             }

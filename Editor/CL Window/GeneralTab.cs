@@ -262,17 +262,17 @@ namespace CrossingLearsEditor
                         string timeAgo;
 
                         if (difference.TotalSeconds < 60)
-                            timeAgo = $"{Math.Floor(difference.TotalSeconds)} seconds ago";
+                            timeAgo = $"{Math.Floor(difference.TotalSeconds)} sec ago";
                         else if (difference.TotalMinutes < 60)
-                            timeAgo = $"{Math.Floor(difference.TotalMinutes)} minutes ago";
+                            timeAgo = $"{Math.Floor(difference.TotalMinutes)} min ago";
                         else if (difference.TotalHours < 24)
-                            timeAgo = $"{Math.Floor(difference.TotalHours)} hours ago";
+                            timeAgo = $"{Math.Floor(difference.TotalHours)} hr ago";
                         else if (difference.TotalDays < 30)
-                            timeAgo = $"{Math.Floor(difference.TotalDays)} days ago";
+                            timeAgo = $"{Math.Floor(difference.TotalDays)} d ago";
                         else if (difference.TotalDays < 365)
-                            timeAgo = $"{Math.Floor(difference.TotalDays / 30)} months ago";
+                            timeAgo = $"{Math.Floor(difference.TotalDays / 30)} m ago";
                         else
-                            timeAgo = $"{Math.Floor(difference.TotalDays / 365)} years ago";
+                            timeAgo = $"{Math.Floor(difference.TotalDays / 365)} yr ago";
 
                         VersionTime = $"({timeAgo}) {localDate:yyyy-MM-dd}";
                     }

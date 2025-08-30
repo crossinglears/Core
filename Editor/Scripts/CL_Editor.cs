@@ -30,11 +30,15 @@ namespace CrossingLearsEditor
             EditorGUILayout.EndVertical();
         }
 
-        public static GUIStyle BrownTextLabel;
+        public static GUIStyle ColoredLabel(Color color)
+        {
+            var r = new GUIStyle(EditorStyles.label);
+            r.normal.textColor = color;
+            return r;
+        }
+
         static CL_Design()
         {
-            BrownTextLabel = new GUIStyle(EditorStyles.label);
-            BrownTextLabel.normal.textColor = CL_Design.brown;
         }
     }
 }
