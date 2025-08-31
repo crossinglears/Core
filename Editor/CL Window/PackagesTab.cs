@@ -16,6 +16,7 @@ namespace CrossingLearsEditor
             new ("Latest Menu", "A simplified menu manager", "https://github.com/crossinglears/Latest-Menu.git"),
             new ("UI", "A collection of UI tools", "https://github.com/crossinglears/UI.git"),
             new ("Audio", "A simple Audio Manager", "https://github.com/crossinglears/Audio.git"),
+            new ("Haptic Feedback", "Enable vibration on mobile", "https://github.com/crossinglears/HapticFeedback.git"),
         };
         
         public override string TabName => "Packages";
