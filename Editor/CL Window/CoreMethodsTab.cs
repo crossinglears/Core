@@ -3,10 +3,11 @@ using CrossingLears;
 using UnityEngine.SceneManagement;
 using System.Linq;
 using UnityEditor;
+using UnityEngine.UI;
 
 namespace CrossingLearsEditor
 {
-    public class ToolSpawnerTab : CL_WindowTab
+    public class CoreMethodsTab : CL_WindowTab
     {
         public override string TabName => "Core Methods";
 
@@ -14,11 +15,12 @@ namespace CrossingLearsEditor
         {
             StartStateControllerButton();
             UpgradeScrollRectButton();
+            DisableAllNavigation();
         }
 
         void StartStateControllerButton()
         {
-            if (!GUILayout.Button("StartState Controller")) return;
+            if (!GUILayout.Button("StartState Controller", GUILayout.Height(25))) return;
 
             Scene scene = Selection.activeGameObject != null ? Selection.activeGameObject.scene : SceneManager.GetActiveScene();
 
@@ -44,12 +46,26 @@ namespace CrossingLearsEditor
             if (Selection.activeGameObject == null)
                 GUI.enabled = false;
 
-            if (GUILayout.Button("Upgrade ScrollRect"))
+            if (GUILayout.Button("Upgrade ScrollRect", GUILayout.Height(25)))
             {
                 SmoothScrollRect.ReplaceWithSmoothScrollRect(Selection.activeGameObject);
             }
 
             GUI.enabled = true;
+        }
+
+        void DisableAllNavigation()
+        {
+            if (GUILayout.Button("Disable All Navigation in scene", GUILayout.Height(25)))
+            {
+                Selectable[] selectables = Object.FindObjectsByType<Selectable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+                for (int i = 0; i < selectables.Length; i++)
+                {
+                    Navigation nav = selectables[i].navigation;
+                    nav.mode = Navigation.Mode.None;
+                    selectables[i].navigation = nav;
+                }
+            }
         }
     }
 }
