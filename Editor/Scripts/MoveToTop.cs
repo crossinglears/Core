@@ -8,10 +8,14 @@ namespace CrossingLearsEditor
         [MenuItem("CONTEXT/MonoBehaviour/MoveToTop")]
         private static void MoveComponentToTop(MenuCommand menuCommand)
         {
-            MonoBehaviour monoBehaviour = menuCommand.context as MonoBehaviour;
+            MoveMonobehaviourToTop(menuCommand.context as MonoBehaviour);
+        }
+
+        public static void MoveMonobehaviourToTop(MonoBehaviour monoBehaviour)
+        {
             if (monoBehaviour != null)
             {
-                while(UnityEditorInternal.ComponentUtility.MoveComponentUp(monoBehaviour));
+                while (UnityEditorInternal.ComponentUtility.MoveComponentUp(monoBehaviour)) ;
             }
         }
     }

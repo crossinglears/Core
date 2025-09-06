@@ -30,6 +30,18 @@ namespace CrossingLears
                 Object.Destroy(obj);
             #endif
         }
+        
+        public static void destroy(this Object obj, bool destroyAssets)
+        {
+            #if UNITY_EDITOR
+                if (Application.isPlaying)
+                    Object.Destroy(obj);
+                else
+                    Object.DestroyImmediate(obj, destroyAssets);
+            #else
+                Object.Destroy(obj);
+            #endif
+        }
 
         public static void destroyChildObjects(this Transform tr)
         {
