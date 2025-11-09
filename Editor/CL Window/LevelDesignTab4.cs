@@ -44,8 +44,8 @@ namespace CrossingLearsEditor
         {
             if(GUILayout.Button("B4"))
             {
-                // itempos3 + itempos1 - itempos2;
-                Vector3 pos = itempos3 + itempos1 - itempos2;
+                // itempos3 - itempos1 + itempos2;
+                Vector3 pos = itempos3 - itempos1 + itempos2;
                 Selection.activeGameObject.transform.position = pos;
             }
         }
