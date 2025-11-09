@@ -30,6 +30,10 @@ namespace CrossingLearsEditor
             GUILayout.Space(10);
 
             InformationArea();
+
+            GUILayout.Space(10);
+            
+            RelaterMenu();
         }
     }
 }
