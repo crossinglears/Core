@@ -50,15 +50,37 @@ namespace CrossingLearsEditor
         {
             if (GUILayout.Button("B4"))
             {
+                GameObject[] selectedObjects = Selection.gameObjects;
+                if (selectedObjects.Length == 0) return;
+
+                GameObject mainObject = Selection.activeGameObject;
+                if (mainObject == null) return;
+
                 Vector3 offset = itempos3 - itempos1 + itempos2;
                 Vector3 pivot = itempos3;
 
                 Vector3 direction = offset - pivot;
                 Quaternion rotation = Quaternion.Euler(rotationEuler);
                 Vector3 rotatedDirection = rotation * direction;
-                Vector3 finalPos = pivot + rotatedDirection;
+                Vector3 mainFinalPos = pivot + rotatedDirection;
 
-                Selection.activeGameObject.transform.position = finalPos;
+                // Record Undo for all selected objects
+                foreach (GameObject go in selectedObjects)
+                {
+                    Undo.RecordObject(go.transform, "Move with Rotation");
+                }
+
+                Vector3 mainOriginalPos = mainObject.transform.position;
+                mainObject.transform.position = mainFinalPos;
+
+                foreach (GameObject go in selectedObjects)
+                {
+                    if (go == mainObject) continue;
+
+                    Vector3 relativeOffset = go.transform.position - mainOriginalPos;
+                    Vector3 rotatedOffset = rotation * relativeOffset;
+                    go.transform.position = mainFinalPos + rotatedOffset;
+                }
             }
         }
     }
