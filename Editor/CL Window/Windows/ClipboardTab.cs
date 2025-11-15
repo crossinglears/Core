@@ -24,17 +24,22 @@ namespace CrossingLearsEditor
             if (GUILayout.Button("Check Dictionary"))
             {
                 LogAllClipboardItems();
+
                 void LogAllClipboardItems()
                 {
                     foreach (KeyValuePair<string, List<Content>> pair in keyValuePairs)
                     {
-                        Debug.Log("InvokeID: " + pair.Key);
+                        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+                        sb.AppendLine(pair.Key);
 
                         for (int i = 0; i < pair.Value.Count; i++)
                         {
-                            ClipboardTab.Content content = pair.Value[i];
-                            Debug.Log("    Title: " + content.Title + " | Message: " + content.Message);
+                            Content content = pair.Value[i];
+                            sb.AppendLine("- " + content.Title);
                         }
+
+                        Debug.Log(sb.ToString());
                     }
                 }
             }
