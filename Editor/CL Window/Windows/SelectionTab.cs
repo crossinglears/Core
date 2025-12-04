@@ -15,6 +15,13 @@ namespace CrossingLearsEditor
 
         public override void DrawContent()
         {
+            if(GUILayout.Button("Clear Selection"))
+            {
+                lastSelectedObject = firstSelectedObject = selectedObject = Selection.activeGameObject = null;
+                selectedObjects.Clear();
+                return;
+            }
+
             selectedObject = Selection.activeGameObject;
 
             selectedObjects.Clear();
@@ -38,8 +45,6 @@ namespace CrossingLearsEditor
             EditorGUILayout.ObjectField("Last Selected Object", lastSelectedObject, typeof(GameObject), true);
 
             GUILayout.Space(10);
-
-            if (selectedObjects.Count == 0) return;
 
             // Calculate average position
             Vector3 averagePosition = Vector3.zero;
@@ -65,6 +70,28 @@ namespace CrossingLearsEditor
                     EditorGUILayout.Vector3Field("Difference", difference);
                 }
             }
+            
+            ParentSystem();
+        }
+
+        private Transform ParentTransform;
+        void ParentSystem()
+        {
+            GUILayout.Space(20);
+            ParentTransform = EditorGUILayout.ObjectField("Parent", ParentTransform, typeof(Transform), true) as Transform;
+
+            if(GUILayout.Button("Assign Parent"))
+            {
+                ParentTransform = selectedObject.transform;
+            }
+            if(GUILayout.Button("Assign Children"))
+            {
+                foreach(GameObject item in selectedObjects)
+                {
+                    item.transform.SetParent(ParentTransform);
+                }
+            }
         }
     }
+
 }
