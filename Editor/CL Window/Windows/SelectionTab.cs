@@ -91,6 +91,31 @@ namespace CrossingLearsEditor
                     item.transform.SetParent(ParentTransform);
                 }
             }
+            if (GUILayout.Button("Unparent"))
+            {
+                Transform parent = selectedObject.transform.parent;
+                if (parent == null)
+                {
+                    selectedObject.transform.SetParent(null);
+                    EditorGUIUtility.PingObject(selectedObject);
+                    return;
+                }
+
+                Transform grand = parent.parent;
+                int targetIndex = parent.GetSiblingIndex() + 1;
+
+                if (grand == null)
+                {
+                    selectedObject.transform.SetParent(null);
+                    selectedObject.transform.SetSiblingIndex(targetIndex);
+                    EditorGUIUtility.PingObject(selectedObject);
+                    return;
+                }
+
+                selectedObject.transform.SetParent(grand);
+                selectedObject.transform.SetSiblingIndex(targetIndex);
+                EditorGUIUtility.PingObject(selectedObject);
+            }
         }
     }
 
