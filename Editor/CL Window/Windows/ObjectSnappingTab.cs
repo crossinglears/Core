@@ -4,8 +4,11 @@ using UnityEngine;
 namespace CrossingLearsEditor
 {
     public class ObjectSnappingTab : CL_WindowTab
-    {
+    {        
         public override string TabName => "Object Snap";
+
+        private enum SnapSpace { Global, Local }
+        private SnapSpace snapSpace = SnapSpace.Global;
 
         private float gridX = 1f;
         private float gridY = 1f;
@@ -19,6 +22,55 @@ namespace CrossingLearsEditor
         private float scaleY = 1f;
         private float scaleZ = 1f;
 
+        public override void OnEnable()
+        {
+            base.OnEnable();
+
+            snapSpace = (SnapSpace)EditorPrefs.GetInt("CL_ObjectSnapping_SnapSpace", 0);
+
+            gridX = EditorPrefs.GetFloat("CL_ObjectSnapping_GridX", 1f);
+            gridY = EditorPrefs.GetFloat("CL_ObjectSnapping_GridY", 1f);
+            gridZ = EditorPrefs.GetFloat("CL_ObjectSnapping_GridZ", 1f);
+
+            rotX = EditorPrefs.GetFloat("CL_ObjectSnapping_RotX", 15f);
+            rotY = EditorPrefs.GetFloat("CL_ObjectSnapping_RotY", 15f);
+            rotZ = EditorPrefs.GetFloat("CL_ObjectSnapping_RotZ", 15f);
+
+            scaleX = EditorPrefs.GetFloat("CL_ObjectSnapping_ScaleX", 1f);
+            scaleY = EditorPrefs.GetFloat("CL_ObjectSnapping_ScaleY", 1f);
+            scaleZ = EditorPrefs.GetFloat("CL_ObjectSnapping_ScaleZ", 1f);
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+
+            EditorPrefs.SetInt("CL_ObjectSnapping_SnapSpace", (int)snapSpace);
+
+            EditorPrefs.SetFloat("CL_ObjectSnapping_GridX", gridX);
+            EditorPrefs.SetFloat("CL_ObjectSnapping_GridY", gridY);
+            EditorPrefs.SetFloat("CL_ObjectSnapping_GridZ", gridZ);
+
+            EditorPrefs.SetFloat("CL_ObjectSnapping_RotX", rotX);
+            EditorPrefs.SetFloat("CL_ObjectSnapping_RotY", rotY);
+            EditorPrefs.SetFloat("CL_ObjectSnapping_RotZ", rotZ);
+
+            EditorPrefs.SetFloat("CL_ObjectSnapping_ScaleX", scaleX);
+            EditorPrefs.SetFloat("CL_ObjectSnapping_ScaleY", scaleY);
+            EditorPrefs.SetFloat("CL_ObjectSnapping_ScaleZ", scaleZ);
+        }
+
+
+        public override void DrawTitle()
+        {
+            GUILayout.BeginHorizontal();
+            base.DrawTitle();
+
+            snapSpace = (SnapSpace)EditorGUILayout.EnumPopup(snapSpace, GUILayout.Width(90));
+
+            GUILayout.EndHorizontal();
+        }
+
         public override void DrawContent()
         {
             GUILayout.Label("Position", EditorStyles.boldLabel);
@@ -27,11 +79,15 @@ namespace CrossingLearsEditor
                 foreach (GameObject go in Selection.gameObjects)
                 {
                     Undo.RecordObject(go.transform, "Snap Position");
-                    Vector3 pos = go.transform.position;
+
+                    Vector3 pos = snapSpace == SnapSpace.Local ? go.transform.localPosition : go.transform.position;
+
                     if (gridX != 0) pos.x = Mathf.Round(pos.x / gridX) * gridX;
                     if (gridY != 0) pos.y = Mathf.Round(pos.y / gridY) * gridY;
                     if (gridZ != 0) pos.z = Mathf.Round(pos.z / gridZ) * gridZ;
-                    go.transform.position = pos;
+
+                    if (snapSpace == SnapSpace.Local) go.transform.localPosition = pos;
+                    else go.transform.position = pos;
                 }
             }
 
@@ -47,13 +103,18 @@ namespace CrossingLearsEditor
                 foreach (GameObject go in Selection.gameObjects)
                 {
                     Undo.RecordObject(go.transform, "Snap Rotation");
-                    Vector3 rot = go.transform.eulerAngles;
+
+                    Vector3 rot = snapSpace == SnapSpace.Local ? go.transform.localEulerAngles : go.transform.eulerAngles;
+
                     if (rotX != 0) rot.x = Mathf.Round(rot.x / rotX) * rotX;
                     if (rotY != 0) rot.y = Mathf.Round(rot.y / rotY) * rotY;
                     if (rotZ != 0) rot.z = Mathf.Round(rot.z / rotZ) * rotZ;
-                    go.transform.eulerAngles = rot;
+
+                    if (snapSpace == SnapSpace.Local) go.transform.localEulerAngles = rot;
+                    else go.transform.eulerAngles = rot;
                 }
             }
+
 
             GUILayout.Space(5);
             DrawSnapRow("X", ref rotX, SnapRotX);
@@ -105,103 +166,116 @@ namespace CrossingLearsEditor
             EditorGUILayout.EndHorizontal();
         }
 
-        private void SnapPosX()
-        {
-            foreach (GameObject go in Selection.gameObjects)
-            {
-                Undo.RecordObject(go.transform, "Snap Position X");
-                Vector3 pos = go.transform.position;
-                if (gridX != 0) pos.x = Mathf.Round(pos.x / gridX) * gridX;
-                go.transform.position = pos;
-            }
-        }
+private void SnapPosX()
+{
+    foreach (GameObject go in Selection.gameObjects)
+    {
+        Undo.RecordObject(go.transform, "Snap Position X");
+        Vector3 pos = snapSpace == SnapSpace.Local ? go.transform.localPosition : go.transform.position;
+        if (gridX != 0) pos.x = Mathf.Round(pos.x / gridX) * gridX;
 
-        private void SnapPosY()
-        {
-            foreach (GameObject go in Selection.gameObjects)
-            {
-                Undo.RecordObject(go.transform, "Snap Position Y");
-                Vector3 pos = go.transform.position;
-                if (gridY != 0) pos.y = Mathf.Round(pos.y / gridY) * gridY;
-                go.transform.position = pos;
-            }
-        }
+        if (snapSpace == SnapSpace.Local) go.transform.localPosition = pos;
+        else go.transform.position = pos;
+    }
+}
 
-        private void SnapPosZ()
-        {
-            foreach (GameObject go in Selection.gameObjects)
-            {
-                Undo.RecordObject(go.transform, "Snap Position Z");
-                Vector3 pos = go.transform.position;
-                if (gridZ != 0) pos.z = Mathf.Round(pos.z / gridZ) * gridZ;
-                go.transform.position = pos;
-            }
-        }
+private void SnapPosY()
+{
+    foreach (GameObject go in Selection.gameObjects)
+    {
+        Undo.RecordObject(go.transform, "Snap Position Y");
+        Vector3 pos = snapSpace == SnapSpace.Local ? go.transform.localPosition : go.transform.position;
+        if (gridY != 0) pos.y = Mathf.Round(pos.y / gridY) * gridY;
 
-        private void SnapRotX()
-        {
-            foreach (GameObject go in Selection.gameObjects)
-            {
-                Undo.RecordObject(go.transform, "Snap Rotation X");
-                Vector3 rot = go.transform.eulerAngles;
-                if (rotX != 0) rot.x = Mathf.Round(rot.x / rotX) * rotX;
-                go.transform.eulerAngles = rot;
-            }
-        }
+        if (snapSpace == SnapSpace.Local) go.transform.localPosition = pos;
+        else go.transform.position = pos;
+    }
+}
 
-        private void SnapRotY()
-        {
-            foreach (GameObject go in Selection.gameObjects)
-            {
-                Undo.RecordObject(go.transform, "Snap Rotation Y");
-                Vector3 rot = go.transform.eulerAngles;
-                if (rotY != 0) rot.y = Mathf.Round(rot.y / rotY) * rotY;
-                go.transform.eulerAngles = rot;
-            }
-        }
+private void SnapPosZ()
+{
+    foreach (GameObject go in Selection.gameObjects)
+    {
+        Undo.RecordObject(go.transform, "Snap Position Z");
+        Vector3 pos = snapSpace == SnapSpace.Local ? go.transform.localPosition : go.transform.position;
+        if (gridZ != 0) pos.z = Mathf.Round(pos.z / gridZ) * gridZ;
 
-        private void SnapRotZ()
-        {
-            foreach (GameObject go in Selection.gameObjects)
-            {
-                Undo.RecordObject(go.transform, "Snap Rotation Z");
-                Vector3 rot = go.transform.eulerAngles;
-                if (rotZ != 0) rot.z = Mathf.Round(rot.z / rotZ) * rotZ;
-                go.transform.eulerAngles = rot;
-            }
-        }
+        if (snapSpace == SnapSpace.Local) go.transform.localPosition = pos;
+        else go.transform.position = pos;
+    }
+}
 
-        private void SnapScaleX()
-        {
-            foreach (GameObject go in Selection.gameObjects)
-            {
-                Undo.RecordObject(go.transform, "Snap Scale X");
-                Vector3 scale = go.transform.localScale;
-                if (scaleX != 0) scale.x = Mathf.Round(scale.x / scaleX) * scaleX;
-                go.transform.localScale = scale;
-            }
-        }
+private void SnapRotX()
+{
+    foreach (GameObject go in Selection.gameObjects)
+    {
+        Undo.RecordObject(go.transform, "Snap Rotation X");
+        Vector3 rot = snapSpace == SnapSpace.Local ? go.transform.localEulerAngles : go.transform.eulerAngles;
+        if (rotX != 0) rot.x = Mathf.Round(rot.x / rotX) * rotX;
 
-        private void SnapScaleY()
-        {
-            foreach (GameObject go in Selection.gameObjects)
-            {
-                Undo.RecordObject(go.transform, "Snap Scale Y");
-                Vector3 scale = go.transform.localScale;
-                if (scaleY != 0) scale.y = Mathf.Round(scale.y / scaleY) * scaleY;
-                go.transform.localScale = scale;
-            }
-        }
+        if (snapSpace == SnapSpace.Local) go.transform.localEulerAngles = rot;
+        else go.transform.eulerAngles = rot;
+    }
+}
 
-        private void SnapScaleZ()
-        {
-            foreach (GameObject go in Selection.gameObjects)
-            {
-                Undo.RecordObject(go.transform, "Snap Scale Z");
-                Vector3 scale = go.transform.localScale;
-                if (scaleZ != 0) scale.z = Mathf.Round(scale.z / scaleZ) * scaleZ;
-                go.transform.localScale = scale;
-            }
-        }
+private void SnapRotY()
+{
+    foreach (GameObject go in Selection.gameObjects)
+    {
+        Undo.RecordObject(go.transform, "Snap Rotation Y");
+        Vector3 rot = snapSpace == SnapSpace.Local ? go.transform.localEulerAngles : go.transform.eulerAngles;
+        if (rotY != 0) rot.y = Mathf.Round(rot.y / rotY) * rotY;
+
+        if (snapSpace == SnapSpace.Local) go.transform.localEulerAngles = rot;
+        else go.transform.eulerAngles = rot;
+    }
+}
+
+private void SnapRotZ()
+{
+    foreach (GameObject go in Selection.gameObjects)
+    {
+        Undo.RecordObject(go.transform, "Snap Rotation Z");
+        Vector3 rot = snapSpace == SnapSpace.Local ? go.transform.localEulerAngles : go.transform.eulerAngles;
+        if (rotZ != 0) rot.z = Mathf.Round(rot.z / rotZ) * rotZ;
+
+        if (snapSpace == SnapSpace.Local) go.transform.localEulerAngles = rot;
+        else go.transform.eulerAngles = rot;
+    }
+}
+
+private void SnapScaleX()
+{
+    foreach (GameObject go in Selection.gameObjects)
+    {
+        Undo.RecordObject(go.transform, "Snap Scale X");
+        Vector3 scale = go.transform.localScale;
+        if (scaleX != 0) scale.x = Mathf.Round(scale.x / scaleX) * scaleX;
+        go.transform.localScale = scale;
+    }
+}
+
+private void SnapScaleY()
+{
+    foreach (GameObject go in Selection.gameObjects)
+    {
+        Undo.RecordObject(go.transform, "Snap Scale Y");
+        Vector3 scale = go.transform.localScale;
+        if (scaleY != 0) scale.y = Mathf.Round(scale.y / scaleY) * scaleY;
+        go.transform.localScale = scale;
+    }
+}
+
+private void SnapScaleZ()
+{
+    foreach (GameObject go in Selection.gameObjects)
+    {
+        Undo.RecordObject(go.transform, "Snap Scale Z");
+        Vector3 scale = go.transform.localScale;
+        if (scaleZ != 0) scale.z = Mathf.Round(scale.z / scaleZ) * scaleZ;
+        go.transform.localScale = scale;
+    }
+}
+
     }
 }
