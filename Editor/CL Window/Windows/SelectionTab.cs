@@ -11,7 +11,6 @@ namespace CrossingLearsEditor
         private GameObject selectedObject;
         private GameObject firstSelectedObject;
         private GameObject lastSelectedObject;
-        private List<GameObject> selectedObjects = new List<GameObject>();
         
 public override void DrawContent()
 {
@@ -91,9 +90,9 @@ public override void DrawContent()
             }
             if(GUILayout.Button("Assign Children"))
             {
-                foreach(GameObject item in selectedObjects)
+                foreach(Transform item in Selection.transforms)
                 {
-                    item.transform.SetParent(ParentTransform);
+                    item.SetParent(ParentTransform);
                 }
             }
             
