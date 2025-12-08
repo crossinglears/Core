@@ -68,7 +68,7 @@ public override void DrawContent()
 
         if (firstSelectedObject != null && lastSelectedObject != null)
         {
-            Vector3 difference = firstSelectedObject.transform.position - lastSelectedObject.transform.position;
+            Vector3 difference = firstSelectedObject.transform.localPosition - lastSelectedObject.transform.localPosition;
             difference = new Vector3(Mathf.Abs(difference.x), Mathf.Abs(difference.y), Mathf.Abs(difference.z));
             EditorGUILayout.Vector3Field("Difference", difference);
 
