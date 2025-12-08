@@ -71,6 +71,11 @@ public override void DrawContent()
             Vector3 difference = firstSelectedObject.transform.position - lastSelectedObject.transform.position;
             difference = new Vector3(Mathf.Abs(difference.x), Mathf.Abs(difference.y), Mathf.Abs(difference.z));
             EditorGUILayout.Vector3Field("Difference", difference);
+
+            if(GUILayout.Button("Apply difference to Snap"))
+            {
+                EditorSnapSettings.move = difference;                    
+            }
         }
     }
 
