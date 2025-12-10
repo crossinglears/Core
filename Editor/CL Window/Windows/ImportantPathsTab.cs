@@ -7,7 +7,6 @@ namespace CrossingLearsEditor
     public class ImportantPathsTab : CL_WindowTab
     {
         public override string TabName => "Paths";
-        public override int Order => 100;
 
         public List<Path> FilePaths = new()
         {

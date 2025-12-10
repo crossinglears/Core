@@ -10,7 +10,7 @@ namespace CrossingLearsEditor
     {
         public abstract string TabName { get; }
         public abstract void DrawContent();
-        public virtual int Order => 0;
+        // public virtual int Order => 0;
         public virtual void OnFocus() { }
         public virtual void OnUnfocus() { }
 
@@ -100,7 +100,7 @@ namespace CrossingLearsEditor
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(CL_WindowTab).IsAssignableFrom(t))
                 .Select(t => (CL_WindowTab)Activator.CreateInstance(t))
-                .OrderBy(tab => tab.Order)
+                // .OrderBy(tab => tab.Order)
                 .ToList();
         }
 
@@ -120,55 +120,6 @@ namespace CrossingLearsEditor
 
             Repaint();
         }
-
-        // private void DrawLeftPanel()
-        // {
-        //     EditorGUILayout.BeginVertical(GUILayout.Width(120));
-        //     GUILayout.Space(10);
-        //     leftScrollPos = EditorGUILayout.BeginScrollView(leftScrollPos, GUILayout.Width(120), GUILayout.ExpandHeight(true));
-
-        //     GUIStyle tabStyle = new GUIStyle(EditorStyles.label)
-        //     {
-        //         fontSize = 12,
-        //         alignment = TextAnchor.MiddleLeft,
-        //         normal = { textColor = Color.white },
-        //         padding = new RectOffset(10, 10, 5, 5)
-        //     };
-
-        //     for (int i = 0; i < tabs.Count; i++)
-        //     {
-        //         CL_WindowTab item = tabs[i];
-        //         if (IgnoredTabs.Contains(item.TabName))
-        //             continue;
-
-        //         GUIStyle currentStyle = new GUIStyle(tabStyle);
-        //         if (selectedTab == i)
-        //             currentStyle.normal.background = GetTabBackgroundColor();
-
-        //         if (GUILayout.Button(item.TabName, currentStyle, GUILayout.ExpandWidth(true), GUILayout.Height(25)))
-        //         {
-        //             if (selectedTab != i)
-        //             {
-        //                 tabs[selectedTab]?.OnUnfocus();
-        //                 item.OnDisable();
-        //                 selectedTab = i;
-        //                 item.OnEnable();
-        //                 item.OnFocus();
-        //             }
-        //         }
-        //     }
-
-        //     GUILayout.Space(30);
-        //     EditorGUILayout.EndScrollView();
-        //     EditorGUILayout.EndVertical();
-        // }
-
-        // private void DrawSeparator()
-        // {
-        //     Color lineColor = EditorGUIUtility.isProSkin ? new Color(0.15f, 0.15f, 0.15f) : new Color(0.6f, 0.6f, 0.6f);
-        //     Rect lineRect = GUILayoutUtility.GetRect(2, Screen.height, GUILayout.Width(2));
-        //     EditorGUI.DrawRect(lineRect, lineColor);
-        // }
 
         public const float leftPan = 115;
         private void DrawLeftPanel()
@@ -219,7 +170,6 @@ namespace CrossingLearsEditor
             Rect lineRect = GUILayoutUtility.GetRect(2, Screen.height, GUILayout.Width(2));
             EditorGUI.DrawRect(lineRect, lineColor);
         }
-
 
         private void DrawRightPanel()
         {

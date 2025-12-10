@@ -1,20 +1,69 @@
 using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
+using UnityEditorInternal;
 
 namespace CrossingLearsEditor
 {
     public class GeneralTab : CL_WindowTab
     {
-        public string VersionTime;
+        private void InitTabList()
+{
+    CL_Window cL_Window = CL_Window.current;
+    if (tabList != null) return;
+
+    // Exclude GeneralTab explicitly
+    System.Collections.Generic.List<CL_WindowTab> otherTabs = cL_Window.tabs.FindAll(tab => !(tab is GeneralTab));
+
+    tabList = new ReorderableList(otherTabs, typeof(CL_WindowTab), true, false, false, false);
+
+    // Draw each element
+    tabList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+    {
+        CL_WindowTab tab = otherTabs[index];
+        bool active = !cL_Window.IgnoredTabs.Contains(tab.TabName);
+
+        Rect toggleRect = new Rect(rect.x, rect.y, 20, rect.height);
+        Rect labelRect = new Rect(rect.x + 25, rect.y, rect.width - 25, rect.height);
+
+        bool newActive = EditorGUI.Toggle(toggleRect, active);
+        if (newActive != active)
+        {
+            if (newActive) cL_Window.IgnoredTabs.Remove(tab.TabName);
+            else cL_Window.IgnoredTabs.Add(tab.TabName);
+        }
+
+        EditorGUI.LabelField(labelRect, tab.TabName);
+    };
+
+    // Apply reordering to the original list
+    // tabList.onReorderCallbackWithDetails = (list, oldIndex, newIndex) =>
+    // {
+    //     CL_WindowTab movedTab = otherTabs[oldIndex];
+    //     otherTabs.RemoveAt(oldIndex);
+    //     otherTabs.Insert(newIndex, movedTab);
+
+    //     // Rebuild the original tabs list, keeping GeneralTab at top
+    //     CL_WindowTab general = cL_Window.tabs.Find(tab => tab is GeneralTab);
+    //     cL_Window.tabs.Clear();
+    //     if (general != null) cL_Window.tabs.Add(general);
+    //     cL_Window.tabs.AddRange(otherTabs);
+    // };
+
+    tabList.onReorderCallbackWithDetails = (list, oldIndex, newIndex) =>
+{
+    // Move the tab directly in the main tabs list
+    CL_WindowTab movedTab = cL_Window.tabs[oldIndex + 1]; // +1 to skip GeneralTab at index 0
+    cL_Window.tabs.RemoveAt(oldIndex + 1);
+    cL_Window.tabs.Insert(newIndex + 1, movedTab);
+};
+}
+
 
         public override string TabName => "General";
         public string WebsiteLink => "https://crossinglears.com/";
-        public override int Order => -1000;
 
         private AddRequest addRequest;
         private string feedbackMessage = "";
@@ -23,28 +72,19 @@ namespace CrossingLearsEditor
         private Vector2 scrollPos;
         private const int maxVisibleLines = 5;
 
+        private ReorderableList tabList;
+
         public override void DrawTitle()
         {
-            // base.DrawTitle();
             GUILayout.BeginHorizontal();
             GUILayout.Label(TabName, EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
-            GUILayout.Label(VersionTime);
             GUILayout.EndHorizontal();
             InstallCorePackageButton();
-
-        }
-
-        public override void OnEnable()
-        {
-            base.OnEnable();
-            GetVersion();
         }
 
         public override void DrawContent()
         {
-            // InstallCorePackageButton();
-
             GUILayout.Space(10);
             TabsChecklist();
 
@@ -114,7 +154,6 @@ namespace CrossingLearsEditor
                     {
                         if (addRequest.Status == StatusCode.Success)
                         {
-                            GetVersion();
                             Debug.Log("Crossing Lears Toolbox updated successfully!");
                         }
                         else
@@ -127,165 +166,45 @@ namespace CrossingLearsEditor
             }
         }
 
+        public override void Awake()
+        {
+            base.Awake();
+
+            CL_Window cL_Window = CL_Window.current;
+            if (EditorPrefs.HasKey("CL_WindowTabsOrder"))
+            {
+                string saved = EditorPrefs.GetString("CL_WindowTabsOrder");
+                string[] savedNames = saved.Split(';');
+                cL_Window.tabs.Sort((a, b) =>
+                {
+                    int indexA = Array.IndexOf(savedNames, a.TabName);
+                    int indexB = Array.IndexOf(savedNames, b.TabName);
+                    return indexA.CompareTo(indexB);
+                });
+            }
+
+            InitTabList();
+            
+            CL_WindowTab generalTab = cL_Window.tabs.Find(tab => tab is GeneralTab);
+            if (generalTab != null)
+            {
+                cL_Window.tabs.Remove(generalTab);
+                cL_Window.tabs.Insert(0, generalTab);
+            }
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+            CL_Window cL_Window = CL_Window.current;
+            string[] tabNames = cL_Window.tabs.ConvertAll(tab => tab.TabName).ToArray();
+            EditorPrefs.SetString("CL_WindowTabsOrder", string.Join(";", tabNames));
+        }
+
         private void TabsChecklist()
         {
-            CL_Window cL_Window = CL_Window.current;
             GUILayout.Label("Menus to open", EditorStyles.boldLabel);
-
-            for (int i = 1; i < cL_Window.tabs.Count; i++)
-            {
-                CL_WindowTab tab = cL_Window.tabs[i];
-                bool isActive = !cL_Window.IgnoredTabs.Contains(tab.TabName); // Check if the tab is ignored
-
-                GUILayout.BeginHorizontal();
-                bool newIsActive = EditorGUILayout.Toggle(isActive, GUILayout.Width(20));
-
-                if (newIsActive != isActive)
-                {
-                    if (newIsActive)
-                    {
-                        cL_Window.IgnoredTabs.Remove(tab.TabName);
-                    }
-                    else
-                    {
-                        cL_Window.IgnoredTabs.Add(tab.TabName);
-                    }
-                }
-                GUILayout.Label(tab.TabName);
-                GUILayout.EndHorizontal();
-            }
-        }
-
-        //     private async void GetVersion()
-        //     {
-        //         string url = "https://github.com/crossinglears/Core.git#main";
-
-        //         string[] parts = url.Split(new[] { '/', '.', '#' }, StringSplitOptions.RemoveEmptyEntries);
-        //         string owner = parts[3];
-        //         string repo = parts[4];
-        //         string branch = parts[^1];
-
-        //         string apiUrl = $"https://api.github.com/repos/{owner}/{repo}/commits/{branch}";
-
-        //         using (HttpClient client = new HttpClient())
-        //         {
-        //             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("UnityApp", "1.0"));
-
-        //             try
-        //             {
-        //                 HttpResponseMessage response = await client.GetAsync(apiUrl);
-        //                 response.EnsureSuccessStatusCode();
-
-        //                 string json = await response.Content.ReadAsStringAsync();
-        //                 JObject data = JObject.Parse(json);
-
-        //                 string commitDateUtc = data["commit"]["committer"]["date"].ToString();
-
-        //                 DateTime utcDate = DateTime.Parse(commitDateUtc, null, System.Globalization.DateTimeStyles.AdjustToUniversal);
-        //                 DateTime localDate = utcDate.ToLocalTime();
-
-        //                 TimeSpan difference = DateTime.Now - localDate;
-        //                 string timeAgo;
-
-        //                 if (difference.TotalSeconds < 60)
-        //                     timeAgo = $"{Math.Floor(difference.TotalSeconds)} seconds ago";
-        //                 else if (difference.TotalMinutes < 60)
-        //                     timeAgo = $"{Math.Floor(difference.TotalMinutes)} minutes ago";
-        //                 else if (difference.TotalHours < 24)
-        //                     timeAgo = $"{Math.Floor(difference.TotalHours)} hours ago";
-        //                 else if (difference.TotalDays < 30)
-        //                     timeAgo = $"{Math.Floor(difference.TotalDays)} days ago";
-        //                 else if (difference.TotalDays < 365)
-        //                     timeAgo = $"{Math.Floor(difference.TotalDays / 30)} months ago";
-        //                 else
-        //                     timeAgo = $"{Math.Floor(difference.TotalDays / 365)} years ago";
-
-        //                 VersionTime = $"({timeAgo}) {localDate:yyyy-MM-dd}";
-        //             }
-        //             catch (Exception ex)
-        //             {
-        //                 Debug.LogError($"Error fetching commit date: {ex.Message}");
-        //             }
-        //         }
-        //     }
-        // }
-
-        [Serializable]
-        public class Committer
-        {
-            public string date;
-        }
-
-        [Serializable]
-        public class Commit
-        {
-            public Committer committer;
-        }
-
-        [Serializable]
-        public class CommitResponse
-        {
-            public Commit commit;
-        }
-
-        private async void GetVersion()
-        {
-            string url = "https://github.com/crossinglears/Core.git#main";
-
-            string[] parts = url.Split(new[] { '/', '.', '#' }, StringSplitOptions.RemoveEmptyEntries);
-            string owner = parts[3];
-            string repo = parts[4];
-            string branch = parts[^1];
-
-            string apiUrl = $"https://api.github.com/repos/{owner}/{repo}/commits/{branch}";
-
-            using (HttpClient client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("UnityApp", "1.0"));
-
-                try
-                {
-                    HttpResponseMessage response = await client.GetAsync(apiUrl);
-                    response.EnsureSuccessStatusCode();
-
-                    string json = await response.Content.ReadAsStringAsync();
-                    CommitResponse data = JsonUtility.FromJson<CommitResponse>(json);
-
-                    if (data != null && data.commit != null && data.commit.committer != null)
-                    {
-                        string commitDateUtc = data.commit.committer.date;
-
-                        DateTime utcDate = DateTime.Parse(commitDateUtc, null, System.Globalization.DateTimeStyles.AdjustToUniversal);
-                        DateTime localDate = utcDate.ToLocalTime();
-
-                        TimeSpan difference = DateTime.Now - localDate;
-                        string timeAgo;
-
-                        if (difference.TotalSeconds < 60)
-                            timeAgo = $"{Math.Floor(difference.TotalSeconds)} sec ago";
-                        else if (difference.TotalMinutes < 60)
-                            timeAgo = $"{Math.Floor(difference.TotalMinutes)} min ago";
-                        else if (difference.TotalHours < 24)
-                            timeAgo = $"{Math.Floor(difference.TotalHours)} hr ago";
-                        else if (difference.TotalDays < 30)
-                            timeAgo = $"{Math.Floor(difference.TotalDays)} d ago";
-                        else if (difference.TotalDays < 365)
-                            timeAgo = $"{Math.Floor(difference.TotalDays / 30)} m ago";
-                        else
-                            timeAgo = $"{Math.Floor(difference.TotalDays / 365)} yr ago";
-
-                        VersionTime = $"({timeAgo}) {localDate:yyyy-MM-dd}";
-                    }
-                    else
-                    {
-                        Debug.LogError("Invalid JSON structure.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"Error fetching commit date: {ex.Message}");
-                }
-            }
+            tabList.DoLayoutList();
         }
     }
 }
