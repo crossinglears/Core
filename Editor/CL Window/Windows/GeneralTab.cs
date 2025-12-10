@@ -9,59 +9,6 @@ namespace CrossingLearsEditor
 {
     public class GeneralTab : CL_WindowTab
     {
-        private void InitTabList()
-{
-    CL_Window cL_Window = CL_Window.current;
-    if (tabList != null) return;
-
-    // Exclude GeneralTab explicitly
-    System.Collections.Generic.List<CL_WindowTab> otherTabs = cL_Window.tabs.FindAll(tab => !(tab is GeneralTab));
-
-    tabList = new ReorderableList(otherTabs, typeof(CL_WindowTab), true, false, false, false);
-
-    // Draw each element
-    tabList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
-    {
-        CL_WindowTab tab = otherTabs[index];
-        bool active = !cL_Window.IgnoredTabs.Contains(tab.TabName);
-
-        Rect toggleRect = new Rect(rect.x, rect.y, 20, rect.height);
-        Rect labelRect = new Rect(rect.x + 25, rect.y, rect.width - 25, rect.height);
-
-        bool newActive = EditorGUI.Toggle(toggleRect, active);
-        if (newActive != active)
-        {
-            if (newActive) cL_Window.IgnoredTabs.Remove(tab.TabName);
-            else cL_Window.IgnoredTabs.Add(tab.TabName);
-        }
-
-        EditorGUI.LabelField(labelRect, tab.TabName);
-    };
-
-    // Apply reordering to the original list
-    // tabList.onReorderCallbackWithDetails = (list, oldIndex, newIndex) =>
-    // {
-    //     CL_WindowTab movedTab = otherTabs[oldIndex];
-    //     otherTabs.RemoveAt(oldIndex);
-    //     otherTabs.Insert(newIndex, movedTab);
-
-    //     // Rebuild the original tabs list, keeping GeneralTab at top
-    //     CL_WindowTab general = cL_Window.tabs.Find(tab => tab is GeneralTab);
-    //     cL_Window.tabs.Clear();
-    //     if (general != null) cL_Window.tabs.Add(general);
-    //     cL_Window.tabs.AddRange(otherTabs);
-    // };
-
-    tabList.onReorderCallbackWithDetails = (list, oldIndex, newIndex) =>
-{
-    // Move the tab directly in the main tabs list
-    CL_WindowTab movedTab = cL_Window.tabs[oldIndex + 1]; // +1 to skip GeneralTab at index 0
-    cL_Window.tabs.RemoveAt(oldIndex + 1);
-    cL_Window.tabs.Insert(newIndex + 1, movedTab);
-};
-}
-
-
         public override string TabName => "General";
         public string WebsiteLink => "https://crossinglears.com/";
 
@@ -177,5 +124,43 @@ namespace CrossingLearsEditor
             GUILayout.Label("Menus to open", EditorStyles.boldLabel);
             tabList.DoLayoutList();
         }
+        
+        private void InitTabList()
+        {
+            CL_Window cL_Window = CL_Window.current;
+            if (tabList != null) return;
+
+            // Exclude GeneralTab explicitly
+            System.Collections.Generic.List<CL_WindowTab> otherTabs = cL_Window.tabs.FindAll(tab => !(tab is GeneralTab));
+
+            tabList = new ReorderableList(otherTabs, typeof(CL_WindowTab), true, false, false, false);
+
+            // Draw each element
+            tabList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+            {
+                CL_WindowTab tab = otherTabs[index];
+                bool active = !cL_Window.IgnoredTabs.Contains(tab.TabName);
+
+                Rect toggleRect = new Rect(rect.x, rect.y, 20, rect.height);
+                Rect labelRect = new Rect(rect.x + 25, rect.y, rect.width - 25, rect.height);
+
+                bool newActive = EditorGUI.Toggle(toggleRect, active);
+                if (newActive != active)
+                {
+                    if (newActive) cL_Window.IgnoredTabs.Remove(tab.TabName);
+                    else cL_Window.IgnoredTabs.Add(tab.TabName);
+                }
+
+                EditorGUI.LabelField(labelRect, tab.TabName);
+            };
+
+            tabList.onReorderCallbackWithDetails = (list, oldIndex, newIndex) =>
+            {
+                CL_WindowTab movedTab = cL_Window.tabs[oldIndex + 1]; // +1 to skip GeneralTab at index 0
+                cL_Window.tabs.RemoveAt(oldIndex + 1);
+                cL_Window.tabs.Insert(newIndex + 1, movedTab);
+            };
+        }
+
     }
 }

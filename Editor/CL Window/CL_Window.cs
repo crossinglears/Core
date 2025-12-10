@@ -66,6 +66,7 @@ namespace CrossingLearsEditor
 
         private void Awake()
         {
+            Debug.Log("clwindow awake");
             if (EditorPrefs.HasKey("CL_WindowTabsOrder"))
             {
                 string saved = EditorPrefs.GetString("CL_WindowTabsOrder");
@@ -77,6 +78,7 @@ namespace CrossingLearsEditor
                     return indexA.CompareTo(indexB);
                 });
             }
+
             CL_WindowTab generalTab = tabs.Find(tab => tab is GeneralTab);
             if (generalTab != null)
             {
@@ -102,6 +104,7 @@ namespace CrossingLearsEditor
 
         private void OnEnable()
         {
+            Debug.Log("clwindow onenable");
             current = this;
             IgnoredTabs = EditorPrefs.GetString(IGNOREDTABSKEY).Split('+').ToList();
             LoadTabs();
