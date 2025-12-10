@@ -1,3 +1,6 @@
+// Remove every dictionary/keyValuePairs reference completely.
+// Updated ClipboardTab and ClipboardEditWindow without InvokeID and Dictionary logic.
+
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -21,28 +24,6 @@ namespace CrossingLearsEditor
                 SaveTasks();
                 DrawReorderables();
             }
-            if (GUILayout.Button("Check Dictionary"))
-            {
-                LogAllClipboardItems();
-
-                void LogAllClipboardItems()
-                {
-                    foreach (KeyValuePair<string, List<Content>> pair in keyValuePairs)
-                    {
-                        System.Text.StringBuilder sb = new System.Text.StringBuilder();
-
-                        sb.AppendLine(pair.Key);
-
-                        for (int i = 0; i < pair.Value.Count; i++)
-                        {
-                            Content content = pair.Value[i];
-                            sb.AppendLine("- " + content.Title);
-                        }
-
-                        Debug.Log(sb.ToString());
-                    }
-                }
-            }
 
             GUILayout.EndHorizontal();
         }
@@ -52,37 +33,39 @@ namespace CrossingLearsEditor
         {
             public string Title;
             public string _Message;
-            public string InvokeID = "";
-
             public string Message
             {
                 get { return string.IsNullOrEmpty(_Message) ? Title : _Message; }
                 set { _Message = value; }
             }
-
             public ClipboardPurpose Purpose;
 
-            public void Press(ClipboardTab clipboardTab, bool recursion)
-            {
-                if(recursion && !string.IsNullOrEmpty(InvokeID))
-                {
-                    foreach(Content item in clipboardTab.keyValuePairs[InvokeID])
-                    {
-                        item.Press(clipboardTab, false);
-                    }
-                    return;
-                }
+            public string SnapInterval;
 
+            public void Press()
+            {
                 switch (Purpose)
                 {
                     case ClipboardPurpose.Clipboard:
-                        EditorGUIUtility.systemCopyBuffer = Message;
-                        break;
+                        {
+                            EditorGUIUtility.systemCopyBuffer = Message;
 
+                            if (ExtensionTools.TryParseVector3(SnapInterval, out Vector3 s))
+                                EditorSnapSettings.move = s;
+
+                            break;
+                        }
                     case ClipboardPurpose.SnapInterval:
-                        if (ExtensionTools.TryParseVector3(Message, out Vector3 snap))
-                            EditorSnapSettings.move = snap;
-                        break;
+                        {
+                            if (ExtensionTools.TryParseVector3(Message, out Vector3 snap))
+                                EditorSnapSettings.move = snap;
+                            else
+                            {
+                                if (ExtensionTools.TryParseVector3(SnapInterval, out Vector3 s))
+                                EditorSnapSettings.move = s;
+                            }
+                            break;
+                        }
 
                     case ClipboardPurpose.ResizeObject:
                         if (Selection.activeTransform != null && ExtensionTools.TryParseVector3(Message, out Vector3 scale))
@@ -116,7 +99,6 @@ namespace CrossingLearsEditor
 
         private List<ClipboardList> clipboardLists = new List<ClipboardList>();
         private List<ReorderableList> reorderableLists = new List<ReorderableList>();
-        public Dictionary<string, List<Content>> keyValuePairs = new();
 
         private const string TaskFilePath = "Assets/Editor/Development Files/Clipboard.json";
 
@@ -148,24 +130,21 @@ namespace CrossingLearsEditor
                     float buttonWidth = 80;
                     float menuWidth = 20;
 
-                    // Text field for list name
                     EditorGUI.LabelField(new Rect(rect.x, rect.y, width - buttonWidth - menuWidth - 10, EditorGUIUtility.singleLineHeight), list.ListName);
 
-                    // Add item button
                     if (GUI.Button(new Rect(rect.x + width - buttonWidth - menuWidth - 5, rect.y, buttonWidth, EditorGUIUtility.singleLineHeight), "Add Item"))
                     {
-                        var c = new Content { Title = "New Content", Message = "", Purpose = ClipboardPurpose.Clipboard };
+                        var c = new Content { Title = "New Content", Message = "" };
                         list.Contents.Add(c);
-                        ClipboardEditWindow.Open(c, SaveTasks, this);
+                        ClipboardEditWindow.Open(c, SaveTasks);
                     }
 
-                    // 3-dot menu button
                     if (GUI.Button(new Rect(rect.x + width - menuWidth, rect.y, menuWidth, EditorGUIUtility.singleLineHeight), "⋮"))
                     {
                         GenericMenu menu = new GenericMenu();
                         menu.AddItem(new GUIContent("Rename"), false, () =>
-                        {                            
-                            StringInputWindow.Open("Rename List", "Enter a new name for this list:", list.ListName, newName =>
+                        {
+                            StringInputWindow.Open("Rename List", "Enter new name:", list.ListName, newName =>
                             {
                                 if (!string.IsNullOrEmpty(newName))
                                 {
@@ -200,11 +179,11 @@ namespace CrossingLearsEditor
                     EditorGUI.LabelField(new Rect(rect.x + 5, rect.y, width - 200, EditorGUIUtility.singleLineHeight), content.Title);
 
                     if (GUI.Button(new Rect(rect.x + width - 180, rect.y, 60, EditorGUIUtility.singleLineHeight), "Edit"))
-                        ClipboardEditWindow.Open(content, SaveTasks, this);
+                        ClipboardEditWindow.Open(content, SaveTasks);
 
                     if (GUI.Button(new Rect(rect.x + width - 115, rect.y, 90, EditorGUIUtility.singleLineHeight), content.Purpose.ToString()))
                     {
-                        content.Press(this, true);
+                        content.Press();
                         SaveTasks();
                     }
 
@@ -241,25 +220,6 @@ namespace CrossingLearsEditor
             AssetDatabase.Refresh();
         }
 
-        // private void LoadClipboard()
-        // {
-        //     if (System.IO.File.Exists(TaskFilePath))
-        //     {
-        //         string json = System.IO.File.ReadAllText(TaskFilePath);
-        //         ClipboardWrapper wrapper = JsonUtility.FromJson<ClipboardWrapper>(json);
-        //         clipboardLists = wrapper?.lists ?? new List<ClipboardList>();
-        //     }
-        //     else
-        //     {
-        //         clipboardLists = new List<ClipboardList>();
-        //     }
-
-        //     foreach(var item in clipboardLists)
-        //     {
-        //         if(item.in)
-        //     }
-        // }
-
         private void LoadClipboard()
         {
             if (System.IO.File.Exists(TaskFilePath))
@@ -268,36 +228,8 @@ namespace CrossingLearsEditor
                 ClipboardWrapper wrapper = JsonUtility.FromJson<ClipboardWrapper>(json);
                 clipboardLists = wrapper != null ? wrapper.lists : new List<ClipboardList>();
             }
-            else
-            {
-                clipboardLists = new List<ClipboardList>();
-            }
-
-            keyValuePairs.Clear();
-
-            for (int i = 0; i < clipboardLists.Count; i++)
-            {
-                ClipboardList list = clipboardLists[i];
-
-                for (int j = 0; j < list.Contents.Count; j++)
-                {
-                    Content content = list.Contents[j];
-
-                    if (string.IsNullOrEmpty(content.InvokeID))
-                    {
-                        continue;
-                    }
-
-                    if (!keyValuePairs.ContainsKey(content.InvokeID))
-                    {
-                        keyValuePairs.Add(content.InvokeID, new List<Content>());
-                    }
-
-                    keyValuePairs[content.InvokeID].Add(content);
-                }
-            }
+            else clipboardLists = new List<ClipboardList>();
         }
-
 
         [System.Serializable]
         private class ClipboardWrapper
@@ -310,66 +242,16 @@ namespace CrossingLearsEditor
     {
         private static ClipboardTab.Content editingContent;
         private static System.Action saveCallback;
-        private static  ClipboardTab clipboardTab;
 
-        static string originalInvokeID = "";
-
-        public static void Open(ClipboardTab.Content content, System.Action onSave, ClipboardTab clipboardTab)
+        public static void Open(ClipboardTab.Content content, System.Action onSave)
         {
-            ClipboardEditWindow.clipboardTab = clipboardTab;
             ClipboardEditWindow window = GetWindow<ClipboardEditWindow>("Edit Clipboard");
             editingContent = content;
             saveCallback = onSave;
-            originalInvokeID = content.InvokeID;
             window.Show();
         }
 
-        private bool focusTitle = true;
-
-        // private void OnGUI()
-        // {
-        //     if (editingContent == null) return;
-
-        //     GUILayout.Label("Edit Clipboard Content", EditorStyles.boldLabel);
-
-        //     // Focus the Title field on first draw
-        //     GUI.SetNextControlName("TitleField");
-        //     editingContent.Title = EditorGUILayout.TextField("Title", editingContent.Title);
-
-        //     if (focusTitle)
-        //     {
-        //         EditorGUI.FocusTextInControl("TitleField");
-        //         focusTitle = false;
-        //     }
-
-        //     editingContent.Message = EditorGUILayout.TextField("Message", editingContent._Message);
-        //     editingContent.Purpose = (ClipboardTab.ClipboardPurpose)EditorGUILayout.EnumPopup("Purpose", editingContent.Purpose);
-        //     editingContent.InvokeID = EditorGUILayout.TextField("Invoke ID", editingContent.InvokeID);
-
-        //     GUILayout.Space(10);
-
-        //     if (GUILayout.Button("Save"))
-        //     {
-
-        //         if(!string.IsNullOrEmpty(originalInvokeID) && originalInvokeID != editingContent.InvokeID)
-        //         {
-        //             List<ClipboardTab.Content> l = clipboardTab.keyValuePairs[originalInvokeID];
-        //             l.Remove(editingContent);
-        //             if(l.Count == 0)
-        //             {
-        //                 clipboardTab.keyValuePairs.Remove(originalInvokeID);
-        //             }
-        //         }
-
-        //         if(!string.IsNullOrEmpty(editingContent.InvokeID) && originalInvokeID != editingContent.InvokeID)
-        //         {
-                    
-        //         }
-
-        //         saveCallback?.Invoke();
-        //         Close();
-        //     }
-        // }
+        bool focusTitle = true;
 
         private void OnGUI()
         {
@@ -388,40 +270,15 @@ namespace CrossingLearsEditor
 
             editingContent.Message = EditorGUILayout.TextField("Message", editingContent._Message);
             editingContent.Purpose = (ClipboardTab.ClipboardPurpose)EditorGUILayout.EnumPopup("Purpose", editingContent.Purpose);
-            editingContent.InvokeID = EditorGUILayout.TextField("Invoke ID", editingContent.InvokeID);
+            editingContent.SnapInterval = EditorGUILayout.TextField("Snap Interval", editingContent.SnapInterval);
 
             GUILayout.Space(10);
 
             if (GUILayout.Button("Save"))
             {
-                bool hadOriginal = !string.IsNullOrEmpty(originalInvokeID);
-                bool changed = editingContent.InvokeID != originalInvokeID;
-                bool hasNew = !string.IsNullOrEmpty(editingContent.InvokeID);
-
-                if (hadOriginal && changed)
-                {
-                    List<ClipboardTab.Content> list = clipboardTab.keyValuePairs[originalInvokeID];
-                    list.Remove(editingContent);
-                    if (list.Count == 0)
-                    {
-                        clipboardTab.keyValuePairs.Remove(originalInvokeID);
-                    }
-                }
-
-                if (changed && hasNew)
-                {
-                    if (!clipboardTab.keyValuePairs.ContainsKey(editingContent.InvokeID))
-                    {
-                        clipboardTab.keyValuePairs.Add(editingContent.InvokeID, new List<ClipboardTab.Content>());
-                    }
-
-                    clipboardTab.keyValuePairs[editingContent.InvokeID].Add(editingContent);
-                }
-
                 saveCallback?.Invoke();
                 Close();
             }
         }
-
     }
 }
