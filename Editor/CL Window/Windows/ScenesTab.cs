@@ -10,11 +10,9 @@ namespace CrossingLearsEditor
         public override string TabName => "Scenes";
 
         private string[] allScenePaths;
-        private Dictionary<string, List<string>> groupedScenes = new();
-        private Dictionary<string, bool> foldoutStates = new();
-
-        private List<string> alwaysActive = new();
-        private const string AlwaysActiveEditorPrefsKey = "CLWindow.ScenesTab.AlwaysActive";
+        private Dictionary<string, List<string>> groupedScenes = new Dictionary<string, List<string>>();
+        private Dictionary<string, bool> foldoutStates = new Dictionary<string, bool>();
+        private string sceneFilter = "";
 
         public override void Awake()
         {
@@ -26,16 +24,6 @@ namespace CrossingLearsEditor
         {
             base.OnFocus();
             LoadData();
-        }
-
-        public override void OnDisable()
-        {
-            base.OnDisable();
-
-            if (alwaysActive.Count > 0)
-                EditorPrefs.SetString(AlwaysActiveEditorPrefsKey, string.Join(";", alwaysActive));
-            else
-                EditorPrefs.DeleteKey(AlwaysActiveEditorPrefsKey);
         }
 
         private void LoadData()
@@ -50,42 +38,32 @@ namespace CrossingLearsEditor
 
             foreach (string path in allScenePaths)
             {
-                var segments = path.Split('/');
-                var group = segments.Length > 1 ? segments[^2] : "Other";
+                string[] segments = path.Split('/');
+                string group = segments.Length > 1 ? segments[segments.Length - 2] : "Other";
 
                 if (!groupedScenes.ContainsKey(group))
                 {
                     groupedScenes[group] = new List<string>();
-                    foldoutStates[group] = true; // default to expanded
+                    foldoutStates[group] = true;
                 }
 
                 groupedScenes[group].Add(path);
             }
-
-            if (EditorPrefs.HasKey(AlwaysActiveEditorPrefsKey))
-                alwaysActive = EditorPrefs.GetString(AlwaysActiveEditorPrefsKey).Split(';').ToList();
-            else
-                alwaysActive.Clear();
         }
 
         public override void DrawTitle()
         {
             GUILayout.BeginHorizontal();
             base.DrawTitle();
-            GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button("Log All Always Active"))
-            {
-                foreach (var scene in alwaysActive)
-                    Debug.Log(scene);
-            }
+            Rect searchRect = GUILayoutUtility.GetRect(200, 20, GUILayout.ExpandWidth(false));
 
-            if (GUILayout.Button("Reset Always Active"))
-            {
-                EditorPrefs.DeleteKey(AlwaysActiveEditorPrefsKey);
-                alwaysActive.Clear();
-            }
+            GUIStyle searchStyle = GUI.skin.FindStyle("ToolbarSeachTextField") 
+                ?? GUI.skin.FindStyle("ToolbarSearchTextField");
 
+            sceneFilter = GUI.TextField(searchRect, sceneFilter, searchStyle);
+
+            GUILayout.Space(5);
             GUILayout.EndHorizontal();
         }
 
@@ -99,13 +77,12 @@ namespace CrossingLearsEditor
                 return;
             }
 
-            var openScenes = new HashSet<string>();
+            HashSet<string> openScenes = new HashSet<string>();
             for (int i = 0; i < UnityEditor.SceneManagement.EditorSceneManager.sceneCount; i++)
                 openScenes.Add(UnityEditor.SceneManagement.EditorSceneManager.GetSceneAt(i).path);
 
-            foreach (var group in groupedScenes)
+            foreach (KeyValuePair<string, List<string>> group in groupedScenes)
             {
-                foldoutStates.TryAdd(group.Key, true);
                 foldoutStates[group.Key] = EditorGUILayout.Foldout(
                     foldoutStates[group.Key],
                     group.Key,
@@ -117,18 +94,21 @@ namespace CrossingLearsEditor
 
                 foreach (string path in group.Value)
                 {
+                    string fileName = System.IO.Path.GetFileName(path);
+
+                    if (!FuzzyMatch(fileName, sceneFilter))
+                        continue;
+
                     bool isOpen = openScenes.Contains(path);
                     bool isInBuildSettings = EditorBuildSettings.scenes.Any(s => s.path == path);
-                    bool isAlwaysActive = alwaysActive.Contains(path);
                     Color originalColor = GUI.color;
 
                     EditorGUILayout.BeginHorizontal();
 
-                    // Toggle for Build Settings
                     bool toggle = EditorGUILayout.Toggle(isInBuildSettings, GUILayout.Width(20));
                     if (toggle != isInBuildSettings)
                     {
-                        var buildScenes = EditorBuildSettings.scenes.ToList();
+                        List<EditorBuildSettingsScene> buildScenes = EditorBuildSettings.scenes.ToList();
 
                         if (toggle)
                             buildScenes.Add(new EditorBuildSettingsScene(path, true));
@@ -138,43 +118,22 @@ namespace CrossingLearsEditor
                         EditorBuildSettings.scenes = buildScenes.ToArray();
                     }
 
-                    // Scene Label with path tooltip
                     GUI.color = isOpen ? Color.cyan : originalColor;
                     Rect labelRect = EditorGUILayout.GetControlRect(GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
-                    string fileName = System.IO.Path.GetFileName(path);
                     EditorGUI.LabelField(labelRect, new GUIContent(fileName, path));
 
-                    // Context Menu
                     if (Event.current.type == EventType.ContextClick && labelRect.Contains(Event.current.mousePosition))
                     {
-                        GenericMenu menu = new();
+                        GenericMenu menu = new GenericMenu();
                         menu.AddItem(new GUIContent("Copy Path"), false, () => EditorGUIUtility.systemCopyBuffer = path);
-
-                        if (isAlwaysActive)
-                        {
-                            menu.AddItem(new GUIContent("Remove Always Active"), false, () => alwaysActive.Remove(path));
-                        }
-                        else
-                        {
-                            menu.AddItem(new GUIContent("Add to Always Active"), false, () =>
-                            {
-                                alwaysActive.Add(path);
-                                IncludeAllRequiredScenes();
-                            });
-                        }
-
                         menu.ShowAsContext();
                         Event.current.Use();
                     }
 
-                    if (isAlwaysActive)
-                        GUILayout.Label(new GUIContent("A", "Always Active"), GUILayout.Width(20));
-
-                    // Project View Button
                     if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20)))
                     {
                         Object asset = AssetDatabase.LoadAssetAtPath<Object>(path);
-                        if (asset)
+                        if (asset != null)
                         {
                             EditorApplication.ExecuteMenuItem("Window/General/Project");
                             Selection.activeObject = asset;
@@ -182,7 +141,6 @@ namespace CrossingLearsEditor
                         }
                     }
 
-                    // Open Button
                     if (!isInBuildSettings && EditorApplication.isPlaying)
                         GUI.enabled = false;
 
@@ -199,12 +157,10 @@ namespace CrossingLearsEditor
                                 UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
                             }
                         }
-                        IncludeAllRequiredScenes();
                     }
 
                     GUI.enabled = true;
 
-                    // Close or Additive
                     if (isOpen)
                     {
                         if (GUILayout.Button("Close", GUILayout.Width(60)))
@@ -217,7 +173,7 @@ namespace CrossingLearsEditor
                             {
                                 if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                                 {
-                                    var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path);
+                                    UnityEngine.SceneManagement.Scene scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path);
                                     UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);
                                 }
                             }
@@ -249,25 +205,20 @@ namespace CrossingLearsEditor
             EditorGUIUtility.labelWidth = 0;
         }
 
-        private void IncludeAllRequiredScenes()
+        private bool FuzzyMatch(string text, string filter)
         {
-            foreach (string path in alwaysActive)
+            if (string.IsNullOrEmpty(filter)) return true;
+            int ti = 0;
+            int fi = 0;
+
+            while (ti < text.Length && fi < filter.Length)
             {
-                if (!UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path).isLoaded)
-                {
-                    if (EditorApplication.isPlaying)
-                    {
-                        UnityEngine.SceneManagement.SceneManager.LoadScene(path, UnityEngine.SceneManagement.LoadSceneMode.Additive);
-                    }
-                    else
-                    {
-                        if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                        {
-                            UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
-                        }
-                    }
-                }
+                if (char.ToLower(text[ti]) == char.ToLower(filter[fi]))
+                    fi++;
+                ti++;
             }
+
+            return fi == filter.Length;
         }
     }
 }

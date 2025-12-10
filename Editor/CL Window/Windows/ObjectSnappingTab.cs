@@ -64,7 +64,14 @@ namespace CrossingLearsEditor
             GUILayout.BeginHorizontal();
             base.DrawTitle();
 
-            snapSpace = (SnapSpace)EditorGUILayout.EnumPopup(snapSpace, GUILayout.Width(90));
+            // snapSpace = (SnapSpace)EditorGUILayout.EnumPopup(snapSpace, GUILayout.Width(90));
+            snapSpace = (SnapSpace)GUILayout.Toolbar(
+    (int)snapSpace,
+    new string[] { "Local", "Global" },
+    GUILayout.Width(120),
+    GUILayout.Height(20)
+);
+
 
             GUILayout.EndHorizontal();
         }

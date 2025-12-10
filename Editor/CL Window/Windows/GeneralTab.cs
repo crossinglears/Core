@@ -103,7 +103,7 @@ namespace CrossingLearsEditor
 
         private void InstallCorePackageButton()
         {
-            if (GUILayout.Button(new GUIContent("Update Core", "Installs or updates https://github.com/crossinglears/Core.git#main"), GUILayout.Height(30)))
+            if (GUILayout.Button(new GUIContent("Update Toolbox", "Installs or updates https://github.com/crossinglears/Core.git#main"), GUILayout.Height(30)))
             {
                 addRequest = Client.Add("https://github.com/crossinglears/Core.git#main");
                 EditorApplication.update += PackageProgress;
@@ -115,11 +115,11 @@ namespace CrossingLearsEditor
                         if (addRequest.Status == StatusCode.Success)
                         {
                             GetVersion();
-                            Debug.Log("Crossing Lears Core updated successfully!");
+                            Debug.Log("Crossing Lears Toolbox updated successfully!");
                         }
                         else
                         {
-                            Debug.LogError("Failed to install Core package: " + addRequest.Error.message);
+                            Debug.LogError("Failed to install Toolbox package: " + addRequest.Error.message);
                         }
                         EditorApplication.update -= PackageProgress;
                     }
