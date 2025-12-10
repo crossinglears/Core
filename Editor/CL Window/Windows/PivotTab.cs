@@ -39,7 +39,9 @@ namespace CrossingLearsEditor
     {
         public override string TabName => "Pivot";
 
-        int x, y, z;
+        int x = 1;
+        int y = 1;
+        int z = 1;
         int pivotSetting = 0;
 
         public override void DrawContent()
@@ -47,13 +49,28 @@ namespace CrossingLearsEditor
             string[] par = new string[] { "Left", "Center", "Right" };
             string[] par2 = new string[] { "Top", "Center", "Bottom" };
 
-            x = GUILayout.Toolbar(x, par, GUILayout.Width(120), GUILayout.Height(20));
-            y = GUILayout.Toolbar(y, par2, GUILayout.Width(120), GUILayout.Height(20));
-            z = GUILayout.Toolbar(z, par, GUILayout.Width(120), GUILayout.Height(20));
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("X", GUILayout.Width(20));
+            x = GUILayout.Toolbar(x, par, GUILayout.Height(20), GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
 
-            pivotSetting = GUILayout.Toolbar(pivotSetting, new string[] { "Average Position of All Children", "Average Bounds Center of All Children" }, GUILayout.Width(300), GUILayout.Height(20));
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Y", GUILayout.Width(20));
+            y = GUILayout.Toolbar(y, par2, GUILayout.Height(20), GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
 
-            if (GUILayout.Button("Apply Pivot"))
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Z", GUILayout.Width(20));
+            z = GUILayout.Toolbar(z, par, GUILayout.Height(20), GUILayout.ExpandWidth(true));
+            GUILayout.EndHorizontal();
+                        
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Pivot Mode", GUILayout.Width(120));
+            pivotSetting = EditorGUILayout.Popup(pivotSetting, new string[] { "Average Bounds Center of All Children", "Average Position of All Children",  });
+            GUILayout.EndHorizontal();
+
+            GUILayout.Space(5);
+            if (GUILayout.Button("Apply Pivot", GUILayout.Height(25)))
             {
                 ApplyPivot();
             }
