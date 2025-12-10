@@ -40,7 +40,7 @@ namespace CrossingLearsEditor
             }
             public ClipboardPurpose Purpose;
 
-            public string SnapInterval;
+            public string SnapInterval = "";
 
             public void Press()
             {

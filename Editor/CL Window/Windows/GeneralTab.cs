@@ -169,36 +169,7 @@ namespace CrossingLearsEditor
         public override void Awake()
         {
             base.Awake();
-
-            CL_Window cL_Window = CL_Window.current;
-            if (EditorPrefs.HasKey("CL_WindowTabsOrder"))
-            {
-                string saved = EditorPrefs.GetString("CL_WindowTabsOrder");
-                string[] savedNames = saved.Split(';');
-                cL_Window.tabs.Sort((a, b) =>
-                {
-                    int indexA = Array.IndexOf(savedNames, a.TabName);
-                    int indexB = Array.IndexOf(savedNames, b.TabName);
-                    return indexA.CompareTo(indexB);
-                });
-            }
-
             InitTabList();
-            
-            CL_WindowTab generalTab = cL_Window.tabs.Find(tab => tab is GeneralTab);
-            if (generalTab != null)
-            {
-                cL_Window.tabs.Remove(generalTab);
-                cL_Window.tabs.Insert(0, generalTab);
-            }
-        }
-
-        public override void OnDisable()
-        {
-            base.OnDisable();
-            CL_Window cL_Window = CL_Window.current;
-            string[] tabNames = cL_Window.tabs.ConvertAll(tab => tab.TabName).ToArray();
-            EditorPrefs.SetString("CL_WindowTabsOrder", string.Join(";", tabNames));
         }
 
         private void TabsChecklist()

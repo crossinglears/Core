@@ -66,6 +66,24 @@ namespace CrossingLearsEditor
 
         private void Awake()
         {
+            if (EditorPrefs.HasKey("CL_WindowTabsOrder"))
+            {
+                string saved = EditorPrefs.GetString("CL_WindowTabsOrder");
+                string[] savedNames = saved.Split(';');
+                tabs.Sort((a, b) =>
+                {
+                    int indexA = Array.IndexOf(savedNames, a.TabName);
+                    int indexB = Array.IndexOf(savedNames, b.TabName);
+                    return indexA.CompareTo(indexB);
+                });
+            }
+            CL_WindowTab generalTab = tabs.Find(tab => tab is GeneralTab);
+            if (generalTab != null)
+            {
+                tabs.Remove(generalTab);
+                tabs.Insert(0, generalTab);
+            }
+
             foreach (var item in tabs)
             {
                 item.Awake();
@@ -77,6 +95,9 @@ namespace CrossingLearsEditor
             EditorPrefs.SetString(IGNOREDTABSKEY, string.Join("+", IgnoredTabs));
             if (tabs.Count > 0)
                 tabs[selectedTab].OnDisable();
+                
+            string[] tabNames = tabs.ConvertAll(tab => tab.TabName).ToArray();
+            EditorPrefs.SetString("CL_WindowTabsOrder", string.Join(";", tabNames));
         }
 
         private void OnEnable()
