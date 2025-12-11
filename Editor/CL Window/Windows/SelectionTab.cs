@@ -228,7 +228,7 @@ namespace CrossingLearsEditor
             {
                 foreach (Transform item in Selection.transforms)
                 {
-                    item.SetParent(ParentTransform);
+                    Undo.SetTransformParent(item, ParentTransform, "Assign Children");
                 }
             }
 
@@ -238,6 +238,8 @@ namespace CrossingLearsEditor
 
                 void DoUnparent(Transform t)
                 {
+                    Undo.RecordObject(t, "Unparent");
+
                     Transform parent = t.parent;
 
                     if (parent == null)
@@ -267,6 +269,7 @@ namespace CrossingLearsEditor
 
                 EditorGUIUtility.PingObject(selectedObject);
             }
+
         }
     }
 }

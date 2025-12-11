@@ -66,7 +66,7 @@ namespace CrossingLearsEditor
 
         private void Awake()
         {
-            Debug.Log("clwindow awake");
+            LoadTabs();
             if (EditorPrefs.HasKey("CL_WindowTabsOrder"))
             {
                 string saved = EditorPrefs.GetString("CL_WindowTabsOrder");
@@ -104,7 +104,6 @@ namespace CrossingLearsEditor
 
         private void OnEnable()
         {
-            Debug.Log("clwindow onenable");
             current = this;
             IgnoredTabs = EditorPrefs.GetString(IGNOREDTABSKEY).Split('+').ToList();
             LoadTabs();
@@ -120,6 +119,7 @@ namespace CrossingLearsEditor
 
         private void LoadTabs()
         {
+            if(tabs == null || tabs.Count == 0)
             tabs = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(CL_WindowTab).IsAssignableFrom(t))

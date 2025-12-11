@@ -67,144 +67,300 @@ namespace CrossingLearsEditor
             GUILayout.EndHorizontal();
         }
 
-        public override void DrawContent()
-        {
-            EditorGUIUtility.labelWidth = 80;
+        // public override void DrawContent()
+        // {
+        //     EditorGUIUtility.labelWidth = 80;
 
-            if (allScenePaths == null || allScenePaths.Length == 0)
+        //     if (allScenePaths == null || allScenePaths.Length == 0)
+        //     {
+        //         EditorGUILayout.LabelField("No scenes found.");
+        //         return;
+        //     }
+
+        //     HashSet<string> openScenes = new HashSet<string>();
+        //     for (int i = 0; i < UnityEditor.SceneManagement.EditorSceneManager.sceneCount; i++)
+        //         openScenes.Add(UnityEditor.SceneManagement.EditorSceneManager.GetSceneAt(i).path);
+
+        //     foreach (KeyValuePair<string, List<string>> group in groupedScenes)
+        //     {
+        //         foldoutStates[group.Key] = EditorGUILayout.Foldout(
+        //             foldoutStates[group.Key],
+        //             group.Key,
+        //             true,
+        //             EditorStyles.foldoutHeader
+        //         );
+
+        //         if (!foldoutStates[group.Key]) continue;
+
+        //         foreach (string path in group.Value)
+        //         {
+        //             string fileName = System.IO.Path.GetFileName(path);
+
+        //             if (!FuzzyMatch(fileName, sceneFilter))
+        //                 continue;
+
+        //             bool isOpen = openScenes.Contains(path);
+        //             bool isInBuildSettings = EditorBuildSettings.scenes.Any(s => s.path == path);
+        //             Color originalColor = GUI.color;
+
+        //             EditorGUILayout.BeginHorizontal();
+
+        //             bool toggle = EditorGUILayout.Toggle(isInBuildSettings, GUILayout.Width(20));
+        //             if (toggle != isInBuildSettings)
+        //             {
+        //                 List<EditorBuildSettingsScene> buildScenes = EditorBuildSettings.scenes.ToList();
+
+        //                 if (toggle)
+        //                     buildScenes.Add(new EditorBuildSettingsScene(path, true));
+        //                 else
+        //                     buildScenes.RemoveAll(s => s.path == path);
+
+        //                 EditorBuildSettings.scenes = buildScenes.ToArray();
+        //             }
+
+        //             GUI.color = isOpen ? Color.cyan : originalColor;
+        //             Rect labelRect = EditorGUILayout.GetControlRect(GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
+        //             EditorGUI.LabelField(labelRect, new GUIContent(fileName, path));
+
+        //             if (Event.current.type == EventType.ContextClick && labelRect.Contains(Event.current.mousePosition))
+        //             {
+        //                 GenericMenu menu = new GenericMenu();
+        //                 menu.AddItem(new GUIContent("Copy Path"), false, () => EditorGUIUtility.systemCopyBuffer = path);
+        //                 menu.ShowAsContext();
+        //                 Event.current.Use();
+        //             }
+
+        //             if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20)))
+        //             {
+        //                 Object asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+        //                 if (asset != null)
+        //                 {
+        //                     EditorApplication.ExecuteMenuItem("Window/General/Project");
+        //                     Selection.activeObject = asset;
+        //                     EditorGUIUtility.PingObject(asset);
+        //                 }
+        //             }
+
+        //             if (!isInBuildSettings && EditorApplication.isPlaying)
+        //                 GUI.enabled = false;
+
+        //             if (GUILayout.Button("Open", GUILayout.Width(50)))
+        //             {
+        //                 if (EditorApplication.isPlaying)
+        //                 {
+        //                     UnityEngine.SceneManagement.SceneManager.LoadScene(path, UnityEngine.SceneManagement.LoadSceneMode.Single);
+        //                 }
+        //                 else
+        //                 {
+        //                     if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+        //                     {
+        //                         UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
+        //                     }
+        //                 }
+        //             }
+
+        //             GUI.enabled = true;
+
+        //             if (isOpen)
+        //             {
+        //                 if (GUILayout.Button("Close", GUILayout.Width(60)))
+        //                 {
+        //                     if (EditorApplication.isPlaying)
+        //                     {
+        //                         UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(path);
+        //                     }
+        //                     else
+        //                     {
+        //                         if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+        //                         {
+        //                             UnityEngine.SceneManagement.Scene scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path);
+        //                             UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //             else
+        //             {
+        //                 if (GUILayout.Button("Additive", GUILayout.Width(60)))
+        //                 {
+        //                     if (EditorApplication.isPlaying)
+        //                     {
+        //                         UnityEngine.SceneManagement.SceneManager.LoadScene(path, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+        //                     }
+        //                     else
+        //                     {
+        //                         UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
+        //                     }
+        //                 }
+        //             }
+
+        //             GUI.color = originalColor;
+        //             GUI.enabled = true;
+        //             EditorGUILayout.EndHorizontal();
+        //         }
+
+        //         GUILayout.Space(10);
+        //     }
+
+        //     EditorGUIUtility.labelWidth = 0;
+        // }
+
+public override void DrawContent()
+{
+    EditorGUIUtility.labelWidth = 80;
+
+    if (allScenePaths == null || allScenePaths.Length == 0)
+    {
+        EditorGUILayout.LabelField("No scenes found.");
+        return;
+    }
+
+    HashSet<string> openScenes = new HashSet<string>();
+    for (int i = 0; i < UnityEditor.SceneManagement.EditorSceneManager.sceneCount; i++)
+        openScenes.Add(UnityEditor.SceneManagement.EditorSceneManager.GetSceneAt(i).path);
+
+    foreach (KeyValuePair<string, List<string>> group in groupedScenes)
+    {
+        bool hasMatch = false;
+        if (!string.IsNullOrEmpty(sceneFilter))
+        {
+            for (int i = 0; i < group.Value.Count; i++)
             {
-                EditorGUILayout.LabelField("No scenes found.");
-                return;
+                string p = group.Value[i];
+                string fileNameCheck = System.IO.Path.GetFileName(p);
+                if (FuzzyMatch(fileNameCheck, sceneFilter))
+                {
+                    hasMatch = true;
+                    break;
+                }
             }
 
-            HashSet<string> openScenes = new HashSet<string>();
-            for (int i = 0; i < UnityEditor.SceneManagement.EditorSceneManager.sceneCount; i++)
-                openScenes.Add(UnityEditor.SceneManagement.EditorSceneManager.GetSceneAt(i).path);
+            if (!hasMatch)
+                continue;
+        }
 
-            foreach (KeyValuePair<string, List<string>> group in groupedScenes)
+        foldoutStates[group.Key] = EditorGUILayout.Foldout(
+            foldoutStates[group.Key],
+            group.Key,
+            true,
+            EditorStyles.foldoutHeader
+        );
+
+        if (!foldoutStates[group.Key]) continue;
+
+        for (int i = 0; i < group.Value.Count; i++)
+        {
+            string path = group.Value[i];
+            string fileName = System.IO.Path.GetFileName(path);
+
+            if (!FuzzyMatch(fileName, sceneFilter))
+                continue;
+
+            bool isOpen = openScenes.Contains(path);
+            bool isInBuildSettings = EditorBuildSettings.scenes.Any(s => s.path == path);
+            Color originalColor = GUI.color;
+
+            EditorGUILayout.BeginHorizontal();
+
+            bool toggle = EditorGUILayout.Toggle(isInBuildSettings, GUILayout.Width(20));
+            if (toggle != isInBuildSettings)
             {
-                foldoutStates[group.Key] = EditorGUILayout.Foldout(
-                    foldoutStates[group.Key],
-                    group.Key,
-                    true,
-                    EditorStyles.foldoutHeader
-                );
+                List<EditorBuildSettingsScene> buildScenes = EditorBuildSettings.scenes.ToList();
 
-                if (!foldoutStates[group.Key]) continue;
+                if (toggle)
+                    buildScenes.Add(new EditorBuildSettingsScene(path, true));
+                else
+                    buildScenes.RemoveAll(s => s.path == path);
 
-                foreach (string path in group.Value)
+                EditorBuildSettings.scenes = buildScenes.ToArray();
+            }
+
+            GUI.color = isOpen ? Color.cyan : originalColor;
+            Rect labelRect = EditorGUILayout.GetControlRect(GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
+            EditorGUI.LabelField(labelRect, new GUIContent(fileName, path));
+
+            if (Event.current.type == EventType.ContextClick && labelRect.Contains(Event.current.mousePosition))
+            {
+                GenericMenu menu = new GenericMenu();
+                menu.AddItem(new GUIContent("Copy Path"), false, () => EditorGUIUtility.systemCopyBuffer = path);
+                menu.ShowAsContext();
+                Event.current.Use();
+            }
+
+            if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20)))
+            {
+                Object asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+                if (asset != null)
                 {
-                    string fileName = System.IO.Path.GetFileName(path);
+                    EditorApplication.ExecuteMenuItem("Window/General/Project");
+                    Selection.activeObject = asset;
+                    EditorGUIUtility.PingObject(asset);
+                }
+            }
 
-                    if (!FuzzyMatch(fileName, sceneFilter))
-                        continue;
+            if (!isInBuildSettings && EditorApplication.isPlaying)
+                GUI.enabled = false;
 
-                    bool isOpen = openScenes.Contains(path);
-                    bool isInBuildSettings = EditorBuildSettings.scenes.Any(s => s.path == path);
-                    Color originalColor = GUI.color;
-
-                    EditorGUILayout.BeginHorizontal();
-
-                    bool toggle = EditorGUILayout.Toggle(isInBuildSettings, GUILayout.Width(20));
-                    if (toggle != isInBuildSettings)
+            if (GUILayout.Button("Open", GUILayout.Width(50)))
+            {
+                if (EditorApplication.isPlaying)
+                {
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(path, UnityEngine.SceneManagement.LoadSceneMode.Single);
+                }
+                else
+                {
+                    if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                     {
-                        List<EditorBuildSettingsScene> buildScenes = EditorBuildSettings.scenes.ToList();
-
-                        if (toggle)
-                            buildScenes.Add(new EditorBuildSettingsScene(path, true));
-                        else
-                            buildScenes.RemoveAll(s => s.path == path);
-
-                        EditorBuildSettings.scenes = buildScenes.ToArray();
+                        UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
                     }
+                }
+            }
 
-                    GUI.color = isOpen ? Color.cyan : originalColor;
-                    Rect labelRect = EditorGUILayout.GetControlRect(GUILayout.ExpandWidth(true), GUILayout.MinWidth(60));
-                    EditorGUI.LabelField(labelRect, new GUIContent(fileName, path));
+            GUI.enabled = true;
 
-                    if (Event.current.type == EventType.ContextClick && labelRect.Contains(Event.current.mousePosition))
+            if (isOpen)
+            {
+                if (GUILayout.Button("Close", GUILayout.Width(60)))
+                {
+                    if (EditorApplication.isPlaying)
                     {
-                        GenericMenu menu = new GenericMenu();
-                        menu.AddItem(new GUIContent("Copy Path"), false, () => EditorGUIUtility.systemCopyBuffer = path);
-                        menu.ShowAsContext();
-                        Event.current.Use();
-                    }
-
-                    if (GUILayout.Button(EditorGUIUtility.IconContent("d_Project"), GUILayout.Width(20)))
-                    {
-                        Object asset = AssetDatabase.LoadAssetAtPath<Object>(path);
-                        if (asset != null)
-                        {
-                            EditorApplication.ExecuteMenuItem("Window/General/Project");
-                            Selection.activeObject = asset;
-                            EditorGUIUtility.PingObject(asset);
-                        }
-                    }
-
-                    if (!isInBuildSettings && EditorApplication.isPlaying)
-                        GUI.enabled = false;
-
-                    if (GUILayout.Button("Open", GUILayout.Width(50)))
-                    {
-                        if (EditorApplication.isPlaying)
-                        {
-                            UnityEngine.SceneManagement.SceneManager.LoadScene(path, UnityEngine.SceneManagement.LoadSceneMode.Single);
-                        }
-                        else
-                        {
-                            if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                            {
-                                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
-                            }
-                        }
-                    }
-
-                    GUI.enabled = true;
-
-                    if (isOpen)
-                    {
-                        if (GUILayout.Button("Close", GUILayout.Width(60)))
-                        {
-                            if (EditorApplication.isPlaying)
-                            {
-                                UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(path);
-                            }
-                            else
-                            {
-                                if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                                {
-                                    UnityEngine.SceneManagement.Scene scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path);
-                                    UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);
-                                }
-                            }
-                        }
+                        UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(path);
                     }
                     else
                     {
-                        if (GUILayout.Button("Additive", GUILayout.Width(60)))
+                        if (UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                         {
-                            if (EditorApplication.isPlaying)
-                            {
-                                UnityEngine.SceneManagement.SceneManager.LoadScene(path, UnityEngine.SceneManagement.LoadSceneMode.Additive);
-                            }
-                            else
-                            {
-                                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
-                            }
+                            UnityEngine.SceneManagement.Scene scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath(path);
+                            UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);
                         }
                     }
-
-                    GUI.color = originalColor;
-                    GUI.enabled = true;
-                    EditorGUILayout.EndHorizontal();
                 }
-
-                GUILayout.Space(10);
+            }
+            else
+            {
+                if (GUILayout.Button("Additive", GUILayout.Width(60)))
+                {
+                    if (EditorApplication.isPlaying)
+                    {
+                        UnityEngine.SceneManagement.SceneManager.LoadScene(path, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+                    }
+                    else
+                    {
+                        UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
+                    }
+                }
             }
 
-            EditorGUIUtility.labelWidth = 0;
+            GUI.color = originalColor;
+            GUI.enabled = true;
+            EditorGUILayout.EndHorizontal();
         }
 
+        GUILayout.Space(10);
+    }
+
+    EditorGUIUtility.labelWidth = 0;
+}
         private bool FuzzyMatch(string text, string filter)
         {
             if (string.IsNullOrEmpty(filter)) return true;

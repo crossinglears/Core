@@ -28,8 +28,6 @@ namespace CrossingLearsEditor
         {
             base.Awake();
 
-            Debug.Log("AutosaveSystem init");
-
             autosaveEnabled = EditorPrefs.GetBool(KEY_ENABLED, false);
             saveInterval = EditorPrefs.GetFloat(KEY_INTERVAL, 3);
             saveDirectory = EditorPrefs.GetString(KEY_PATH, "Autosaves");
