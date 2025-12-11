@@ -113,9 +113,9 @@ namespace CrossingLearsEditor
             }
         }
 
-        public override void Awake()
+        public override void OnEnable()
         {
-            base.Awake();
+            base.OnEnable();
             InitTabList();
         }
 
@@ -131,6 +131,8 @@ namespace CrossingLearsEditor
             if (tabList != null) return;
 
             // Exclude GeneralTab explicitly
+            Debug.Log("cL_Window == " + (cL_Window != null));
+            Debug.Log("cL_Window.tabs == " + (cL_Window != null && cL_Window.tabs != null));
             System.Collections.Generic.List<CL_WindowTab> otherTabs = cL_Window.tabs.FindAll(tab => !(tab is GeneralTab));
 
             tabList = new ReorderableList(otherTabs, typeof(CL_WindowTab), true, false, false, false);

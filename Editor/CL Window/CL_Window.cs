@@ -86,7 +86,7 @@ namespace CrossingLearsEditor
                 tabs.Insert(0, generalTab);
             }
 
-            foreach (var item in tabs)
+            foreach (CL_WindowTab item in tabs)
             {
                 item.Awake();
             }
