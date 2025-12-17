@@ -46,6 +46,11 @@ namespace CrossingLearsEditor
             return false;
         }
 
+        public static string Vector3ToString(this Vector3 v)
+        {
+            return $"{v.x}, {v.y}, {v.z}";
+        }
+
         public static void SetProjectSearch(string searchText)
         {
             var projectBrowserType = typeof(Editor).Assembly.GetType("UnityEditor.ProjectBrowser");
