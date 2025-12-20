@@ -64,6 +64,11 @@ namespace CrossingLearsEditor
                     EditorGUIUtility.systemCopyBuffer = rotatedDelta.Vector3ToString();
                 }
                 GUILayout.EndHorizontal();
+
+                if (GUILayout.Button(new GUIContent("Match Bounds Center", "Moves Object 1 so its Renderer bounds center matches Object 2")))
+                {
+                    MatchBoundsCenter(object1.GetComponent<Renderer>(), object2.GetComponent<Renderer>());
+                }
             }
 
             ParentSystem();
@@ -124,7 +129,15 @@ namespace CrossingLearsEditor
 
                 EditorGUIUtility.PingObject(selectedObject);
             }
+        }
+        
+        public static void MatchBoundsCenter(Renderer source, Renderer target)
+        {
+            Vector3 sourceCenter = source.bounds.center;
+            Vector3 targetCenter = target.bounds.center;
 
+            Vector3 delta = targetCenter - sourceCenter;
+            source.transform.position += delta;
         }
     }
 }
