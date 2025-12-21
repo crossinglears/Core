@@ -56,116 +56,308 @@ namespace CrossingLearsEditor
             }
         }
 
-        void ApplyPivot(bool includeDescendants)
+        // void ApplyPivot(bool includeDescendants)
+        // {
+        //     Transform target = Selection.activeTransform;
+        //     if (target == null) return;
+
+        //     List<Transform> moveChildren = new List<Transform>();
+        //     List<Transform> calcChildren = new List<Transform>();
+
+        //     if (includeDescendants)
+        //     {
+        //         Transform[] all = target.GetComponentsInChildren<Transform>();
+        //         for (int i = 0; i < all.Length; i++)
+        //         {
+        //             if (all[i] != target) calcChildren.Add(all[i]);
+        //         }
+
+        //         for (int i = 0; i < target.childCount; i++)
+        //         {
+        //             moveChildren.Add(target.GetChild(i));
+        //         }
+        //     }
+        //     else
+        //     {
+        //         for (int i = 0; i < target.childCount; i++)
+        //         {
+        //             Transform c = target.GetChild(i);
+        //             moveChildren.Add(c);
+        //             calcChildren.Add(c);
+        //         }
+        //     }
+
+        //     if (calcChildren.Count == 0) return;
+
+        //     Vector3 desired = Vector3.zero;
+
+        //     if (pivotSetting == PivotSetting.AveragePosition)
+        //     {
+        //         Vector3 sum = Vector3.zero;
+        //         for (int i = 0; i < calcChildren.Count; i++)
+        //         {
+        //             sum += calcChildren[i].position;
+        //         }
+        //         desired = sum / calcChildren.Count;
+        //     }
+        //     else
+        //     {
+        //         Bounds bounds = new Bounds();
+        //         bool set = false;
+
+        //         for (int i = 0; i < calcChildren.Count; i++)
+        //         {
+        //             Transform child = calcChildren[i];
+        //             Renderer r = child.GetComponent<Renderer>();
+        //             Collider c = child.GetComponent<Collider>();
+
+        //             if (r != null)
+        //             {
+        //                 if (!set) { bounds = new Bounds(r.bounds.center, r.bounds.size); set = true; }
+        //                 else { bounds.Encapsulate(r.bounds); }
+        //             }
+        //             else if (c != null)
+        //             {
+        //                 if (!set) { bounds = new Bounds(c.bounds.center, c.bounds.size); set = true; }
+        //                 else { bounds.Encapsulate(c.bounds); }
+        //             }
+        //             else
+        //             {
+        //                 if (!set) { bounds = new Bounds(child.position, Vector3.zero); set = true; }
+        //                 else { bounds.Encapsulate(child.position); }
+        //             }
+        //         }
+
+        //         desired = bounds.center;
+        //     }
+
+        //     Bounds finalBounds = new Bounds(desired, Vector3.zero);
+        //     for (int i = 0; i < calcChildren.Count; i++)
+        //     {
+        //         Transform child = calcChildren[i];
+        //         Renderer r = child.GetComponent<Renderer>();
+        //         Collider c = child.GetComponent<Collider>();
+
+        //         if (r != null)
+        //         {
+        //             finalBounds.Encapsulate(r.bounds);
+        //         }
+        //         else if (c != null)
+        //         {
+        //             finalBounds.Encapsulate(c.bounds);
+        //         }
+        //         else
+        //         {
+        //             finalBounds.Encapsulate(child.position);
+        //         }
+        //     }
+
+        //     float selectX = x == 0 ? finalBounds.min.x : (x == 1 ? finalBounds.center.x : finalBounds.max.x);
+        //     float selectY = y == 0 ? finalBounds.max.y : (y == 1 ? finalBounds.center.y : finalBounds.min.y);
+        //     float selectZ = z == 0 ? finalBounds.min.z : (z == 1 ? finalBounds.center.z : finalBounds.max.z);
+
+        //     desired = new Vector3(selectX, selectY, selectZ);
+
+        //     Vector3 offset = target.position - desired;
+
+        //     for (int i = 0; i < moveChildren.Count; i++)
+        //     {
+        //         moveChildren[i].position += offset;
+        //     }
+
+        //     target.position = desired;
+        // }
+
+// void ApplyPivot(bool includeDescendants)
+// {
+//     Transform target = Selection.activeTransform;
+//     if (target == null) return;
+
+//     Quaternion originalRotation = target.rotation;
+
+//     List<Transform> moveChildren = new List<Transform>();
+//     List<Transform> calcChildren = new List<Transform>();
+
+//     if (includeDescendants)
+//     {
+//         Transform[] all = target.GetComponentsInChildren<Transform>();
+//         for (int i = 0; i < all.Length; i++)
+//         {
+//             if (all[i] != target)
+//                 calcChildren.Add(all[i]);
+//         }
+
+//         for (int i = 0; i < target.childCount; i++)
+//             moveChildren.Add(target.GetChild(i));
+//     }
+//     else
+//     {
+//         for (int i = 0; i < target.childCount; i++)
+//         {
+//             Transform child = target.GetChild(i);
+//             moveChildren.Add(child);
+//             calcChildren.Add(child);
+//         }
+//     }
+
+//     if (calcChildren.Count == 0) return;
+
+//     Transform referenceChild = moveChildren[0];
+//     Vector3 referenceWorldPos = referenceChild.position;
+
+//     target.rotation = Quaternion.identity;
+
+//     Bounds bounds = new Bounds(calcChildren[0].position, Vector3.zero);
+//     bool set = false;
+
+//     for (int i = 0; i < calcChildren.Count; i++)
+//     {
+//         Transform child = calcChildren[i];
+
+//         Renderer renderer = child.GetComponent<Renderer>();
+//         Collider collider = child.GetComponent<Collider>();
+
+//         if (renderer != null)
+//         {
+//             if (!set)
+//             {
+//                 bounds = renderer.bounds;
+//                 set = true;
+//             }
+//             else
+//             {
+//                 bounds.Encapsulate(renderer.bounds);
+//             }
+//         }
+//         else if (collider != null)
+//         {
+//             if (!set)
+//             {
+//                 bounds = collider.bounds;
+//                 set = true;
+//             }
+//             else
+//             {
+//                 bounds.Encapsulate(collider.bounds);
+//             }
+//         }
+//         else
+//         {
+//             if (!set)
+//             {
+//                 bounds = new Bounds(child.position, Vector3.zero);
+//                 set = true;
+//             }
+//             else
+//             {
+//                 bounds.Encapsulate(child.position);
+//             }
+//         }
+//     }
+
+//     float selectX = x == 0 ? bounds.min.x : (x == 1 ? bounds.center.x : bounds.max.x);
+//     float selectY = y == 0 ? bounds.max.y : (y == 1 ? bounds.center.y : bounds.min.y);
+//     float selectZ = z == 0 ? bounds.min.z : (z == 1 ? bounds.center.z : bounds.max.z);
+
+//     Vector3 desired = new Vector3(selectX, selectY, selectZ);
+//     Vector3 offset = target.position - desired;
+
+//     for (int i = 0; i < moveChildren.Count; i++)
+//         moveChildren[i].position += offset;
+
+//     target.position = desired;
+//     target.rotation = originalRotation;
+
+//     Vector3 correction = referenceWorldPos - referenceChild.position;
+//     target.position += correction;
+// }
+
+
+void ApplyPivot(bool includeDescendants)
+{
+    Transform target = Selection.activeTransform;
+    if (target == null) return;
+
+    Quaternion originalRotation = target.rotation;
+
+    List<Transform> calcChildren = new List<Transform>();
+    List<Transform> moveChildren = new List<Transform>();
+
+    if (includeDescendants)
+    {
+        Transform[] all = target.GetComponentsInChildren<Transform>();
+        for (int i = 0; i < all.Length; i++)
         {
-            Transform target = Selection.activeTransform;
-            if (target == null) return;
-
-            List<Transform> moveChildren = new List<Transform>();
-            List<Transform> calcChildren = new List<Transform>();
-
-            if (includeDescendants)
-            {
-                Transform[] all = target.GetComponentsInChildren<Transform>();
-                for (int i = 0; i < all.Length; i++)
-                {
-                    if (all[i] != target) calcChildren.Add(all[i]);
-                }
-
-                for (int i = 0; i < target.childCount; i++)
-                {
-                    moveChildren.Add(target.GetChild(i));
-                }
-            }
-            else
-            {
-                for (int i = 0; i < target.childCount; i++)
-                {
-                    Transform c = target.GetChild(i);
-                    moveChildren.Add(c);
-                    calcChildren.Add(c);
-                }
-            }
-
-            if (calcChildren.Count == 0) return;
-
-            Vector3 desired = Vector3.zero;
-
-            if (pivotSetting == PivotSetting.AveragePosition)
-            {
-                Vector3 sum = Vector3.zero;
-                for (int i = 0; i < calcChildren.Count; i++)
-                {
-                    sum += calcChildren[i].position;
-                }
-                desired = sum / calcChildren.Count;
-            }
-            else
-            {
-                Bounds bounds = new Bounds();
-                bool set = false;
-
-                for (int i = 0; i < calcChildren.Count; i++)
-                {
-                    Transform child = calcChildren[i];
-                    Renderer r = child.GetComponent<Renderer>();
-                    Collider c = child.GetComponent<Collider>();
-
-                    if (r != null)
-                    {
-                        if (!set) { bounds = new Bounds(r.bounds.center, r.bounds.size); set = true; }
-                        else { bounds.Encapsulate(r.bounds); }
-                    }
-                    else if (c != null)
-                    {
-                        if (!set) { bounds = new Bounds(c.bounds.center, c.bounds.size); set = true; }
-                        else { bounds.Encapsulate(c.bounds); }
-                    }
-                    else
-                    {
-                        if (!set) { bounds = new Bounds(child.position, Vector3.zero); set = true; }
-                        else { bounds.Encapsulate(child.position); }
-                    }
-                }
-
-                desired = bounds.center;
-            }
-
-            Bounds finalBounds = new Bounds(desired, Vector3.zero);
-            for (int i = 0; i < calcChildren.Count; i++)
-            {
-                Transform child = calcChildren[i];
-                Renderer r = child.GetComponent<Renderer>();
-                Collider c = child.GetComponent<Collider>();
-
-                if (r != null)
-                {
-                    finalBounds.Encapsulate(r.bounds);
-                }
-                else if (c != null)
-                {
-                    finalBounds.Encapsulate(c.bounds);
-                }
-                else
-                {
-                    finalBounds.Encapsulate(child.position);
-                }
-            }
-
-            float selectX = x == 0 ? finalBounds.min.x : (x == 1 ? finalBounds.center.x : finalBounds.max.x);
-            float selectY = y == 0 ? finalBounds.max.y : (y == 1 ? finalBounds.center.y : finalBounds.min.y);
-            float selectZ = z == 0 ? finalBounds.min.z : (z == 1 ? finalBounds.center.z : finalBounds.max.z);
-
-            desired = new Vector3(selectX, selectY, selectZ);
-
-            Vector3 offset = target.position - desired;
-
-            for (int i = 0; i < moveChildren.Count; i++)
-            {
-                moveChildren[i].position += offset;
-            }
-
-            target.position = desired;
+            if (all[i] != target)
+                calcChildren.Add(all[i]);
         }
+
+        for (int i = 0; i < target.childCount; i++)
+            moveChildren.Add(target.GetChild(i));
+    }
+    else
+    {
+        for (int i = 0; i < target.childCount; i++)
+        {
+            Transform child = target.GetChild(i);
+            calcChildren.Add(child);
+            moveChildren.Add(child);
+        }
+    }
+
+    if (calcChildren.Count == 0) return;
+
+    Vector3 referenceWorldPos = moveChildren.Count > 0 ? moveChildren[0].position : target.position;
+
+    target.rotation = Quaternion.identity;
+
+    Bounds bounds = new Bounds();
+    bool hasBounds = false;
+
+    for (int i = 0; i < calcChildren.Count; i++)
+    {
+        Transform child = calcChildren[i];
+
+        Renderer renderer = child.GetComponent<Renderer>();
+        Collider collider = child.GetComponent<Collider>();
+
+        if (renderer != null)
+        {
+            if (!hasBounds) { bounds = renderer.bounds; hasBounds = true; }
+            else bounds.Encapsulate(renderer.bounds);
+        }
+        else if (collider != null)
+        {
+            if (!hasBounds) { bounds = collider.bounds; hasBounds = true; }
+            else bounds.Encapsulate(collider.bounds);
+        }
+        else
+        {
+            if (!hasBounds) { bounds = new Bounds(child.position, Vector3.zero); hasBounds = true; }
+            else bounds.Encapsulate(child.position);
+        }
+    }
+
+    float px = x == 0 ? bounds.min.x : (x == 1 ? bounds.center.x : bounds.max.x);
+    float py = y == 0 ? bounds.max.y : (y == 1 ? bounds.center.y : bounds.min.y);
+    float pz = z == 0 ? bounds.min.z : (z == 1 ? bounds.center.z : bounds.max.z);
+
+    Vector3 desired = new Vector3(px, py, pz);
+    Vector3 offset = target.position - desired;
+
+    for (int i = 0; i < moveChildren.Count; i++)
+        moveChildren[i].position += offset;
+
+    target.position = desired;
+    target.rotation = originalRotation;
+
+    if (moveChildren.Count > 0)
+    {
+        Vector3 correction = referenceWorldPos - moveChildren[0].position;
+        target.position += correction;
+    }
+}
+
+
     }
 }
