@@ -25,8 +25,20 @@ namespace CrossingLearsEditor
             selectedObject = Selection.activeGameObject;
 
             EditorGUILayout.ObjectField("Selected Object", selectedObject, typeof(GameObject), true);
+            GUILayout.BeginHorizontal();
             object1 = EditorGUILayout.ObjectField("Object 1", object1, typeof(GameObject), true) as GameObject;
+            if(GUILayout.Button("Select", GUILayout.Width(60)))
+            {
+                EditorGUIUtility.PingObject(Selection.activeGameObject = object1);
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
             object2 = EditorGUILayout.ObjectField("Object 2", object2, typeof(GameObject), true) as GameObject;
+            if(GUILayout.Button("Select", GUILayout.Width(60)))
+            {
+                EditorGUIUtility.PingObject(Selection.activeGameObject = object2);
+            }
+            GUILayout.EndHorizontal();
 
             GUILayout.Space(10);
 
