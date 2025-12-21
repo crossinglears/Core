@@ -11,6 +11,9 @@ namespace CrossingLearsEditor
         private GameObject object1;
         private GameObject object2;
 
+        private Vector3 cachedSign;
+        private Transform ParentTransform;
+
         public override void DrawContent()
         {
             if (GUILayout.Button("Clear Selection"))
@@ -18,6 +21,7 @@ namespace CrossingLearsEditor
                 selectedObject = null;
                 object1 = null;
                 object2 = null;
+                cachedSign = Vector3.zero;
                 Selection.activeGameObject = null;
                 return;
             }
@@ -25,18 +29,22 @@ namespace CrossingLearsEditor
             selectedObject = Selection.activeGameObject;
 
             EditorGUILayout.ObjectField("Selected Object", selectedObject, typeof(GameObject), true);
+
             GUILayout.BeginHorizontal();
             object1 = EditorGUILayout.ObjectField("Object 1", object1, typeof(GameObject), true) as GameObject;
-            if(GUILayout.Button("Select", GUILayout.Width(60)))
+            if (GUILayout.Button("Select", GUILayout.Width(60)))
             {
                 EditorGUIUtility.PingObject(Selection.activeGameObject = object1);
+                cachedSign = Vector3.zero;
             }
             GUILayout.EndHorizontal();
+
             GUILayout.BeginHorizontal();
             object2 = EditorGUILayout.ObjectField("Object 2", object2, typeof(GameObject), true) as GameObject;
-            if(GUILayout.Button("Select", GUILayout.Width(60)))
+            if (GUILayout.Button("Select", GUILayout.Width(60)))
             {
                 EditorGUIUtility.PingObject(Selection.activeGameObject = object2);
+                cachedSign = Vector3.zero;
             }
             GUILayout.EndHorizontal();
 
@@ -46,45 +54,58 @@ namespace CrossingLearsEditor
             if (GUILayout.Button("Set Object 1"))
             {
                 object1 = selectedObject;
+                cachedSign = Vector3.zero;
             }
             if (GUILayout.Button("Set Object 2"))
             {
                 object2 = selectedObject;
+                cachedSign = Vector3.zero;
             }
             EditorGUILayout.EndHorizontal();
-if (object1 != null && object2 != null)
-{
-    Vector3 worldDelta = object1.transform.position - object2.transform.position;
-    Vector3 rotatedDelta = object1.transform.InverseTransformDirection(worldDelta);
 
-    rotatedDelta = new Vector3(
-        Mathf.Abs(rotatedDelta.x),
-        Mathf.Abs(rotatedDelta.y),
-        Mathf.Abs(rotatedDelta.z)
-    );
+            if (object1 != null && object2 != null)
+            {
+                Vector3 worldDelta = object1.transform.position - object2.transform.position;
+                Vector3 localDelta = object1.transform.InverseTransformDirection(worldDelta);
 
-    Vector3 newRotatedDelta = EditorGUILayout.Vector3Field("Difference", rotatedDelta);
+                if (cachedSign == Vector3.zero)
+                {
+                    cachedSign = new Vector3(
+                        Mathf.Sign(localDelta.x),
+                        Mathf.Sign(localDelta.y),
+                        Mathf.Sign(localDelta.z)
+                    );
+                }
 
-    if (newRotatedDelta != rotatedDelta)
-    {
-        Vector3 signedLocalDelta = new Vector3(
-            Mathf.Sign(object1.transform.InverseTransformDirection(worldDelta).x) * newRotatedDelta.x,
-            Mathf.Sign(object1.transform.InverseTransformDirection(worldDelta).y) * newRotatedDelta.y,
-            Mathf.Sign(object1.transform.InverseTransformDirection(worldDelta).z) * newRotatedDelta.z
-        );
+                Vector3 absLocalDelta = new Vector3(
+                    Mathf.Abs(localDelta.x),
+                    Mathf.Abs(localDelta.y),
+                    Mathf.Abs(localDelta.z)
+                );
 
-        Vector3 newWorldDelta = object1.transform.TransformDirection(signedLocalDelta);
-        object2.transform.position = object1.transform.position - newWorldDelta;
-    }
+                EditorGUI.BeginChangeCheck();
+                Vector3 newAbsLocalDelta = EditorGUILayout.Vector3Field("Difference", absLocalDelta);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Vector3 signedLocalDelta = new Vector3(
+                        cachedSign.x * newAbsLocalDelta.x,
+                        cachedSign.y * newAbsLocalDelta.y,
+                        cachedSign.z * newAbsLocalDelta.z
+                    );
+
+                    Vector3 newWorldDelta = object1.transform.TransformDirection(signedLocalDelta);
+                    Undo.RecordObject(object2.transform, "Move Object 2");
+                    object2.transform.position = object1.transform.position - newWorldDelta;
+                }
 
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Apply difference to Snap"))
                 {
-                    EditorSnapSettings.move = rotatedDelta;
+                    EditorSnapSettings.move = absLocalDelta;
                 }
                 if (GUILayout.Button("Copy", GUILayout.Width(50)))
                 {
-                    EditorGUIUtility.systemCopyBuffer = rotatedDelta.Vector3ToString();
+                    EditorGUIUtility.systemCopyBuffer = absLocalDelta.Vector3ToString();
                 }
                 GUILayout.EndHorizontal();
 
@@ -97,7 +118,6 @@ if (object1 != null && object2 != null)
             ParentSystem();
         }
 
-        private Transform ParentTransform;
         void ParentSystem()
         {
             GUILayout.Space(20);
@@ -153,7 +173,7 @@ if (object1 != null && object2 != null)
                 EditorGUIUtility.PingObject(selectedObject);
             }
         }
-        
+
         public static void MatchBoundsCenter(Renderer source, Renderer target)
         {
             Vector3 sourceCenter = source.bounds.center;
