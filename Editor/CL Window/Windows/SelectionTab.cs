@@ -52,19 +52,30 @@ namespace CrossingLearsEditor
                 object2 = selectedObject;
             }
             EditorGUILayout.EndHorizontal();
+if (object1 != null && object2 != null)
+{
+    Vector3 worldDelta = object1.transform.position - object2.transform.position;
+    Vector3 rotatedDelta = object1.transform.InverseTransformDirection(worldDelta);
 
-            if (object1 != null && object2 != null)
-            {
-                Vector3 worldDelta = object1.transform.position - object2.transform.position;
-                Vector3 rotatedDelta = object1.transform.InverseTransformDirection(worldDelta);
+    rotatedDelta = new Vector3(
+        Mathf.Abs(rotatedDelta.x),
+        Mathf.Abs(rotatedDelta.y),
+        Mathf.Abs(rotatedDelta.z)
+    );
 
-                rotatedDelta = new Vector3(
-                    Mathf.Abs(rotatedDelta.x),
-                    Mathf.Abs(rotatedDelta.y),
-                    Mathf.Abs(rotatedDelta.z)
-                );
+    Vector3 newRotatedDelta = EditorGUILayout.Vector3Field("Difference", rotatedDelta);
 
-                EditorGUILayout.Vector3Field("Difference", rotatedDelta);
+    if (newRotatedDelta != rotatedDelta)
+    {
+        Vector3 signedLocalDelta = new Vector3(
+            Mathf.Sign(object1.transform.InverseTransformDirection(worldDelta).x) * newRotatedDelta.x,
+            Mathf.Sign(object1.transform.InverseTransformDirection(worldDelta).y) * newRotatedDelta.y,
+            Mathf.Sign(object1.transform.InverseTransformDirection(worldDelta).z) * newRotatedDelta.z
+        );
+
+        Vector3 newWorldDelta = object1.transform.TransformDirection(signedLocalDelta);
+        object2.transform.position = object1.transform.position - newWorldDelta;
+    }
 
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Apply difference to Snap"))
