@@ -72,20 +72,32 @@ private bool FuzzyMatch(string text, string filter)
     if (string.IsNullOrEmpty(filter)) return true;
 
     string lowerText = text.ToLower();
-    string lowerFilter = filter.ToLower();
+    string[] filters = filter.Split('|');
 
-    int ti = 0;
-    int fi = 0;
-
-    while (ti < lowerText.Length && fi < lowerFilter.Length)
+    for (int f = 0; f < filters.Length; f++)
     {
-        if (lowerText[ti] == lowerFilter[fi])
-            fi++;
-        ti++;
+        string part = filters[f];
+        if (string.IsNullOrEmpty(part)) continue;
+
+        string lowerFilter = part.ToLower();
+
+        int ti = 0;
+        int fi = 0;
+
+        while (ti < lowerText.Length && fi < lowerFilter.Length)
+        {
+            if (lowerText[ti] == lowerFilter[fi])
+                fi++;
+            ti++;
+        }
+
+        if (fi == lowerFilter.Length)
+            return true;
     }
 
-    return fi == lowerFilter.Length;
+    return false;
 }
+
 
 public override void DrawContent()
 {
