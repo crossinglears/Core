@@ -63,6 +63,7 @@ namespace CrossingLearsEditor
                     
                     Undo.RecordObject(object2.transform, "Zero Relative Position");
                     object2.transform.position = object1.transform.position;
+                    Selection.activeGameObject = object2;
                 }
                 GUILayout.EndHorizontal();
             }
