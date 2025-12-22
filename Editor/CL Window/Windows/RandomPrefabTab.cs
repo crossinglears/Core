@@ -13,6 +13,33 @@ namespace CrossingLearsEditor
 
         private ReorderableList randomSetList;
 
+        public override void Awake()
+        {
+            base.Awake();
+            string path = "Assets/Editor/Development Files/RandomSets.json";
+            if (System.IO.File.Exists(path))
+            {
+                string json = System.IO.File.ReadAllText(path);
+                randomSets = JsonUtility.FromJson<RandomSetListWrapper>(json).Sets;
+            }
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+            string path = "Assets/Editor/Development Files/RandomSets.json";
+            RandomSetListWrapper wrapper = new RandomSetListWrapper { Sets = randomSets };
+            string json = JsonUtility.ToJson(wrapper, true);
+            System.IO.File.WriteAllText(path, json);
+        }
+
+        [System.Serializable]
+        private class RandomSetListWrapper
+        {
+            public List<RandomSet> Sets = new List<RandomSet>();
+        }
+
+
         public RandomPrefabTab()
         {
             randomSetList = new ReorderableList(randomSets, typeof(RandomSet), true, false, false, false);
@@ -30,10 +57,10 @@ namespace CrossingLearsEditor
         {
             RandomSet set = randomSets[index];
 
-            Rect nameRect = new Rect(rect.x, rect.y + 2f, rect.width - 200f, EditorGUIUtility.singleLineHeight);
-            Rect editRect = new Rect(rect.x + rect.width - 190f, rect.y + 2f, 50f, EditorGUIUtility.singleLineHeight);
-            Rect randomRect = new Rect(rect.x + rect.width - 135f, rect.y + 2f, 80f, EditorGUIUtility.singleLineHeight);
-            Rect menuRect = new Rect(rect.x + rect.width - 50f, rect.y + 2f, 50f, EditorGUIUtility.singleLineHeight);
+            Rect menuRect = new Rect(rect.xMax - 25f, rect.y + 2f, 25f, EditorGUIUtility.singleLineHeight);
+            Rect randomRect = new Rect(rect.xMax - 110f, rect.y + 2f, 80f, EditorGUIUtility.singleLineHeight);
+            Rect editRect = new Rect(rect.xMax - 195f, rect.y + 2f, 80f, EditorGUIUtility.singleLineHeight);
+            Rect nameRect = new Rect(rect.x, rect.y + 2f, rect.xMax - 210f, EditorGUIUtility.singleLineHeight);
 
             EditorGUI.LabelField(nameRect, set.RandomSetName);
 
@@ -163,6 +190,48 @@ namespace CrossingLearsEditor
 
             EditorGUILayout.LabelField("Random Set Name");
             tempName = EditorGUILayout.TextField(tempName);
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Add All Selected Objects"))
+            {
+                Object[] selectedObjects = Selection.objects;
+
+                foreach (Object obj in selectedObjects)
+                {
+                    string path = null;
+
+                    // If it's a scene object, get prefab source
+                    if (obj is GameObject go && go.scene.IsValid())
+                    {
+                        GameObject prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
+                        if (prefab != null)
+                            path = AssetDatabase.GetAssetPath(prefab);
+                    }
+                    else
+                    {
+                        // If it's an asset in project
+                        path = AssetDatabase.GetAssetPath(obj);
+                    }
+
+                    if (!string.IsNullOrEmpty(path) && !targetSet.PrefabPaths.Contains(path))
+                    {
+                        targetSet.PrefabPaths.Add(path);
+                    }
+                }
+            }
+            if(GUILayout.Button("Remove Empty", GUILayout.Width(100)))
+            {
+                for (int i = targetSet.PrefabPaths.Count - 1; i >= 0; i--)
+                {
+                    if (string.IsNullOrEmpty(targetSet.PrefabPaths[i]) ||
+                        AssetDatabase.LoadAssetAtPath<GameObject>(targetSet.PrefabPaths[i]) == null)
+                    {
+                        targetSet.PrefabPaths.RemoveAt(i);
+                    }
+                }
+            }
+
+            GUILayout.EndHorizontal();
 
             GUILayout.Space(6f);
 
