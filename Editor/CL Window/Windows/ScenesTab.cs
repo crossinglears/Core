@@ -18,6 +18,8 @@ namespace CrossingLearsEditor
         {
             base.Awake();
             LoadData();
+
+            sceneFilter = EditorPrefs.GetString("CL_SceneTabFilter", "");
         }
 
         public override void OnFocus()
@@ -65,6 +67,12 @@ namespace CrossingLearsEditor
 
             GUILayout.Space(5);
             GUILayout.EndHorizontal();
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+            EditorPrefs.SetString("CL_SceneTabFilter", sceneFilter);
         }
 
 private bool FuzzyMatch(string text, string filter)

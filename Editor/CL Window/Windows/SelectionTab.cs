@@ -50,11 +50,21 @@ namespace CrossingLearsEditor
 
             if (Selection.transforms.Length == 2)
             {
+                GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Assign Selected Objects"))
                 {
                     object1 = Selection.transforms[1].gameObject;
                     object2 = Selection.transforms[0].gameObject;
                 }
+                if(GUILayout.Button("Zero", GUILayout.Width(50)))
+                {
+                    object1 = Selection.transforms[1].gameObject;
+                    object2 = Selection.transforms[0].gameObject;
+                    
+                    Undo.RecordObject(object2.transform, "Zero Relative Position");
+                    object2.transform.position = object1.transform.position;
+                }
+                GUILayout.EndHorizontal();
             }
             else
             {
