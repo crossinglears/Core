@@ -52,8 +52,8 @@ namespace CrossingLearsEditor
             {
                 if (GUILayout.Button("Assign Selected Objects"))
                 {
-                    object1 = Selection.transforms[0].gameObject;
-                    object2 = Selection.transforms[1].gameObject;
+                    object1 = Selection.transforms[1].gameObject;
+                    object2 = Selection.transforms[0].gameObject;
                 }
             }
             else
