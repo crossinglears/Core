@@ -43,7 +43,12 @@ namespace CrossingLearsEditor
 
             public void Press()
             {
-                switch (Purpose)
+                Press(Purpose);
+            }
+
+            public void Press(ClipboardPurpose x)
+            {
+                switch (x)
                 {
                     case ClipboardPurpose.Clipboard:
                         EditorGUIUtility.systemCopyBuffer = Message;
@@ -66,6 +71,32 @@ namespace CrossingLearsEditor
                         }
                         break;
 
+                    case ClipboardPurpose.PrefabReplace:
+                        // Message is a string of the address of a prefab item in the Project folder
+                        // Replace the currently selected object with the prefab found in the destination
+                        if (Selection.activeTransform == null) break;
+
+                        string prefabPath = Message;
+                        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+                        if (prefab == null) break;
+
+                        Transform target = Selection.activeTransform;
+                        Transform parent = target.parent;
+
+                        GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
+                        if (instance == null) break;
+
+                        Undo.RegisterCreatedObjectUndo(instance, "Prefab Replace");
+
+                        instance.transform.localPosition = target.localPosition;
+                        instance.transform.localRotation = target.localRotation;
+                        instance.transform.localScale = target.localScale;
+                        instance.transform.SetSiblingIndex(target.GetSiblingIndex());
+
+                        Undo.DestroyObjectImmediate(target.gameObject);
+                        Selection.activeGameObject = instance;
+                        break;
+
                     default:
                         Debug.Log($"{Message}");
                         break;
@@ -85,6 +116,7 @@ namespace CrossingLearsEditor
             Clipboard,
             ResizeObject,
             SnapInterval,
+            PrefabReplace,
             Log,
         }
 
@@ -173,29 +205,68 @@ namespace CrossingLearsEditor
 
 
                 reorderable.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
-                {
-                    rect.y += 2;
-                    Content content = list.Contents[index];
-                    float width = rect.width;
+{
+    rect.y += 2;
 
-                    EditorGUI.LabelField(new Rect(rect.x + 5, rect.y, width - 200, EditorGUIUtility.singleLineHeight), content.Title);
+    Content content = list.Contents[index];
+    float lineHeight = EditorGUIUtility.singleLineHeight;
 
-                    if (GUI.Button(new Rect(rect.x + width - 180, rect.y, 60, EditorGUIUtility.singleLineHeight), "Edit"))
-                        ClipboardEditWindow.Open(content, SaveTasks);
+    float x = rect.x + 5f;
+    float y = rect.y;
+    float w = rect.width;
 
-                    if (GUI.Button(new Rect(rect.x + width - 115, rect.y, 90, EditorGUIUtility.singleLineHeight), content.Purpose.ToString()))
-                    {
-                        content.Press();
-                        SaveTasks();
-                    }
+    float editWidth = 60f;
+    float purposeWidth = 90f;
+    float addWidth = 25f;
+    float removeWidth = 25f;
+    float spacing = 5f;
 
-                    if (GUI.Button(new Rect(rect.x + width - 25, rect.y, 25, EditorGUIUtility.singleLineHeight), "X"))
-                    {
-                        list.Contents.RemoveAt(index);
-                        SaveTasks();
-                        GUIUtility.ExitGUI();
-                    }
-                };
+    float removeX = rect.x + w - removeWidth;
+    float addX = removeX - spacing - addWidth;
+    float purposeX = addX - spacing - purposeWidth;
+    float editX = purposeX - spacing - editWidth;
+
+    float labelWidth = editX - x - spacing;
+
+    EditorGUI.LabelField(
+        new Rect(x, y, labelWidth, lineHeight),
+        content.Title
+    );
+
+    if (GUI.Button(new Rect(editX, y, editWidth, lineHeight), "Edit"))
+        ClipboardEditWindow.Open(content, SaveTasks);
+
+    if (GUI.Button(new Rect(purposeX, y, purposeWidth, lineHeight), content.Purpose.ToString()))
+    {
+        content.Press();
+        SaveTasks();
+    }
+
+    if (GUI.Button(new Rect(addX, y, addWidth, lineHeight), "+"))
+    {
+        GenericMenu menu = new GenericMenu();
+
+        foreach (ClipboardPurpose value in System.Enum.GetValues(typeof(ClipboardPurpose)))
+        {
+            ClipboardPurpose captured = value;
+            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(captured.ToString())), false, () =>
+            {
+                content.Press(captured);
+                SaveTasks();
+            });
+        }
+
+        menu.ShowAsContext();
+    }
+
+    if (GUI.Button(new Rect(removeX, y, removeWidth, lineHeight), "X"))
+    {
+        list.Contents.RemoveAt(index);
+        SaveTasks();
+        GUIUtility.ExitGUI();
+    }
+};
+
 
                 reorderableLists.Add(reorderable);
             }
