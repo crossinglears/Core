@@ -40,6 +40,7 @@ namespace CrossingLearsEditor
             }
             public ClipboardPurpose Purpose;
             public string SnapInterval = "";
+            public string PrefabReplace = "";
 
             public void Press()
             {
@@ -75,8 +76,9 @@ namespace CrossingLearsEditor
                         // Message is a string of the address of a prefab item in the Project folder
                         // Replace the currently selected object with the prefab found in the destination
                         if (Selection.activeTransform == null) break;
+                        if(PrefabReplace == "") break;
 
-                        string prefabPath = Message;
+                        string prefabPath = PrefabReplace;
                         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
                         if (prefab == null) break;
 
@@ -383,6 +385,7 @@ namespace CrossingLearsEditor
             editingContent.Message = EditorGUILayout.TextField("Message", editingContent._Message);
             editingContent.Purpose = (ClipboardTab.ClipboardPurpose)EditorGUILayout.EnumPopup("Purpose", editingContent.Purpose);
             editingContent.SnapInterval = EditorGUILayout.TextField("Snap Interval", editingContent.SnapInterval);
+            editingContent.PrefabReplace = EditorGUILayout.TextField("Prefab Replace", editingContent.PrefabReplace);
 
             GUILayout.Space(10);
 
