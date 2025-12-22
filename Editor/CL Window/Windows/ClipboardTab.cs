@@ -385,7 +385,14 @@ namespace CrossingLearsEditor
             editingContent.Message = EditorGUILayout.TextField("Message", editingContent._Message);
             editingContent.Purpose = (ClipboardTab.ClipboardPurpose)EditorGUILayout.EnumPopup("Purpose", editingContent.Purpose);
             editingContent.SnapInterval = EditorGUILayout.TextField("Snap Interval", editingContent.SnapInterval);
+
+            GUILayout.BeginHorizontal();
             editingContent.PrefabReplace = EditorGUILayout.TextField("Prefab Replace", editingContent.PrefabReplace);
+            if(GUILayout.Button("Grab", GUILayout.Width(50)))
+            {
+                editingContent.PrefabReplace = ExtensionTools.GetPathOfObjectSelected(Selection.activeObject);
+            }
+            GUILayout.EndHorizontal();
 
             GUILayout.Space(10);
 

@@ -198,20 +198,7 @@ namespace CrossingLearsEditor
 
                 foreach (Object obj in selectedObjects)
                 {
-                    string path = null;
-
-                    // If it's a scene object, get prefab source
-                    if (obj is GameObject go && go.scene.IsValid())
-                    {
-                        GameObject prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
-                        if (prefab != null)
-                            path = AssetDatabase.GetAssetPath(prefab);
-                    }
-                    else
-                    {
-                        // If it's an asset in project
-                        path = AssetDatabase.GetAssetPath(obj);
-                    }
+                    string path = ExtensionTools.GetPathOfObjectSelected(obj);
 
                     if (!string.IsNullOrEmpty(path) && !targetSet.PrefabPaths.Contains(path))
                     {

@@ -70,6 +70,23 @@ namespace CrossingLearsEditor
                 refreshMethod.Invoke(win, null);
             }
         }
+
+        public static string GetPathOfObjectSelected(Object obj)
+        {
+            string path = "";
+            if (obj is GameObject go && go.scene.IsValid())
+            {
+                GameObject prefab = PrefabUtility.GetCorrespondingObjectFromSource(go);
+                if (prefab != null)
+                    path = AssetDatabase.GetAssetPath(prefab);
+            }
+            else
+            {
+                // If it's an asset in project
+                path = AssetDatabase.GetAssetPath(obj);
+            }
+            return path;
+        }
     }
 
 
