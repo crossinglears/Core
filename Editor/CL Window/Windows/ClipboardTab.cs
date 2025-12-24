@@ -73,30 +73,36 @@ namespace CrossingLearsEditor
                         break;
 
                     case ClipboardPurpose.PrefabReplace:
-                        // Message is a string of the address of a prefab item in the Project folder
-                        // Replace the currently selected object with the prefab found in the destination
-                        if (Selection.activeTransform == null) break;
-                        if(PrefabReplace == "") break;
+                        if (PrefabReplace == "") break;
 
                         string prefabPath = PrefabReplace;
                         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
                         if (prefab == null) break;
 
-                        Transform target = Selection.activeTransform;
-                        Transform parent = target.parent;
+                        Transform[] targets = Selection.transforms;
+                        if (targets == null || targets.Length == 0) break;
 
-                        GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
-                        if (instance == null) break;
+                        List<GameObject> newSelection = new List<GameObject>();
 
-                        Undo.RegisterCreatedObjectUndo(instance, "Prefab Replace");
+                        foreach (Transform target in targets)
+                        {
+                            Transform parent = target.parent;
 
-                        instance.transform.localPosition = target.localPosition;
-                        instance.transform.localRotation = target.localRotation;
-                        instance.transform.localScale = target.localScale;
-                        instance.transform.SetSiblingIndex(target.GetSiblingIndex());
+                            GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
+                            if (instance == null) continue;
 
-                        Undo.DestroyObjectImmediate(target.gameObject);
-                        Selection.activeGameObject = instance;
+                            Undo.RegisterCreatedObjectUndo(instance, "Prefab Replace");
+
+                            instance.transform.localPosition = target.localPosition;
+                            instance.transform.localRotation = target.localRotation;
+                            instance.transform.localScale = target.localScale;
+                            instance.transform.SetSiblingIndex(target.GetSiblingIndex());
+
+                            Undo.DestroyObjectImmediate(target.gameObject);
+                            newSelection.Add(instance);
+                        }
+
+                        Selection.objects = newSelection.ToArray();
                         break;
 
                     default:
