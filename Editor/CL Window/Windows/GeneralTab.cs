@@ -122,7 +122,10 @@ namespace CrossingLearsEditor
         private void TabsChecklist()
         {
             GUILayout.Label("Menus to open", EditorStyles.boldLabel);
-            tabList.DoLayoutList();
+            if(tabList != null)
+            {
+                tabList.DoLayoutList();
+            }
         }
         
         private void InitTabList()
