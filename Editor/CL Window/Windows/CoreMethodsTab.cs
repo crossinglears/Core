@@ -92,7 +92,12 @@ namespace CrossingLearsEditor
                 gameObject.name = System.Text.RegularExpressions.Regex
                     .Replace(text, "<.*?>", string.Empty)
                     .Replace("\n", " ");
+                    
+                EditorUtility.SetDirty(gameObject);
             }
+
+            if (!Application.isPlaying)
+                UnityEditor.SceneManagement.EditorSceneManager.MarkAllScenesDirty();
         }
     }
 }
