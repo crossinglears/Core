@@ -16,6 +16,7 @@ namespace CrossingLearsEditor
             StartStateControllerButton();
             UpgradeScrollRectButton();
             DisableAllNavigation();
+            RenameAllSelected();
         }
 
         void StartStateControllerButton()
@@ -65,6 +66,32 @@ namespace CrossingLearsEditor
                     nav.mode = Navigation.Mode.None;
                     selectables[i].navigation = nav;
                 }
+            }
+        }
+
+        void RenameAllSelected()
+        {
+            if (!GUILayout.Button("Rename All Selected", GUILayout.Height(25))) return;
+            foreach(Transform item in Selection.transforms)
+            {
+                GameObject gameObject = item.gameObject;
+                string text = gameObject.name;
+
+                Text textComponent = gameObject.GetComponentInChildren<Text>();
+                if (textComponent != null)
+                    text = textComponent.text;
+                
+                TMPro.TextMeshProUGUI textMeshProUGUI = gameObject.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+                if (textMeshProUGUI != null)
+                    text = textMeshProUGUI.text;
+                
+                TMPro.TextMeshPro textMeshPro = gameObject.GetComponentInChildren<TMPro.TextMeshPro>();
+                if (textMeshPro != null)
+                    text = textMeshPro.text;
+
+                gameObject.name = System.Text.RegularExpressions.Regex
+                    .Replace(text, "<.*?>", string.Empty)
+                    .Replace("\n", " ");
             }
         }
     }
