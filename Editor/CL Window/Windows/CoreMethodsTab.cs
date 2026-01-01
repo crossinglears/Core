@@ -74,7 +74,9 @@ namespace CrossingLearsEditor
             if (!GUILayout.Button("Rename All Selected", GUILayout.Height(25))) return;
             foreach(Transform item in Selection.transforms)
             {
+
                 GameObject gameObject = item.gameObject;
+                Undo.RecordObject(gameObject, "Rename All Selected");
                 string text = gameObject.name;
 
                 Text textComponent = gameObject.GetComponentInChildren<Text>();
@@ -92,7 +94,7 @@ namespace CrossingLearsEditor
                 gameObject.name = System.Text.RegularExpressions.Regex
                     .Replace(text, "<.*?>", string.Empty)
                     .Replace("\n", " ");
-                    
+
                 EditorUtility.SetDirty(gameObject);
             }
 
