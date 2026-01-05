@@ -16,9 +16,8 @@ namespace CrossingLears
             this.CanCallAll = CanCallAll;
         }
 
-        public CL_CommandAttribute(MethodType methodType, bool CanCallAll = false)
+        public CL_CommandAttribute(MethodType methodType)
         {
-            this.CanCallAll = CanCallAll;
             m_type = methodType;
         }
     }
