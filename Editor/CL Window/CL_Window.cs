@@ -130,10 +130,15 @@ namespace CrossingLearsEditor
 
         private void OnGUI()
         {
-            if (tabs.Count == 0)
+            // if (tabs.Count == 0)
+            // {
+            //     EditorGUILayout.LabelField("No tabs available.", EditorStyles.boldLabel);
+            //     return;
+            // }
+
+            if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
-                EditorGUILayout.LabelField("No tabs available.", EditorStyles.boldLabel);
-                return;
+                GUI.FocusControl(null);
             }
 
             EditorGUILayout.BeginHorizontal();

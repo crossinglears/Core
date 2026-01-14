@@ -13,10 +13,18 @@ namespace CrossingLearsEditor
 
         public override void DrawContent()
         {
+            GUILayout.Label("Basic");
             StartStateControllerButton();
-            UpgradeScrollRectButton();
             DisableAllNavigation();
             RenameAllSelected();
+
+            GUILayout.Space(10);
+            GUILayout.Label("UI");
+            UpgradeScrollRectButton();
+
+            GUILayout.Space(10);
+            GUILayout.Label("Versioning");
+            Versioning();
         }
 
         void StartStateControllerButton()
@@ -100,6 +108,20 @@ namespace CrossingLearsEditor
 
             if (!Application.isPlaying)
                 UnityEditor.SceneManagement.EditorSceneManager.MarkAllScenesDirty();
+        }
+
+        void Versioning()
+        {
+            GUILayout.BeginHorizontal();
+            if(GUILayout.Button("Patch Fix (0.0.1)", GUILayout.Height(25)))
+            {
+                VersioningCommands.PatchFix();
+            }
+            if(GUILayout.Button("Minor Fix (0.1.0)", GUILayout.Height(25)))
+            {
+                VersioningCommands.MinorFix();
+            }
+            GUILayout.EndHorizontal();
         }
     }
 }
