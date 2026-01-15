@@ -15,7 +15,7 @@ namespace CrossingLearsEditor
             "Reload All",
             "Reload Scene",
             "Reload Domain",
-            "FastMode"
+            "Fast Mode"
         };
 #endif
 

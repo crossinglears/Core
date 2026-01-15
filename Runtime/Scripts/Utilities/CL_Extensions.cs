@@ -68,7 +68,7 @@ namespace CrossingLears
             => new Vector2Int(Mathf.RoundToInt(vector3.x), Mathf.RoundToInt(vector3.y));
 
         public static Vector3Int SnapToInt(this Vector3 vector3) 
-            => new Vector3Int(Mathf.RoundToInt(vector3.x), Mathf.RoundToInt(vector3.y), 0);
+            => new Vector3Int(Mathf.RoundToInt(vector3.x), Mathf.RoundToInt(vector3.y), Mathf.RoundToInt(vector3.z));
 
         public static Vector2Int SnapToInt(this Vector2 vector2) 
             => new Vector2Int(Mathf.RoundToInt(vector2.x), Mathf.RoundToInt(vector2.y));
