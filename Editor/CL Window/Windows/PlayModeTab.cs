@@ -49,9 +49,19 @@ namespace CrossingLearsEditor
             }
         }
 
+        GUIContent PlayModeEnterSettingLabel = new GUIContent(
+            "Play Mode Reload Setting",
+            "Controls what Unity reloads when entering Play Mode.\n\n" +
+            "Default: Uses Unity default behavior.\n" +
+            "Reload All: Reloads both Scene and Domain.\n" +
+            "Reload Scene: Reloads Scene only.\n" +
+            "Reload Domain: Reloads Domain only.\n" +
+            "Fast Mode: Skips both for faster Play Mode entry."
+        );
+        
         void PlayModeEnterSetting()
         {
-#if UNITY_2019_3_OR_NEWER
+        #if UNITY_2019_3_OR_NEWER
             if (EditorSettings.enterPlayModeOptionsEnabled)
             {
                 EnterPlayModeOptions option = EditorSettings.enterPlayModeOptions;
@@ -63,13 +73,15 @@ namespace CrossingLearsEditor
             }
 
             EditorGUI.BeginChangeCheck();
-            selectedEnterPlayMode = EditorGUILayout.Popup("Play Mode Reload Setting", selectedEnterPlayMode, enterPlayModeOption);
+
+            selectedEnterPlayMode = EditorGUILayout.Popup(PlayModeEnterSettingLabel, selectedEnterPlayMode, enterPlayModeOption);
+
             if (EditorGUI.EndChangeCheck() && 0 <= selectedEnterPlayMode && selectedEnterPlayMode < enterPlayModeOption.Length)
             {
                 EditorSettings.enterPlayModeOptionsEnabled = selectedEnterPlayMode != 0;
                 EditorSettings.enterPlayModeOptions = (EnterPlayModeOptions)(selectedEnterPlayMode - 1);
             }
-#endif
+        #endif
         }
     }
 

@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using System.Linq;
 using UnityEditor;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace CrossingLearsEditor
 {
@@ -14,7 +15,7 @@ namespace CrossingLearsEditor
         public override void DrawContent()
         {
             GUILayout.Label("Basic");
-            StartStateControllerButton();
+            GroupSelectedObjects();
             DisableAllNavigation();
             RenameAllSelected();
 
@@ -23,13 +24,17 @@ namespace CrossingLearsEditor
             UpgradeScrollRectButton();
 
             GUILayout.Space(10);
+            GUILayout.Label("Utilities");
+            StartStateControllerButton();
+
+            GUILayout.Space(10);
             GUILayout.Label("Versioning");
             Versioning();
         }
 
         void StartStateControllerButton()
         {
-            if (!GUILayout.Button("StartState Controller", GUILayout.Height(25))) return;
+            if (!GUILayout.Button("StartState Controller")) return;
 
             Scene scene = Selection.activeGameObject != null ? Selection.activeGameObject.scene : SceneManager.GetActiveScene();
 
@@ -55,7 +60,7 @@ namespace CrossingLearsEditor
             if (Selection.activeGameObject == null)
                 GUI.enabled = false;
 
-            if (GUILayout.Button("Upgrade ScrollRect", GUILayout.Height(25)))
+            if (GUILayout.Button("Upgrade ScrollRect"))
             {
                 SmoothScrollRect.ReplaceWithSmoothScrollRect(Selection.activeGameObject);
             }
@@ -65,7 +70,7 @@ namespace CrossingLearsEditor
 
         void DisableAllNavigation()
         {
-            if (GUILayout.Button("Disable All Navigation in scene", GUILayout.Height(25)))
+            if (GUILayout.Button("Disable All Navigation in scene"))
             {
                 Selectable[] selectables = Object.FindObjectsByType<Selectable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 for (int i = 0; i < selectables.Length; i++)
@@ -77,9 +82,62 @@ namespace CrossingLearsEditor
             }
         }
 
+        public static void GroupSelectedObjects()
+        {
+            if(!GUILayout.Button("Group Selected Objects")) return;
+
+            GameObject[] selected = Selection.gameObjects;
+            if (selected.Length == 0) return;
+
+            Vector3 min = selected[0].transform.position;
+            Vector3 max = selected[0].transform.position;
+
+            for (int i = 1; i < selected.Length; i++)
+            {
+                Vector3 pos = selected[i].transform.position;
+                min = Vector3.Min(min, pos);
+                max = Vector3.Max(max, pos);
+            }
+
+            Vector3 median = (min + max) * 0.5f;
+
+            Dictionary<Vector3, int> rotationCounts = new Dictionary<Vector3, int>();
+            for (int i = 0; i < selected.Length; i++)
+            {
+                Vector3 rot = selected[i].transform.rotation.eulerAngles;
+                if (rotationCounts.ContainsKey(rot)) rotationCounts[rot]++;
+                else rotationCounts.Add(rot, 1);
+            }
+
+            Vector3 majorityRotation = Vector3.zero;
+            int highest = -1;
+            foreach (KeyValuePair<Vector3, int> kvp in rotationCounts)
+            {
+                if (kvp.Value > highest)
+                {
+                    highest = kvp.Value;
+                    majorityRotation = kvp.Key;
+                }
+            }
+
+            Transform parent = selected[0].transform.parent;
+
+            GameObject holder = new GameObject("GroupedHolder");
+            holder.transform.position = median;
+            holder.transform.rotation = Quaternion.Euler(majorityRotation);
+            holder.transform.SetParent(parent, true);
+
+            for (int i = 0; i < selected.Length; i++)
+            {
+                Undo.SetTransformParent(selected[i].transform, holder.transform, "Parent Selected to Holder");
+            }
+
+            Selection.activeGameObject = holder;
+        }
+
         void RenameAllSelected()
         {
-            if (!GUILayout.Button("Rename All Selected", GUILayout.Height(25))) return;
+            if (!GUILayout.Button("Rename All Selected")) return;
             foreach(Transform item in Selection.transforms)
             {
 
@@ -113,11 +171,11 @@ namespace CrossingLearsEditor
         void Versioning()
         {
             GUILayout.BeginHorizontal();
-            if(GUILayout.Button("Patch Fix (0.0.1)", GUILayout.Height(25)))
+            if(GUILayout.Button("Patch Fix (0.0.1)"))
             {
                 VersioningCommands.PatchFix();
             }
-            if(GUILayout.Button("Minor Fix (0.1.0)", GUILayout.Height(25)))
+            if(GUILayout.Button("Minor Fix (0.1.0)"))
             {
                 VersioningCommands.MinorFix();
             }
