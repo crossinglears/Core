@@ -57,11 +57,50 @@ namespace CrossingLearsEditor
             }
         }
 
+        // public static void SaveNow()
+        // {
+        //     string folder = EditorPrefs.GetString(KEY_PATH, "Autosaves");
+        //     if (!folder.StartsWith("Assets")) folder = "Assets/" + folder;
+        //     if (!AssetDatabase.IsValidFolder(folder)) AssetDatabase.CreateFolder("Assets", folder.Replace("Assets/", ""));
+
+        //     string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        //     string stamp = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss");
+        //     string path;
+
+        //     switch (saveMode)
+        //     {
+        //         case SaveMode.KeepEverything:
+        //             path = $"{folder}/{sceneName} {stamp}.unity";
+        //             EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), path, true);
+        //             break;
+
+        //         case SaveMode.KeepFew:
+        //             string[] files = Directory.GetFiles(folder, "*.unity");
+        //             if (files.Length >= maxScenes)
+        //             {
+        //                 Array.Sort(files, (a, b) => File.GetCreationTime(a).CompareTo(File.GetCreationTime(b)));
+        //                 File.Delete(files[0]);
+        //             }
+        //             path = $"{folder}/{sceneName} {stamp}.unity";
+        //             EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), path, true);
+        //             break;
+
+        //         case SaveMode.KeepOnlyTheLatest:
+        //             path = $"{folder}/{sceneName}(autosaved).unity";
+        //             EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), path, true);
+        //             break;
+        //     }
+
+        //     AssetDatabase.Refresh();
+        //     Debug.Log("Scene autosaved");
+        // }
+
         public static void SaveNow()
         {
             string folder = EditorPrefs.GetString(KEY_PATH, "Autosaves");
             if (!folder.StartsWith("Assets")) folder = "Assets/" + folder;
-            if (!AssetDatabase.IsValidFolder(folder)) AssetDatabase.CreateFolder("Assets", folder.Replace("Assets/", ""));
+            if (!AssetDatabase.IsValidFolder(folder))
+                AssetDatabase.CreateFolder("Assets", folder.Replace("Assets/", ""));
 
             string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             string stamp = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss");
@@ -70,30 +109,39 @@ namespace CrossingLearsEditor
             switch (saveMode)
             {
                 case SaveMode.KeepEverything:
+                {
                     path = $"{folder}/{sceneName} {stamp}.unity";
                     EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), path, true);
                     break;
+                }
 
                 case SaveMode.KeepFew:
+                {
                     string[] files = Directory.GetFiles(folder, "*.unity");
                     if (files.Length >= maxScenes)
                     {
                         Array.Sort(files, (a, b) => File.GetCreationTime(a).CompareTo(File.GetCreationTime(b)));
-                        File.Delete(files[0]);
+                        string assetPath = files[0].Replace("\\", "/");
+                        AssetDatabase.DeleteAsset(assetPath);
                     }
+
                     path = $"{folder}/{sceneName} {stamp}.unity";
                     EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), path, true);
                     break;
+                }
 
                 case SaveMode.KeepOnlyTheLatest:
+                {
                     path = $"{folder}/{sceneName}(autosaved).unity";
                     EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), path, true);
                     break;
+                }
             }
 
             AssetDatabase.Refresh();
             Debug.Log("Scene autosaved");
         }
+
 
         public override void DrawContent()
         {

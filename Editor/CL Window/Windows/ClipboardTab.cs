@@ -397,6 +397,10 @@ namespace CrossingLearsEditor
             if(GUILayout.Button("Grab", GUILayout.Width(50)))
             {
                 editingContent.PrefabReplace = ExtensionTools.GetPathOfObjectSelected(Selection.activeObject);
+                if(string.IsNullOrEmpty(editingContent.Title) || editingContent.Title == "New Content")
+                {
+                    editingContent.Title = Selection.activeObject.name;
+                }
             }
             GUILayout.EndHorizontal();
 

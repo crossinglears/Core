@@ -30,6 +30,13 @@ public class StringInputWindow : EditorWindow
         GUI.SetNextControlName("InputField");
         inputValue = EditorGUILayout.TextField(inputValue);
 
+        if (Event.current.type == EventType.KeyDown && (Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter))
+        {
+            onConfirm?.Invoke(inputValue);
+            Close();
+            GUIUtility.ExitGUI();
+        }
+
         GUILayout.FlexibleSpace();
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Cancel"))
