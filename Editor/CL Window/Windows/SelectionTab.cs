@@ -119,6 +119,7 @@ namespace CrossingLearsEditor
             }
 
             ParentSystem();
+            ScatterChildren();
         }
 
         void ParentSystem()
