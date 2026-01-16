@@ -55,6 +55,10 @@ namespace CrossingLears
                     }
                 }
             }
+
+            #if !UNITY_EDITOR
+            gameObject.destroy();
+            #endif
         }
     }
 }
