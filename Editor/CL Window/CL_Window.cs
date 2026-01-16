@@ -10,7 +10,6 @@ namespace CrossingLearsEditor
     {
         public abstract string TabName { get; }
         public abstract void DrawContent();
-        // public virtual int Order => 0;
         public virtual void OnFocus() { }
         public virtual void OnUnfocus() { }
 
@@ -124,18 +123,11 @@ namespace CrossingLearsEditor
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(CL_WindowTab).IsAssignableFrom(t))
                 .Select(t => (CL_WindowTab)Activator.CreateInstance(t))
-                // .OrderBy(tab => tab.Order)
                 .ToList();
         }
 
         private void OnGUI()
         {
-            // if (tabs.Count == 0)
-            // {
-            //     EditorGUILayout.LabelField("No tabs available.", EditorStyles.boldLabel);
-            //     return;
-            // }
-
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
                 GUI.FocusControl(null);

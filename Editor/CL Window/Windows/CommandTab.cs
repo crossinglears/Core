@@ -59,15 +59,6 @@ namespace CrossingLearsEditor
                 FindAllMethods();
             }
         }
-
-        // public override void DrawTitle()
-        // {
-        //     GUILayout.BeginHorizontal();
-        //     GUILayout.Label(TabName, EditorStyles.boldLabel);
-        //     GUILayout.FlexibleSpace();
-        //     SearchText = EditorGUILayout.TextField(SearchText, GUILayout.Width(200));
-        //     GUILayout.EndHorizontal();
-        // }
         
         public override void DrawTitle()
         {

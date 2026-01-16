@@ -3,13 +3,11 @@ using UnityEditor;
 using UnityEngine;
 using System;
 
-[CL_CommandHolder]
 public class VersioningCommands
 {
     private static DateTime lastRunTime = DateTime.MinValue;
     private const int cooldownSeconds = 10;
 
-    [CL_Command("Patch Fix (0.0.1)", MethodType.Static)]
     public static void PatchFix()
     {
         if (IsOnCooldown()) return;
@@ -17,7 +15,6 @@ public class VersioningCommands
         UpdateVersion(2); // patch
     }
 
-    [CL_Command("Minor Fix (0.1.0)", MethodType.Static)]
     public static void MinorFix()
     {
         if (IsOnCooldown()) return;

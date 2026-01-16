@@ -70,7 +70,7 @@ namespace CrossingLearsEditor
 
         void DisableAllNavigation()
         {
-            if (GUILayout.Button("Disable All Navigation in scene"))
+            if (GUILayout.Button(new GUIContent("Disable All Navigation in scene", "Sets all Selectables in the scene to have no navigation")))
             {
                 Selectable[] selectables = Object.FindObjectsByType<Selectable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 for (int i = 0; i < selectables.Length; i++)
@@ -84,7 +84,9 @@ namespace CrossingLearsEditor
 
         public static void GroupSelectedObjects()
         {
-            if(!GUILayout.Button("Group Selected Objects")) return;
+            if (!GUILayout.Button(new GUIContent("Group Selected Objects", "Creates a new parent GameObject at the median position and majority rotation of selected objects, then parents them to it"))) 
+                return;
+
 
             GameObject[] selected = Selection.gameObjects;
             if (selected.Length == 0) return;
@@ -136,11 +138,12 @@ namespace CrossingLearsEditor
         }
 
         void RenameAllSelected()
-        {
-            if (!GUILayout.Button("Rename All Selected")) return;
-            foreach(Transform item in Selection.transforms)
-            {
+        {                
+            if (!GUILayout.Button(new GUIContent("Rename All Selected", "Renames all selected objects based on their text components, stripping tags and newlines.")))
+                return;
 
+            foreach (Transform item in Selection.transforms)
+            {
                 GameObject gameObject = item.gameObject;
                 Undo.RecordObject(gameObject, "Rename All Selected");
                 string text = gameObject.name;
@@ -148,11 +151,11 @@ namespace CrossingLearsEditor
                 Text textComponent = gameObject.GetComponentInChildren<Text>();
                 if (textComponent != null)
                     text = textComponent.text;
-                
+
                 TMPro.TextMeshProUGUI textMeshProUGUI = gameObject.GetComponentInChildren<TMPro.TextMeshProUGUI>();
                 if (textMeshProUGUI != null)
                     text = textMeshProUGUI.text;
-                
+
                 TMPro.TextMeshPro textMeshPro = gameObject.GetComponentInChildren<TMPro.TextMeshPro>();
                 if (textMeshPro != null)
                     text = textMeshPro.text;
@@ -167,6 +170,7 @@ namespace CrossingLearsEditor
             if (!Application.isPlaying)
                 UnityEditor.SceneManagement.EditorSceneManager.MarkAllScenesDirty();
         }
+
 
         void Versioning()
         {
