@@ -1,4 +1,5 @@
-using UnityEngine;
+using System;
+using Random = UnityEngine.Random;
 
 namespace CrossingLears
 {
@@ -15,5 +16,8 @@ namespace CrossingLears
             int whole = (int)input;
             return chance((input - whole) * 100) ? whole + 1 : whole;
         }
+
+        public static T RandomEnum<T>() where T : struct, IComparable, IFormattable, IConvertible 
+            => ((T[])Enum.GetValues(typeof(T))).GetRandomFromList();
     }
 }
