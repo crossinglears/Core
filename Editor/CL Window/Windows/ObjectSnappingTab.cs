@@ -40,10 +40,20 @@ namespace CrossingLearsEditor
             scaleZ = EditorPrefs.GetFloat("CL_ObjectSnapping_ScaleZ", 1f); 
         }
 
+        public override void OnDisable()
+        {
+            base.OnDisable();
+            Save();
+        }
+
         public override void OnUnfocus()
         {
-            base.OnUnfocus(); 
+            base.OnUnfocus();
+            Save();
+        }
 
+        void Save()
+        {
             EditorPrefs.SetInt("CL_ObjectSnapping_SnapSpace", (int)snapSpace);
 
             EditorPrefs.SetFloat("CL_ObjectSnapping_GridX", gridX);

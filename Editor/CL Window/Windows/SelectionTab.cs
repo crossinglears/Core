@@ -10,14 +10,19 @@ namespace CrossingLearsEditor
         public override void DrawContent()
         {
             SelectionBasic();
+
+            GUILayout.Space(10);
             CL_GUILayout.HorizontalSeparator();
 
             ParentSystem();
+            GUILayout.Space(10);
             CL_GUILayout.HorizontalSeparator();
 
             ScatterChildren();
-            CL_GUILayout.HorizontalSeparator();
             
+            GUILayout.Space(10);
+            CL_GUILayout.HorizontalSeparator();
+
             Replacers();
         }
     }
