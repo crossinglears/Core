@@ -22,9 +22,9 @@ namespace CrossingLearsEditor
         private float scaleY = 1f;
         private float scaleZ = 1f;
 
-        public override void OnFocus()
+        public override void Awake()
         {
-            base.OnFocus();
+            base.Awake();
             snapSpace = (SnapSpace)EditorPrefs.GetInt("CL_ObjectSnapping_SnapSpace", 0);
 
             gridX = EditorPrefs.GetFloat("CL_ObjectSnapping_GridX", 1f);
@@ -43,12 +43,6 @@ namespace CrossingLearsEditor
         public override void OnDisable()
         {
             base.OnDisable();
-            Save();
-        }
-
-        public override void OnUnfocus()
-        {
-            base.OnUnfocus();
             Save();
         }
 
