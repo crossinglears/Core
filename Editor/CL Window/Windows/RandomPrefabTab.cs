@@ -16,22 +16,43 @@ namespace CrossingLearsEditor
         public override void Awake()
         {
             base.Awake();
+
             string path = "Assets/Editor/Development Files/RandomSets.json";
+            string directory = System.IO.Path.GetDirectoryName(path);
+
+            if (!System.IO.Directory.Exists(directory))
+            {
+                System.IO.Directory.CreateDirectory(directory);
+            }
+
             if (System.IO.File.Exists(path))
             {
                 string json = System.IO.File.ReadAllText(path);
-                randomSets = JsonUtility.FromJson<RandomSetListWrapper>(json).Sets;
+                RandomSetListWrapper wrapper = JsonUtility.FromJson<RandomSetListWrapper>(json);
+                if (wrapper != null && wrapper.Sets != null)
+                {
+                    randomSets = wrapper.Sets;
+                }
             }
         }
 
         public override void OnDisable()
         {
             base.OnDisable();
+
             string path = "Assets/Editor/Development Files/RandomSets.json";
+            string directory = System.IO.Path.GetDirectoryName(path);
+
+            if (!System.IO.Directory.Exists(directory))
+            {
+                System.IO.Directory.CreateDirectory(directory);
+            }
+
             RandomSetListWrapper wrapper = new RandomSetListWrapper { Sets = randomSets };
             string json = JsonUtility.ToJson(wrapper, true);
             System.IO.File.WriteAllText(path, json);
         }
+
 
         [System.Serializable]
         private class RandomSetListWrapper

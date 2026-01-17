@@ -14,4 +14,9 @@ public static partial class CL_GUILayout
     {
         GUILayout.Label(new GUIContent("?", tooltip), HelpStyle);
     }
+
+    public static void HorizontalSeparator()
+    {
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+    }
 }

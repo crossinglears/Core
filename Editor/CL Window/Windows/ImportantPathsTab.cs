@@ -32,20 +32,13 @@ namespace CrossingLearsEditor
         public override void DrawContent()
         {
             DisplaySet(FilePaths);
-            DrawSeparator();
+            CL_GUILayout.HorizontalSeparator();
 
             DisplaySet(TemplatesPath);
-            DrawSeparator();
+            CL_GUILayout.HorizontalSeparator();
 
             DisplaySet(EditorPaths);
         }
-
-private void DrawSeparator()
-{
-    // GUILayout.Space(5);
-    EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-    // GUILayout.Space(5);
-}
 
         private void DisplaySet(List<Path> paths)
         {

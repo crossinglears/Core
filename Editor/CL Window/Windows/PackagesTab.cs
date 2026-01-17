@@ -66,10 +66,21 @@ namespace CrossingLearsEditor
                 EditorGUI.LabelField(titleRect, entry.Name);
                 EditorGUI.LabelField(descRect, entry.Desc);
 
+                // if (GUI.Button(editRect, "Edit"))
+                // {
+                //     PackageEditWindow.Open(entry, SaveFavorites);
+                // }
+
                 if (GUI.Button(editRect, "Edit"))
                 {
-                    PackageEditWindow.Open(entry, SaveFavorites);
+                    PackageEditWindow.Open(entry, SaveFavorites, () =>
+                    {
+                        FavoriteTabs.Remove(entry);
+                        SaveFavorites();
+                        BuildReorderableList();
+                    });
                 }
+
 
                 if (GUI.Button(installRect, "Install"))
                 {
@@ -254,9 +265,10 @@ namespace CrossingLearsEditor
 
             private PackageEntry entry;
             private System.Action onSave;
+            private System.Action onDelete;
             private bool sizeLocked;
 
-            public static void Open(PackageEntry entry, System.Action onSave)
+            public static void Open(PackageEntry entry, System.Action onSave, System.Action onDelete)
             {
                 if (activeWindow != null)
                 {
@@ -268,22 +280,10 @@ namespace CrossingLearsEditor
 
                 window.entry = entry;
                 window.onSave = onSave;
+                window.onDelete = onDelete;
                 window.titleContent = new GUIContent("Edit Package");
 
                 window.ShowUtility();
-            }
-
-            private void OnEnable()
-            {
-                sizeLocked = false;
-            }
-
-            private void OnDisable()
-            {
-                if (activeWindow == this)
-                {
-                    activeWindow = null;
-                }
             }
 
             private void OnGUI()
@@ -302,6 +302,7 @@ namespace CrossingLearsEditor
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("Delete"))
                 {
+                    onDelete?.Invoke();
                     Close();
                 }
 
@@ -323,5 +324,6 @@ namespace CrossingLearsEditor
                 }
             }
         }
+
     }
 }
