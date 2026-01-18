@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public abstract class ObjectDictionary<T> : MonoBehaviour where T : Object
+public abstract class ObjectDictionary<T> : MonoBehaviour
 {
     protected abstract string NameGetter(T inp);
 
@@ -43,7 +43,12 @@ public abstract class ObjectDictionary<T> : MonoBehaviour where T : Object
     {
         Lister = new List<T>(new HashSet<T>(Lister));
     }
+    #endif
+}
 
+public abstract class ObjectLibrary<T> : ObjectDictionary<T> where T : Object
+{
+    #if UNITY_EDITOR
     [CrossingLears.Button]
     public void FillViaResourcesLoadAll()
     {
@@ -58,8 +63,6 @@ public abstract class ObjectDictionary<T> : MonoBehaviour where T : Object
                 Lister.Add(item);
             }
         }
-
-        Debug.Log($"[ObjectDictionary] Loaded {Lister.Count} items via Resources.LoadAll");
     }
     
     [CrossingLears.Button]
@@ -67,40 +70,46 @@ public abstract class ObjectDictionary<T> : MonoBehaviour where T : Object
     {
         Lister.Clear();
 
-        string filter = $"t:{typeof(T).Name}";
-        string[] guids = AssetDatabase.FindAssets(filter);
+        bool isMono = typeof(MonoBehaviour).IsAssignableFrom(typeof(T));
 
-        foreach (string guid in guids)
+        if (isMono)
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            T asset = AssetDatabase.LoadAssetAtPath<T>(path);
+            // MonoBehaviours live on prefabs
+            string[] guids = AssetDatabase.FindAssets("t:Prefab");
 
-            if (asset != null && !Lister.Contains(asset))
+            foreach (string guid in guids)
             {
-                Lister.Add(asset);
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+
+                if (prefab == null) continue;
+
+                T comp = prefab.GetComponent<T>();
+                if (comp != null && !Lister.Contains(comp))
+                {
+                    Lister.Add(comp);
+                }
+            }
+        }
+        else
+        {
+            // Normal asset types (ScriptableObject, etc.)
+            string filter = $"t:{typeof(T).Name}";
+            string[] guids = AssetDatabase.FindAssets(filter);
+
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                T asset = AssetDatabase.LoadAssetAtPath<T>(path);
+
+                if (asset != null && !Lister.Contains(asset))
+                {
+                    Lister.Add(asset);
+                }
             }
         }
 
         Debug.Log($"[ObjectDictionary] Loaded {Lister.Count} items via AssetDatabase");
-    }
-    #endif
-
-}
-
-public abstract class ObjectLibrary<T> : ObjectDictionary<T> where T : Object
-{
-    #if UNITY_EDITOR
-    [Button("ResourceFindAll_Scriptable_Object")]
-    public void FindAllSO()
-    {
-        T[] tee = Resources.LoadAll<T>("");
-        foreach(var item in tee)
-        {
-            if(!Lister.Contains(item))
-            {
-                Lister.Add(item);
-            }
-        }
     }
     #endif
 }
