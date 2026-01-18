@@ -2,7 +2,11 @@ using System.Collections.Generic;
 using CrossingLears;
 using UnityEngine;
 
-public abstract class ObjectDictionary<T> : MonoBehaviour
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+public abstract class ObjectDictionary<T> : MonoBehaviour where T : Object
 {
     protected abstract string NameGetter(T inp);
 
@@ -38,6 +42,46 @@ public abstract class ObjectDictionary<T> : MonoBehaviour
     public void KillDupes()
     {
         Lister = new List<T>(new HashSet<T>(Lister));
+    }
+
+    [CrossingLears.Button]
+    public void FillViaResourcesLoadAll()
+    {
+        Lister.Clear();
+
+        T[] loaded = Resources.LoadAll<T>("");
+
+        foreach (var item in loaded)
+        {
+            if (item != null && !Lister.Contains(item))
+            {
+                Lister.Add(item);
+            }
+        }
+
+        Debug.Log($"[ObjectDictionary] Loaded {Lister.Count} items via Resources.LoadAll");
+    }
+    
+    [CrossingLears.Button]
+    public void FillViaAssetDatabase()
+    {
+        Lister.Clear();
+
+        string filter = $"t:{typeof(T).Name}";
+        string[] guids = AssetDatabase.FindAssets(filter);
+
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            T asset = AssetDatabase.LoadAssetAtPath<T>(path);
+
+            if (asset != null && !Lister.Contains(asset))
+            {
+                Lister.Add(asset);
+            }
+        }
+
+        Debug.Log($"[ObjectDictionary] Loaded {Lister.Count} items via AssetDatabase");
     }
     #endif
 
