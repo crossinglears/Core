@@ -46,6 +46,23 @@ namespace CrossingLearsEditor
 
                 EditorGUILayout.BeginHorizontal();
 
+                if (parameters.Length == 0)
+                {
+                    if (GUILayout.Button(name, GUILayout.ExpandWidth(true)))
+                    {
+                        foreach (UnityEngine.Object t in editor.targets)
+                        {
+                            object result = method.Invoke(t, null);
+
+                            if (result is IEnumerator enumerator && t is MonoBehaviour mb)
+                                mb.StartCoroutine(enumerator);
+                        }
+                    }
+
+                    EditorGUILayout.EndHorizontal();
+                    continue;
+                }
+
                 if (GUILayout.Button(name, GUILayout.Width(118f)))
                 {
                     foreach (UnityEngine.Object t in editor.targets)
@@ -53,9 +70,7 @@ namespace CrossingLearsEditor
                         object result = method.Invoke(t, args);
 
                         if (result is IEnumerator enumerator && t is MonoBehaviour mb)
-                        {
                             mb.StartCoroutine(enumerator);
-                        }
                     }
                 }
 
@@ -85,5 +100,6 @@ namespace CrossingLearsEditor
                 EditorGUILayout.EndHorizontal();
             }
         }
+
     }
 }
