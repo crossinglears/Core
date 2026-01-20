@@ -46,7 +46,7 @@ namespace CrossingLearsEditor
 
                 EditorGUILayout.BeginHorizontal();
 
-                if (GUILayout.Button(name, GUILayout.Width(125f)))
+                if (GUILayout.Button(name, GUILayout.Width(118f)))
                 {
                     foreach (UnityEngine.Object t in editor.targets)
                     {
