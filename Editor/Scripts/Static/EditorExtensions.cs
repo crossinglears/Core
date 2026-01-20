@@ -94,6 +94,9 @@ namespace CrossingLearsEditor
                         args[i] = EditorGUILayout.Vector3Field(GUIContent.none, (Vector3)args[i]);
                     else if (typeof(UnityEngine.Object).IsAssignableFrom(type))
                         args[i] = EditorGUILayout.ObjectField((UnityEngine.Object)args[i], type, true);
+                    else if (type.IsEnum)
+                        args[i] = EditorGUILayout.EnumPopup((Enum)args[i]);
+
                 }
 
                 GUILayout.Space(2f);

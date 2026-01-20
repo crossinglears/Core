@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEditorInternal;
+using System.Security.Policy;
 
 namespace CrossingLearsEditor
 {
@@ -18,6 +19,11 @@ namespace CrossingLearsEditor
             new PackageEntry("UI", "A collection of UI tools", "https://github.com/crossinglears/UI.git"),
             new PackageEntry("Audio", "A simple Audio Manager", "https://github.com/crossinglears/Audio.git"),
             new PackageEntry("Haptic Feedback", "Enable vibration on mobile", "https://github.com/crossinglears/HapticFeedback.git"),
+        };
+
+        static List<PackageEntry> cL_PaidPackages = new()
+        {
+            new PackageEntry("Editor Calendar", "Serializable DateTime", "https://crossinglears.itch.io/serializeable-datetime"),
         };
 
         public override string TabName => "Packages";
@@ -142,6 +148,7 @@ namespace CrossingLearsEditor
             {
                 favoriteList.DoLayoutList();
             }
+
             CrossingLearsPackages();
         }
 
@@ -173,12 +180,27 @@ namespace CrossingLearsEditor
             {
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Space(5);
-                EditorGUILayout.LabelField(package.Name, CL_Design.ColoredLabel(CL_Design.brown), GUILayout.Width(80));
+                EditorGUILayout.LabelField(package.Name, CL_Design.ColoredLabel(CL_Design.brown), GUILayout.Width(130));
                 EditorGUILayout.LabelField(package.Desc, centeredStyle, GUILayout.MinWidth(1));
 
                 if (GUILayout.Button("Install", GUILayout.Width(60)))
                 {
                     InstallPackage(package.Url);
+                }
+                GUILayout.Space(3);
+                EditorGUILayout.EndHorizontal();
+            }
+            foreach (PackageEntry package in cL_PaidPackages)
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Space(5);
+                EditorGUILayout.LabelField(package.Name, CL_Design.ColoredLabel(CL_Design.brown), GUILayout.Width(130));
+                EditorGUILayout.LabelField(package.Desc, centeredStyle, GUILayout.MinWidth(1));
+
+                if (GUILayout.Button("Buy", GUILayout.Width(60)))
+                {
+                    if (EditorUtility.DisplayDialog("Open URL", $"Open \"{package.Url}\" with your browser?", "Yes", "No"))
+                        Application.OpenURL(package.Url);
                 }
                 GUILayout.Space(3);
                 EditorGUILayout.EndHorizontal();
