@@ -42,12 +42,37 @@ namespace CrossingLearsEditor
             float newTimeScale = EditorGUILayout.Slider("Time Speed", Time.timeScale, 0f, 10f);
             if (EditorGUI.EndChangeCheck())
             {
-                if (!Mathf.Approximately(newTimeScale, Time.timeScale)) {
-                    // Only update Time.timeScale if the user changes the slider
+                if (!Mathf.Approximately(newTimeScale, Time.timeScale))
                     Time.timeScale = newTimeScale;
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Space(EditorGUIUtility.labelWidth);
+
+            float[] timeScaleValues = { 0f, 1f, 2f, 4f, 10f };
+            string[] timeScaleLabels = { "0", "1", "2", "4", "10" };
+
+            // Find nearest value
+            int nearestIndex = 0;
+            float minDiff = Mathf.Abs(Time.timeScale - timeScaleValues[0]);
+            for (int i = 1; i < timeScaleValues.Length; i++)
+            {
+                float diff = Mathf.Abs(Time.timeScale - timeScaleValues[i]);
+                if (diff < minDiff)
+                {
+                    minDiff = diff;
+                    nearestIndex = i;
                 }
             }
+
+            int newIndex = GUILayout.Toolbar(nearestIndex, timeScaleLabels);
+            if (newIndex != nearestIndex)
+                Time.timeScale = timeScaleValues[newIndex];
+
+            EditorGUILayout.EndHorizontal();
         }
+
+
 
         GUIContent PlayModeEnterSettingLabel = new GUIContent(
             "Play Mode Reload Setting",
