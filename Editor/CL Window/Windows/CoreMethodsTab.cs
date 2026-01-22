@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace CrossingLearsEditor
 {
-    public class CoreMethodsTab : CL_WindowTab
+    public partial class CoreMethodsTab : CL_WindowTab
     {
         public override string TabName => "Core Methods";
 
@@ -137,47 +137,16 @@ namespace CrossingLearsEditor
             Selection.activeGameObject = holder;
         }
 
-        void RenameAllSelected()
-        {                
-            if (!GUILayout.Button(new GUIContent("Rename All Selected", "Renames all selected objects based on their text components, stripping tags and newlines.")))
-                return;
-
-            foreach (Transform item in Selection.transforms)
-            {
-                GameObject gameObject = item.gameObject;
-                Undo.RecordObject(gameObject, "Rename All Selected");
-                string text = gameObject.name;
-
-                Text textComponent = gameObject.GetComponentInChildren<Text>();
-                if (textComponent != null)
-                    text = textComponent.text;
-
-                TMPro.TextMeshProUGUI textMeshProUGUI = gameObject.GetComponentInChildren<TMPro.TextMeshProUGUI>();
-                if (textMeshProUGUI != null)
-                    text = textMeshProUGUI.text;
-
-                TMPro.TextMeshPro textMeshPro = gameObject.GetComponentInChildren<TMPro.TextMeshPro>();
-                if (textMeshPro != null)
-                    text = textMeshPro.text;
-
-                gameObject.name = System.Text.RegularExpressions.Regex
-                    .Replace(text, "<.*?>", string.Empty)
-                    .Replace("\n", " ");
-
-                EditorUtility.SetDirty(gameObject);
-            }
-
-            if (!Application.isPlaying)
-                UnityEditor.SceneManagement.EditorSceneManager.MarkAllScenesDirty();
-        }
-
-
         void Versioning()
         {
             GUILayout.BeginHorizontal();
             if(GUILayout.Button("Patch Fix (0.0.1)"))
             {
                 VersioningCommands.PatchFix();
+            }
+            if(GUILayout.Button("Minor Fix (0.1.0)"))
+            {
+                VersioningCommands.MinorFix();
             }
             if(GUILayout.Button("Minor Fix (0.1.0)"))
             {
