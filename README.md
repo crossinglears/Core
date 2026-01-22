@@ -3,7 +3,7 @@
 
 The core component of Crossing Lears tools
 
-This package contains tools and extensions that will mostly be used by different tools created by [Crossing Lears](https://crossinglears.carrd.co/)
+This package contains tools and extensions that will mostly be used by different tools created by [Crossing Lears](https://crossinglears.com/)
 
 ### Why you should use the Crossing Lears tools?
 Crossing Lears creates tools that aims to make game development in Unity Engine more convenient.
