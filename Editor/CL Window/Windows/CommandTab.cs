@@ -7,7 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using CrossingLears;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public class CommandTab : CL_WindowTab
     {

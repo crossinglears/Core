@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public partial class LevelDesignTab : CL_WindowTab_WIP
     {

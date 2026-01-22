@@ -5,7 +5,7 @@ using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEditorInternal;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public class GeneralTab : CL_WindowTab
     {

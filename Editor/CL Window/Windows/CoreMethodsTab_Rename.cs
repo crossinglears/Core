@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public partial class CoreMethodsTab : CL_WindowTab
     {

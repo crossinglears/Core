@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public class CreateEmptyPNG
     {

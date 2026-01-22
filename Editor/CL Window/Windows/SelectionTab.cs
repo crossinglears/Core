@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public partial class SelectionTab : CL_WindowTab
     {

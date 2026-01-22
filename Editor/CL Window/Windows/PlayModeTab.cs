@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public class PlayModeTab : CL_WindowTab
     {

@@ -2,7 +2,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public static class ExtensionTools
     {
@@ -53,13 +53,13 @@ namespace CrossingLearsEditor
 
         public static void SetProjectSearch(string searchText)
         {
-            var projectBrowserType = typeof(Editor).Assembly.GetType("UnityEditor.ProjectBrowser");
+            var projectBrowserType = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.ProjectBrowser");
             var windows = Resources.FindObjectsOfTypeAll(projectBrowserType);
 
             foreach (var win in windows)
             {
                 var searchField = projectBrowserType.GetField("m_SearchFilter", BindingFlags.NonPublic | BindingFlags.Instance);
-                var searchFilterType = typeof(Editor).Assembly.GetType("UnityEditor.SearchFilter");
+                var searchFilterType = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.SearchFilter");
                 var searchFilter = searchField.GetValue(win);
 
                 var searchTextField = searchFilterType.GetField("m_NameFilter", BindingFlags.NonPublic | BindingFlags.Instance);

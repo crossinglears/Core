@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public class EditorTab : CL_WindowTab
     {

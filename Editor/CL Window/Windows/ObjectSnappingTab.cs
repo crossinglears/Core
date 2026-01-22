@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public class ObjectSnappingTab : CL_WindowTab
     {        

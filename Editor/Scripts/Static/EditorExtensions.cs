@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using CrossingLears;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public static class EditorExtensions
     {
         private static Dictionary<string, object[]> cachedArgs = new Dictionary<string, object[]>();
 
-        public static void DrawButtons(this Editor editor)
+        public static void DrawButtons(this UnityEditor.Editor editor)
         {
             IEnumerable<MethodInfo> methods = editor.target.GetType()
                 .GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);

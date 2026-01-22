@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public class RandomPrefabTab : CL_WindowTab
     {

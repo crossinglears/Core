@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public class ScenesTab : CL_WindowTab
     {

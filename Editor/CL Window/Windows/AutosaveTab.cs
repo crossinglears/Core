@@ -4,7 +4,7 @@ using UnityEditor.SceneManagement;
 using System;
 using System.IO;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public class AutosaveTab : CL_WindowTab
     {

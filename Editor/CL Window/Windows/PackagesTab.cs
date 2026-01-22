@@ -7,7 +7,7 @@ using UnityEditor.PackageManager.Requests;
 using UnityEditorInternal;
 using System.Security.Policy;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public class PackagesTab : CL_WindowTab
     {

@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-namespace CrossingLearsEditor
+namespace CrossingLears.Editor
 {
     public partial class CoreMethodsTab : CL_WindowTab
     {

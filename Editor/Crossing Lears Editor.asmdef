@@ -1,6 +1,6 @@
 {
-    "name": "CrossingLearsEditor",
-    "rootNamespace": "CrossingLearsEditor",
+    "name": "Crossing Lears Editor",
+    "rootNamespace": "CrossingLears.Editor",
     "references": [
         "GUID:b5b95d56ce8ae8a4d86d5517a33f4f18",
         "GUID:6055be8ebefd69e48b49212b09b47b2f"
