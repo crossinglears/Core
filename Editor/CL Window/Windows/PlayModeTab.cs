@@ -70,6 +70,8 @@ namespace CrossingLears.Editor
                 Time.timeScale = timeScaleValues[newIndex];
 
             EditorGUILayout.EndHorizontal();
+
+            DrawAverageFPS();
         }
 
 
@@ -107,6 +109,27 @@ namespace CrossingLears.Editor
                 EditorSettings.enterPlayModeOptions = (EnterPlayModeOptions)(selectedEnterPlayMode - 1);
             }
         #endif
+        }
+
+        private float avgFps;
+
+        void DrawAverageFPS()
+        {
+            if (!Application.isPlaying)
+            {
+                EditorGUILayout.LabelField("Avg FPS", "—");
+                return;
+            }
+
+            float dt = Time.unscaledDeltaTime;
+            if (dt > 0f)
+            {
+                float currentFps = 1f / dt;
+                avgFps = Mathf.Lerp(avgFps, currentFps, 0.1f);
+            }
+
+            EditorGUILayout.LabelField("Avg FPS", avgFps.ToString("F1"));
+            CL_Window.current.Repaint();
         }
     }
 
