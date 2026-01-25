@@ -148,9 +148,9 @@ namespace CrossingLears.Editor
             {
                 VersioningCommands.MinorFix();
             }
-            if(GUILayout.Button("Minor Fix (0.1.0)"))
+            if(GUILayout.Button("Major Fix (1.0.0)"))
             {
-                VersioningCommands.MinorFix();
+                VersioningCommands.MajorFix();
             }
             GUILayout.EndHorizontal();
         }

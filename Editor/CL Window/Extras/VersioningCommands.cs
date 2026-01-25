@@ -21,6 +21,13 @@ public class VersioningCommands
         UpdateVersion(1); // minor
     }
 
+    public static void MajorFix()
+    {
+        if (IsOnCooldown()) return;
+        PlayerSettings.Android.bundleVersionCode++;
+        UpdateVersion(1); // minor
+    }
+
     private static bool IsOnCooldown()
     {
         if ((DateTime.Now - lastRunTime).TotalSeconds < cooldownSeconds)
