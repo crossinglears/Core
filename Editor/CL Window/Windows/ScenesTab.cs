@@ -184,6 +184,7 @@ public override void DrawContent()
             {
                 GenericMenu menu = new GenericMenu();
                 menu.AddItem(new GUIContent("Copy Path"), false, () => EditorGUIUtility.systemCopyBuffer = path);
+                menu.AddItem(new GUIContent("Copy Name"), false, () => EditorGUIUtility.systemCopyBuffer = System.IO.Path.GetFileNameWithoutExtension(path));
                 menu.ShowAsContext();
                 Event.current.Use();
             }
