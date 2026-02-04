@@ -88,6 +88,7 @@ namespace CrossingLears.Editor
 
         private void OnFocus()
         {
+            FocusWindowIfItsOpen<CL_Window>();
             if (tabs.Count > 0) tabs[selectedTab].OnFocus();
         }
 
