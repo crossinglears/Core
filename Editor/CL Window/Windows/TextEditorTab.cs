@@ -40,9 +40,21 @@ namespace CrossingLears.Editor
             string newValue = EditorGUILayout.TextArea(currentValue, GUILayout.Height(80f));
             if (EditorGUI.EndChangeCheck())
             {
-                if (foundText != null) foundText.text = newValue;
-                if (foundTMP != null) foundTMP.text = newValue;
-                if (alsoChangeSelectedObjectName) selected.name = newValue;
+                if (foundText != null)
+                {
+                    foundText.text = newValue;
+                    EditorUtility.SetDirty(foundText);
+                }
+                if (foundTMP != null)
+                {
+                    foundTMP.text = newValue;
+                    EditorUtility.SetDirty(foundTMP);
+                }
+                if (alsoChangeSelectedObjectName)
+                {
+                    selected.name = newValue;
+                    EditorUtility.SetDirty(selected);
+                }
             }
             CL_Window.current.Repaint();
         }
