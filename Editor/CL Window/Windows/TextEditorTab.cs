@@ -56,6 +56,8 @@ namespace CrossingLears.Editor
                     EditorUtility.SetDirty(selected);
                 }
             }
+  
+            CoreMethodsTab.RenameAllSelected();
             CL_Window.current.Repaint();
         }
 

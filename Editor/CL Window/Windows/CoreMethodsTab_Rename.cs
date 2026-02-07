@@ -6,7 +6,7 @@ namespace CrossingLears.Editor
 {
     public partial class CoreMethodsTab : CL_WindowTab
     {
-        void RenameAllSelected()
+        public static void RenameAllSelected()
         {                
             if (!GUILayout.Button(new GUIContent("Rename All Selected", "Renames all selected objects based on their text components, stripping tags and newlines.")))
                 return;
