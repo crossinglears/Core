@@ -121,6 +121,41 @@ namespace CrossingLears.Editor
 
         private void TabsChecklist()
         {
+            if(GUILayout.Button("Create New Menu"))
+            {
+                TempInputWindow.ShowWindow<string, string>("Create New Menu", (x, y) =>
+                {
+                    string className = System.IO.Path.GetFileNameWithoutExtension(x);
+                    string folderPath = y.Replace("\\", "/");
+                    string filePath = System.IO.Path.Combine(folderPath, x);
+
+                    string content =
+                "using UnityEditor;\n" +
+                "using UnityEngine;\n\n" +
+                "namespace CrossingLears.Editor\n" +
+                "{\n" +
+                "    public class " + className + " : CL_WindowTab\n" +
+                "    {\n" +
+                "        public override string TabName => \"" + (className.EndsWith("Tab") ? className.Substring(0, className.Length - 3) : className) +"\";\n\n" +
+                "        public override void DrawContent()\n" +
+                "        {\n" +
+                "            \n" +
+                "        }\n" +
+                "    }\n" +
+                "}\n";
+
+                    System.IO.Directory.CreateDirectory(folderPath);
+                    System.IO.File.WriteAllText(filePath, content);
+                    AssetDatabase.Refresh();
+
+                    EditorPrefs.SetString("DefaultDestination", y);
+                    UnityEngine.Object asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(filePath);
+                    AssetDatabase.OpenAsset(asset);
+                })
+                .Label("Tab Name", "Destination")
+                .DefaultValue( "ScriptName.cs", EditorPrefs.GetString( "DefaultDestination", "Assets/Editor/Development Files/CL_Window"))
+                .Show();
+            }
             GUILayout.Label("Menus to open", EditorStyles.boldLabel);
             if(tabList != null)
             {
