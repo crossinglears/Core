@@ -28,6 +28,13 @@ namespace CrossingLears.Editor
             new("Project Templates", EditorApplication.applicationPath.Replace("Unity.exe", "") + @"Data\Resources\PackageManager\ProjectTemplates\"),
         };
 
+        public List<Path> BuildLogsPath = new()
+        {
+            new("Build Log (Windows)", System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData) + "/Unity/Editor/Editor.log"),
+            new("Build Log (macOS)", System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/Library/Logs/Unity/Editor.log"),
+            new("Build Log (Linux)", System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/.config/unity3d/Editor.log"),
+        };
+
 
         public override void DrawContent()
         {
@@ -38,6 +45,9 @@ namespace CrossingLears.Editor
             CL_GUILayout.HorizontalSeparator();
 
             DisplaySet(EditorPaths);
+            CL_GUILayout.HorizontalSeparator();
+
+            DisplaySet(BuildLogsPath);
         }
 
         private void DisplaySet(List<Path> paths)
@@ -81,7 +91,6 @@ namespace CrossingLears.Editor
 
                 EditorUtility.RevealInFinder(path);
             }
-
 
             public Path(string n, string d)
             {
