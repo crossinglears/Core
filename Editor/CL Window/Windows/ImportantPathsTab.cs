@@ -30,9 +30,9 @@ namespace CrossingLears.Editor
 
         public List<Path> BuildLogsPath = new()
         {
-            new("Build Log (Windows)", System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData) + "/Unity/Editor/Editor.log"),
-            new("Build Log (macOS)", System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/Library/Logs/Unity/Editor.log"),
-            new("Build Log (Linux)", System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/.config/unity3d/Editor.log"),
+            new("Player Log (Windows)", System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile) + "/AppData/LocalLow/" + Application.companyName + "/" + Application.productName + "/Player.log"),
+            new("Player Log (macOS)", System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/Library/Logs/" + Application.companyName + "/" + Application.productName + "/Player.log"),
+            new("Player Log (Linux)", System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "/.config/unity3d/" + Application.companyName + "/" + Application.productName + "/Player.log"),
         };
 
 
