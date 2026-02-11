@@ -9,9 +9,10 @@ namespace CrossingLears
     {
         public enum StartStateEnum
         {
-            Close,
-            Open,
-            Destroy,
+            Close           = 0,
+            Open            = 1,
+            Destroy         = 2,
+            AwakeAndClose   = 3,
         }
 
         public StartStateEnum startState;

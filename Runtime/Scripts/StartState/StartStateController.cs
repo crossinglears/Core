@@ -52,13 +52,18 @@ namespace CrossingLears
                         case StartState.StartStateEnum.Close:
                             obj.close();
                             break;
+                        case StartState.StartStateEnum.AwakeAndClose:
+                            obj.gameObject.SetActive(true);
+                            obj.close();
+                            break;
                     }
                 }
             }
 
-            #if !UNITY_EDITOR
+        #if !UNITY_EDITOR
             gameObject.destroy();
-            #endif
+        #endif
         }
+
     }
 }
