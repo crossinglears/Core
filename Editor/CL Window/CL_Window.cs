@@ -42,9 +42,12 @@ namespace CrossingLears.Editor
         private Vector2 rightScrollPos;
         private static Texture2D cachedTexture;
 
-        internal List<string> IgnoredTabs = new();
+        internal List<string> IgnoredTabs = new List<string>();
         private bool isPaused;
         private const string IGNOREDTABSKEY = "CL_Window.IgnoredTabs";
+
+        private string filterString = "";
+        private double lastTypeTime;
 
         [MenuItem("Crossing Lears/Toolbox")]
         public static void ShowWindow() => current = GetWindow<CL_Window>("Crossing Toolbox");
@@ -96,18 +99,15 @@ namespace CrossingLears.Editor
         {
             if (tabs == null || tabs.Count == 0)
             {
-                tabs = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(a => a.GetTypes())
-                    .Where(t => t.IsClass && !t.IsAbstract && typeof(CL_WindowTab).IsAssignableFrom(t))
-                    .Select(t => (CL_WindowTab)Activator.CreateInstance(t))
-                    .ToList();
+                tabs = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes()).Where(t => t.IsClass && !t.IsAbstract && typeof(CL_WindowTab).IsAssignableFrom(t)).Select(t => (CL_WindowTab)Activator.CreateInstance(t)).ToList();
             }
         }
 
         private void OnGUI()
         {
-            if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
-                GUI.FocusControl(null);
+            Filter();
+
+            if (Event.current.type == EventType.MouseDown && Event.current.button == 0) GUI.FocusControl(null);
 
             EditorGUILayout.BeginVertical();
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandHeight(true));
@@ -116,10 +116,6 @@ namespace CrossingLears.Editor
             DrawRightPanel();
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
-
-            // EditorGUILayout.BeginVertical();
-            // DrawBottomPanel();
-            // EditorGUILayout.EndVertical();
         }
 
         private void DrawVerticalSeparator()
@@ -160,6 +156,7 @@ namespace CrossingLears.Editor
             {
                 CL_WindowTab item = tabs[i];
                 if (IgnoredTabs.Contains(item.TabName)) continue;
+                if (!string.IsNullOrEmpty(filterString) && !item.TabName.ToLower().Contains(filterString)) continue;
 
                 GUIStyle currentStyle = new GUIStyle(tabStyle);
                 if (selectedTab == i) currentStyle.normal.background = GetTabBackgroundColor();
@@ -211,6 +208,35 @@ namespace CrossingLears.Editor
                 cachedTexture.Apply();
             }
             return cachedTexture;
+        }
+
+        void Filter()
+        {
+            Event e = Event.current;
+            if (e.type != EventType.KeyDown) return;
+
+            if (e.keyCode == KeyCode.Escape || e.keyCode == KeyCode.Backspace)
+            {
+                filterString = "";
+                Repaint();
+                return;
+            }
+
+            if (!char.IsControl(e.character) && char.IsLetterOrDigit(e.character))
+            {
+                filterString += char.ToLower(e.character);
+                lastTypeTime = EditorApplication.timeSinceStartup;
+                Repaint();
+            }
+
+            if (!string.IsNullOrEmpty(filterString))
+            {
+                if (EditorApplication.timeSinceStartup - lastTypeTime > 5.0d)
+                {
+                    filterString = "";
+                    Repaint();
+                }
+            }
         }
     }
 }
