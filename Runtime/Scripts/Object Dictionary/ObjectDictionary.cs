@@ -63,6 +63,8 @@ public abstract class ObjectLibrary<T> : ObjectDictionary<T> where T : Object
                 Lister.Add(item);
             }
         }
+
+        EditorUtility.SetDirty(this);
     }
     
     [CrossingLears.Button]
@@ -108,7 +110,8 @@ public abstract class ObjectLibrary<T> : ObjectDictionary<T> where T : Object
                 }
             }
         }
-
+        
+        EditorUtility.SetDirty(this);
         Debug.Log($"[ObjectDictionary] Loaded {Lister.Count} items via AssetDatabase");
     }
     #endif
