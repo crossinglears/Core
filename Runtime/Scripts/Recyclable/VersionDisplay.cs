@@ -1,6 +1,8 @@
 using TMPro;
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// Displays a version string based on Semantic Versioning (SemVer).
@@ -40,7 +42,12 @@ public class VersionDisplay : MonoBehaviour
     /// </summary>
     public string GetVersion(string format)
     {
-        string version = PlayerSettings.bundleVersion;
+        string version;
+#if UNITY_EDITOR
+        version = PlayerSettings.bundleVersion;
+#else
+        version = Application.version;
+#endif
         string[] parts = version.Split('.');
 
         string major = parts.Length > 0 ? parts[0] : "0";
@@ -49,13 +56,13 @@ public class VersionDisplay : MonoBehaviour
 
         string build = "0";
 
-        #if UNITY_ANDROID
+#if UNITY_EDITOR && UNITY_ANDROID
         build = PlayerSettings.Android.bundleVersionCode.ToString();
-        #elif UNITY_IOS
+#elif UNITY_EDITOR && UNITY_IOS
         build = PlayerSettings.iOS.buildNumber;
-        #else
-        build = PlayerSettings.bundleVersion;
-        #endif
+#else
+        build = version;
+#endif
 
         string result = format;
         result = result.Replace("Major", major);
