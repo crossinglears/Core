@@ -183,15 +183,22 @@ namespace CrossingLears.Editor
 
         menu.AddItem(new GUIContent("Rename"), false, () =>
         {
-            StringInputWindow.Open("Rename List", "Enter new name:", list.ListName, newName =>
-            {
-                if (!string.IsNullOrEmpty(newName))
+            TempInputWindow.ShowWindow<string>(
+                "Rename List",
+                newName =>
                 {
-                    list.ListName = newName;
-                    SaveTasks();
-                    DrawReorderables();
-                }
-            });
+                    if (!string.IsNullOrEmpty(newName))
+                    {
+                        list.ListName = newName;
+                        SaveTasks();
+                        DrawReorderables();
+                    }
+                },
+                "Rename"
+            )
+            .Label("Enter new name:")
+            .DefaultValue(list.ListName)
+            .Show();
         });
 
         menu.AddItem(new GUIContent("Delete"), false, () =>
