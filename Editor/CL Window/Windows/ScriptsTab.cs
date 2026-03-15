@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEditor;
+using UnityEditor.PackageManager;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -38,6 +39,7 @@ namespace CrossingLears.Editor
         private GUIStyle sourceBadgeStyle;
         private GUIStyle emptyStateStyle;
         private GUIStyle countStyle;
+        private GUIStyle entryTitleStyle;
 
         public override void DrawTitle()
         {
@@ -107,14 +109,14 @@ namespace CrossingLears.Editor
                 return;
             }
 
-            EditorGUILayout.BeginHorizontal(resultBoxStyle);
-            GUILayout.Label("Results:", EditorStyles.boldLabel);
-            GUILayout.Space(4f);
-            GUILayout.Label(results.Count.ToString(), countStyle);
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.EndHorizontal();
+            // EditorGUILayout.BeginHorizontal(resultBoxStyle);
+            // GUILayout.Label("Results:", EditorStyles.boldLabel);
+            // GUILayout.Space(4f);
+            // GUILayout.Label(results.Count.ToString(), countStyle);
+            // GUILayout.FlexibleSpace();
+            // EditorGUILayout.EndHorizontal();
 
-            GUILayout.Space(4f);
+            // GUILayout.Space(4f);
 
             scroll = EditorGUILayout.BeginScrollView(scroll);
 
@@ -147,160 +149,180 @@ namespace CrossingLears.Editor
         }
 
         private void DrawEntry(ScriptEntry entry)
-{
-    Color previousContentColor = GUI.contentColor;
-    Color previousBackgroundColor = GUI.backgroundColor;
-
-    EditorGUILayout.BeginVertical(entryBoxStyle);
-
-    EditorGUILayout.BeginHorizontal(GUILayout.Height(20f));
-    GUILayout.Label(entry.Name, entryTitleStyle, GUILayout.ExpandWidth(false), GUILayout.Height(20f));
-
-    GUI.contentColor = entry.Source == ScriptSource.Remote ? new Color(0.35f, 0.85f, 0.35f) : new Color(0.95f, 0.85f, 0.25f);
-    GUILayout.Label(entry.SourceLabel, sourceBadgeStyle, GUILayout.Width(60f), GUILayout.Height(20f));
-    GUI.contentColor = previousContentColor;
-
-    GUILayout.FlexibleSpace();
-    EditorGUILayout.EndHorizontal();
-
-    if (!string.IsNullOrWhiteSpace(entry.Description))
-    {
-        GUILayout.Space(4f);
-        GUILayout.Label(entry.Description, descriptionStyle);
-    }
-
-    GUILayout.Space(6f);
-
-    EditorGUILayout.BeginHorizontal();
-    GUILayout.Label("Tags", metaLabelStyle, GUILayout.Width(90f));
-    GUILayout.Label(entry.Tags.Count > 0 ? string.Join(", ", entry.Tags) : "-", metaValueStyle);
-    EditorGUILayout.EndHorizontal();
-
-    EditorGUILayout.BeginHorizontal();
-    GUILayout.Label("Dependencies", metaLabelStyle, GUILayout.Width(90f));
-    GUILayout.Label(entry.Dependencies.Count > 0 ? string.Join(", ", entry.Dependencies) : "-", metaValueStyle);
-    EditorGUILayout.EndHorizontal();
-
-    GUILayout.Space(8f);
-
-    EditorGUILayout.BeginHorizontal();
-
-    if (GUILayout.Button("View", GUILayout.Width(70f), GUILayout.Height(24f)))
-    {
-        ViewEntry(entry);
-    }
-
-    if (GUILayout.Button("Insert", GUILayout.Width(70f), GUILayout.Height(24f)))
-    {
-        InsertEntry(entry);
-    }
-
-    GUILayout.FlexibleSpace();
-    EditorGUILayout.EndHorizontal();
-
-    EditorGUILayout.EndVertical();
-    GUILayout.Space(4f);
-
-    GUI.contentColor = previousContentColor;
-    GUI.backgroundColor = previousBackgroundColor;
-}
-
-private GUIStyle entryTitleStyle;
-
-    private void EnsureStyles()
-    {
-        if (toolbarBoxStyle == null)
         {
-            toolbarBoxStyle = new GUIStyle(EditorStyles.helpBox);
-            toolbarBoxStyle.padding = new RectOffset(10, 10, 10, 10);
-            toolbarBoxStyle.margin = new RectOffset(0, 0, 0, 0);
+            Color previousContentColor = GUI.contentColor;
+            Color previousBackgroundColor = GUI.backgroundColor;
+
+            EditorGUILayout.BeginVertical(entryBoxStyle);
+
+            EditorGUILayout.BeginHorizontal(GUILayout.Height(20f));
+            GUILayout.Label(entry.Name, entryTitleStyle, GUILayout.ExpandWidth(false), GUILayout.Height(20f));
+
+            GUI.contentColor = entry.Source == ScriptSource.Remote ? new Color(0.35f, 0.85f, 0.35f) : new Color(0.95f, 0.85f, 0.25f);
+            GUILayout.Label(entry.SourceLabel, sourceBadgeStyle, GUILayout.Width(60f), GUILayout.Height(20f));
+            GUI.contentColor = previousContentColor;
+
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
+
+            if (!string.IsNullOrWhiteSpace(entry.Description))
+            {
+                GUILayout.Space(4f);
+                GUILayout.Label(entry.Description, descriptionStyle);
+            }
+
+            GUILayout.Space(6f);
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Tags", metaLabelStyle, GUILayout.Width(90f));
+            GUILayout.Label(entry.Tags.Count > 0 ? string.Join(", ", entry.Tags) : "-", metaValueStyle);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Dependencies", metaLabelStyle, GUILayout.Width(90f));
+            GUILayout.Label(entry.Dependencies.Count > 0 ? string.Join(", ", entry.Dependencies) : "-", metaValueStyle);
+            EditorGUILayout.EndHorizontal();
+
+            GUILayout.Space(8f);
+
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("View", GUILayout.Width(70f), GUILayout.Height(24f)))
+            {
+                ViewEntry(entry);
+            }
+
+            if (GUILayout.Button("Insert", GUILayout.Width(70f), GUILayout.Height(24f)))
+            {
+                InsertEntry(entry);
+            }
+
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.EndVertical();
+            GUILayout.Space(4f);
+
+            GUI.contentColor = previousContentColor;
+            GUI.backgroundColor = previousBackgroundColor;
         }
 
-        if (resultBoxStyle == null)
+        private void EnsureStyles()
         {
-            resultBoxStyle = new GUIStyle(EditorStyles.helpBox);
-            resultBoxStyle.padding = new RectOffset(10, 10, 8, 8);
-            resultBoxStyle.margin = new RectOffset(0, 0, 0, 0);
-        }
+            if (toolbarBoxStyle == null)
+            {
+                toolbarBoxStyle = new GUIStyle(EditorStyles.helpBox)
+                {
+                    padding = new RectOffset(10, 10, 10, 10),
+                    margin = new RectOffset(0, 0, 0, 0)
+                };
+            }
 
-        if (entryBoxStyle == null)
-        {
-            entryBoxStyle = new GUIStyle(EditorStyles.helpBox);
-            entryBoxStyle.padding = new RectOffset(10, 10, 10, 10);
-            entryBoxStyle.margin = new RectOffset(0, 0, 0, 0);
-        }
+            if (resultBoxStyle == null)
+            {
+                resultBoxStyle = new GUIStyle(EditorStyles.helpBox)
+                {
+                    padding = new RectOffset(10, 10, 8, 8),
+                    margin = new RectOffset(0, 0, 0, 0)
+                };
+            }
 
-        if (adaptiveTitleStyle == null)
-        {
-            adaptiveTitleStyle = new GUIStyle(EditorStyles.boldLabel);
-            adaptiveTitleStyle.fontSize = 12;
-            adaptiveTitleStyle.wordWrap = false;
-            adaptiveTitleStyle.clipping = TextClipping.Clip;
-            adaptiveTitleStyle.alignment = TextAnchor.MiddleLeft;
-        }
+            if (entryBoxStyle == null)
+            {
+                entryBoxStyle = new GUIStyle(EditorStyles.helpBox)
+                {
+                    padding = new RectOffset(10, 10, 10, 10),
+                    margin = new RectOffset(0, 0, 0, 0)
+                };
+            }
 
-        if (entryTitleStyle == null)
-        {
-            entryTitleStyle = new GUIStyle(EditorStyles.boldLabel);
-            entryTitleStyle.fontSize = 12;
-            entryTitleStyle.wordWrap = false;
-            entryTitleStyle.clipping = TextClipping.Clip;
-            entryTitleStyle.alignment = TextAnchor.MiddleLeft;
-            entryTitleStyle.fixedHeight = 20f;
-            entryTitleStyle.padding = new RectOffset(0, 0, 0, 0);
-            entryTitleStyle.margin = new RectOffset(0, 0, 0, 0);
-        }
+            if (adaptiveTitleStyle == null)
+            {
+                adaptiveTitleStyle = new GUIStyle(EditorStyles.boldLabel)
+                {
+                    fontSize = 12,
+                    wordWrap = false,
+                    clipping = TextClipping.Clip,
+                    alignment = TextAnchor.MiddleLeft
+                };
+            }
 
-        if (descriptionStyle == null)
-        {
-            descriptionStyle = new GUIStyle(EditorStyles.label);
-            descriptionStyle.fontSize = 11;
-            descriptionStyle.wordWrap = true;
-            descriptionStyle.alignment = TextAnchor.UpperLeft;
-        }
+            if (entryTitleStyle == null)
+            {
+                entryTitleStyle = new GUIStyle(EditorStyles.boldLabel)
+                {
+                    fontSize = 12,
+                    wordWrap = false,
+                    clipping = TextClipping.Clip,
+                    alignment = TextAnchor.MiddleLeft,
+                    fixedHeight = 20f,
+                    padding = new RectOffset(0, 0, 0, 0),
+                    margin = new RectOffset(0, 0, 0, 0)
+                };
+            }
 
-        if (metaLabelStyle == null)
-        {
-            metaLabelStyle = new GUIStyle(EditorStyles.label);
-            metaLabelStyle.fontSize = 11;
-            metaLabelStyle.fontStyle = FontStyle.Bold;
-            metaLabelStyle.alignment = TextAnchor.UpperLeft;
-            metaLabelStyle.wordWrap = false;
-        }
+            if (descriptionStyle == null)
+            {
+                descriptionStyle = new GUIStyle(EditorStyles.label)
+                {
+                    fontSize = 11,
+                    wordWrap = true,
+                    alignment = TextAnchor.UpperLeft
+                };
+            }
 
-        if (metaValueStyle == null)
-        {
-            metaValueStyle = new GUIStyle(EditorStyles.label);
-            metaValueStyle.fontSize = 11;
-            metaValueStyle.wordWrap = true;
-            metaValueStyle.alignment = TextAnchor.UpperLeft;
-        }
+            if (metaLabelStyle == null)
+            {
+                metaLabelStyle = new GUIStyle(EditorStyles.label)
+                {
+                    fontSize = 11,
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.UpperLeft,
+                    wordWrap = false
+                };
+            }
 
-        if (sourceBadgeStyle == null)
-        {
-            sourceBadgeStyle = new GUIStyle(EditorStyles.label);
-            sourceBadgeStyle.fontSize = 11;
-            sourceBadgeStyle.fontStyle = FontStyle.Bold;
-            sourceBadgeStyle.alignment = TextAnchor.MiddleLeft;
-            sourceBadgeStyle.wordWrap = false;
-            sourceBadgeStyle.fixedHeight = 20f;
-            sourceBadgeStyle.padding = new RectOffset(0, 0, 0, 0);
-            sourceBadgeStyle.margin = new RectOffset(6, 0, 0, 0);
-        }
+            if (metaValueStyle == null)
+            {
+                metaValueStyle = new GUIStyle(EditorStyles.label)
+                {
+                    fontSize = 11,
+                    wordWrap = true,
+                    alignment = TextAnchor.UpperLeft
+                };
+            }
 
-        if (emptyStateStyle == null)
-        {
-            emptyStateStyle = new GUIStyle(EditorStyles.centeredGreyMiniLabel);
-            emptyStateStyle.wordWrap = true;
-            emptyStateStyle.alignment = TextAnchor.MiddleCenter;
-        }
+            if (sourceBadgeStyle == null)
+            {
+                sourceBadgeStyle = new GUIStyle(EditorStyles.label)
+                {
+                    fontSize = 11,
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.MiddleLeft,
+                    wordWrap = false,
+                    fixedHeight = 20f,
+                    padding = new RectOffset(0, 0, 0, 0),
+                    margin = new RectOffset(6, 0, 0, 0)
+                };
+            }
 
-        if (countStyle == null)
-        {
-            countStyle = new GUIStyle(EditorStyles.boldLabel);
-            countStyle.fontSize = 12;
+            if (emptyStateStyle == null)
+            {
+                emptyStateStyle = new GUIStyle(EditorStyles.centeredGreyMiniLabel)
+                {
+                    wordWrap = true,
+                    alignment = TextAnchor.MiddleCenter
+                };
+            }
+
+            if (countStyle == null)
+            {
+                countStyle = new GUIStyle(EditorStyles.boldLabel)
+                {
+                    fontSize = 12
+                };
+            }
         }
-    }
 
         private void DoSearch()
         {
@@ -448,6 +470,11 @@ private GUIStyle entryTitleStyle;
                 return true;
             }
 
+            if (entry.Packages.Any(x => x.ToLowerInvariant().Contains(query)))
+            {
+                return true;
+            }
+
             return false;
         }
 
@@ -457,7 +484,7 @@ private GUIStyle entryTitleStyle;
             ScriptCreateWindow.Open(this);
         }
 
-        private void CreateScriptFile(string scriptName, string description, string tagsCsv, string dependenciesCsv)
+        private void CreateScriptFile(string scriptName, string description, string tagsCsv, string dependenciesCsv, string packagesCsv)
         {
             scriptName = SanitizeClassName(scriptName);
 
@@ -477,7 +504,7 @@ private GUIStyle entryTitleStyle;
                 return;
             }
 
-            string content = BuildScriptTemplate(scriptName, description, tagsCsv, dependenciesCsv);
+            string content = BuildScriptTemplate(scriptName, description, tagsCsv, dependenciesCsv, packagesCsv);
             File.WriteAllText(filePath, content, new UTF8Encoding(false));
 
             AssetDatabase.Refresh();
@@ -489,7 +516,7 @@ private GUIStyle entryTitleStyle;
             }
         }
 
-        private string BuildScriptTemplate(string scriptName, string description, string tagsCsv, string dependenciesCsv)
+        private string BuildScriptTemplate(string scriptName, string description, string tagsCsv, string dependenciesCsv, string packagesCsv)
         {
             return
 $@"/*
@@ -497,6 +524,7 @@ Name: {scriptName}
 Description: {description}
 Tags: {tagsCsv}
 Dependencies: {dependenciesCsv}
+Packages: {packagesCsv}
 */
 
 using UnityEngine;
@@ -567,6 +595,7 @@ public class {scriptName} : MonoBehaviour
             try
             {
                 WriteEntryToProject(entry, destinationFolder);
+                InstallPackages(entry.Packages);
 
                 if (installDependencies)
                 {
@@ -577,6 +606,7 @@ public class {scriptName} : MonoBehaviour
                         if (dependency != null)
                         {
                             WriteEntryToProject(dependency, destinationFolder);
+                            InstallPackages(dependency.Packages);
                         }
                         else
                         {
@@ -632,6 +662,57 @@ public class {scriptName} : MonoBehaviour
             }
 
             File.WriteAllText(destinationPath, text, new UTF8Encoding(false));
+        }
+
+        private void InstallPackages(List<string> packages)
+        {
+            if (packages == null || packages.Count == 0)
+            {
+                return;
+            }
+
+            HashSet<string> installed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (string rawPackage in packages)
+            {
+                string packageId = ExtractInstallablePackageId(rawPackage);
+
+                if (string.IsNullOrWhiteSpace(packageId))
+                {
+                    continue;
+                }
+
+                if (!installed.Add(packageId))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    Client.Add(packageId);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning("[Scripts] Package install failed '" + packageId + "': " + ex.Message);
+                }
+            }
+        }
+
+        private string ExtractInstallablePackageId(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            string trimmed = value.Trim().Trim('"');
+
+            if (trimmed.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || trimmed.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                return string.Empty;
+            }
+
+            return trimmed;
         }
 
         private ScriptEntry FindDependencyByName(string dependencyName)
@@ -780,6 +861,7 @@ public class {scriptName} : MonoBehaviour
             entry.Description = string.Empty;
             entry.Tags = new List<string>();
             entry.Dependencies = new List<string>();
+            entry.Packages = new List<string>();
 
             int start = text.IndexOf("/*", StringComparison.Ordinal);
             int end = text.IndexOf("*/", StringComparison.Ordinal);
@@ -811,6 +893,10 @@ public class {scriptName} : MonoBehaviour
                 else if (line.StartsWith("Dependencies:", StringComparison.OrdinalIgnoreCase))
                 {
                     entry.Dependencies = SplitCsv(line.Substring("Dependencies:".Length));
+                }
+                else if (line.StartsWith("Packages:", StringComparison.OrdinalIgnoreCase))
+                {
+                    entry.Packages = SplitCsv(line.Substring("Packages:".Length));
                 }
             }
 
@@ -866,7 +952,7 @@ public class {scriptName} : MonoBehaviour
                 Directory.CreateDirectory(LocalScriptsRoot);
             }
         }
-        
+
         private enum ScriptSource
         {
             Local,
@@ -880,6 +966,7 @@ public class {scriptName} : MonoBehaviour
             public string Description;
             public List<string> Tags = new List<string>();
             public List<string> Dependencies = new List<string>();
+            public List<string> Packages = new List<string>();
             public ScriptSource Source;
             public string SourceLabel;
             public string FilePath;
@@ -912,14 +999,15 @@ public class {scriptName} : MonoBehaviour
             private string description = "";
             private string tags = "";
             private string dependencies = "";
+            private string packages = "";
 
             public static void Open(ScriptsTab owner)
             {
                 ScriptCreateWindow window = CreateInstance<ScriptCreateWindow>();
                 window.owner = owner;
                 window.titleContent = new GUIContent("Create Script");
-                window.minSize = new Vector2(420f, 180f);
-                window.maxSize = new Vector2(420f, 180f);
+                window.minSize = new Vector2(420f, 210f);
+                window.maxSize = new Vector2(420f, 210f);
                 window.ShowUtility();
             }
 
@@ -934,6 +1022,7 @@ public class {scriptName} : MonoBehaviour
                 description = EditorGUILayout.TextField("Description", description);
                 tags = EditorGUILayout.TextField("Tags (csv)", tags);
                 dependencies = EditorGUILayout.TextField("Dependencies (csv)", dependencies);
+                packages = EditorGUILayout.TextField("Packages (csv)", packages);
 
                 GUILayout.FlexibleSpace();
                 EditorGUILayout.BeginHorizontal();
@@ -945,7 +1034,7 @@ public class {scriptName} : MonoBehaviour
 
                 if (GUILayout.Button("Create", GUILayout.Height(26f)))
                 {
-                    owner.CreateScriptFile(scriptName, description, tags, dependencies);
+                    owner.CreateScriptFile(scriptName, description, tags, dependencies, packages);
                     Close();
                 }
 
