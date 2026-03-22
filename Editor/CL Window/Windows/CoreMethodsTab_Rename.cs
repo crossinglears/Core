@@ -50,6 +50,14 @@ namespace CrossingLears.Editor
                         text = spriteRenderer.sprite.name;
                 }
 
+                if(text == null)
+                {
+                    if(gameObject.transform.childCount == 1)
+                    {
+                        text = gameObject.transform.GetChild(0).name;
+                    }
+                }
+
                 if (string.IsNullOrEmpty(text))
                     continue;
 
