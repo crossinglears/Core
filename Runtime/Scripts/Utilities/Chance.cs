@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace CrossingLears
@@ -44,5 +45,10 @@ namespace CrossingLears
             return values[values.Length - 1];
         }
 
+        public static int Range(Vector2Int range) => Random.Range(range.x, range.y);
+        public static float Range(Vector2 range) => Random.Range(range.x, range.y);
+
+        public static int Range(Vector3Int range) => Random.Range(range.x, range.y);
+        public static float Range(Vector3 range) => Random.Range(range.x, range.y);
     }
 }
