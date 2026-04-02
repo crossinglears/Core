@@ -57,12 +57,15 @@ namespace CrossingLears.Editor
 
         void UpgradeScrollRectButton()
         {
-            if (Selection.activeGameObject == null)
-                GUI.enabled = false;
+            GameObject[] selectedGameObjects = Selection.gameObjects;
+            GUI.enabled = selectedGameObjects != null && selectedGameObjects.Length > 0;
 
             if (GUILayout.Button("Upgrade ScrollRect"))
             {
-                SmoothScrollRect.ReplaceWithSmoothScrollRect(Selection.activeGameObject);
+                foreach (GameObject selectedGameObject in selectedGameObjects)
+                {
+                    SmoothScrollRect.ReplaceWithSmoothScrollRect(selectedGameObject);
+                }
             }
 
             GUI.enabled = true;
