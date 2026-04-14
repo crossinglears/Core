@@ -47,7 +47,6 @@ namespace CrossingLears.Editor
         private const string IGNOREDTABSKEY = "CL_Window.IgnoredTabs";
 
         private string filterString = "";
-        private double lastTypeTime;
 
         [MenuItem("Crossing Lears/Toolbox")]
         public static void ShowWindow() => current = GetWindow<CL_Window>("Crossing Toolbox");
@@ -105,8 +104,6 @@ namespace CrossingLears.Editor
 
         private void OnGUI()
         {
-            Filter();
-
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0) GUI.FocusControl(null);
 
             EditorGUILayout.BeginVertical();
@@ -141,6 +138,24 @@ namespace CrossingLears.Editor
             EditorGUILayout.BeginVertical(GUILayout.Width(leftPan));
             GUILayout.Space(10);
 
+            GUIStyle searchStyle = GUI.skin.FindStyle("ToolbarSearchTextField") ?? GUI.skin.FindStyle("ToolbarSeachTextField") ?? EditorStyles.textField;
+            Rect searchRect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight, GUILayout.Width(leftPan - 10));
+            filterString = EditorGUI.TextField(searchRect, filterString, searchStyle);
+
+            if (string.IsNullOrEmpty(filterString))
+            {
+                GUIStyle placeholderStyle = new GUIStyle(EditorStyles.label);
+                placeholderStyle.normal.textColor = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.35f) : new Color(0f, 0f, 0f, 0.35f);
+                placeholderStyle.hover.textColor = placeholderStyle.normal.textColor;
+                placeholderStyle.active.textColor = placeholderStyle.normal.textColor;
+                placeholderStyle.focused.textColor = placeholderStyle.normal.textColor;
+                placeholderStyle.alignment = TextAnchor.MiddleLeft;
+                Rect placeholderRect = new Rect(searchRect.x + 18f, searchRect.y, searchRect.width - 18f, searchRect.height);
+                EditorGUI.LabelField(placeholderRect, "Search...", placeholderStyle);
+            }
+
+            GUILayout.Space(6);
+
             leftScrollPos = EditorGUILayout.BeginScrollView(leftScrollPos, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Width(leftPan), GUILayout.ExpandHeight(true));
 
             GUIStyle tabStyle = new GUIStyle(EditorStyles.label)
@@ -152,11 +167,12 @@ namespace CrossingLears.Editor
                 stretchWidth = false
             };
 
+            string loweredFilter = filterString.ToLower();
             for (int i = 0; i < tabs.Count; i++)
             {
                 CL_WindowTab item = tabs[i];
                 if (IgnoredTabs.Contains(item.TabName)) continue;
-                if (!string.IsNullOrEmpty(filterString) && !item.TabName.ToLower().Contains(filterString)) continue;
+                if (!string.IsNullOrEmpty(filterString) && !item.TabName.ToLower().Contains(loweredFilter)) continue;
 
                 GUIStyle currentStyle = new GUIStyle(tabStyle);
                 if (selectedTab == i) currentStyle.normal.background = GetTabBackgroundColor();
@@ -212,31 +228,6 @@ namespace CrossingLears.Editor
 
         void Filter()
         {
-            Event e = Event.current;
-            if (e.type != EventType.KeyDown) return;
-
-            if (e.keyCode == KeyCode.Escape || e.keyCode == KeyCode.Backspace)
-            {
-                filterString = "";
-                Repaint();
-                return;
-            }
-
-            if (!char.IsControl(e.character) && char.IsLetterOrDigit(e.character))
-            {
-                filterString += char.ToLower(e.character);
-                lastTypeTime = EditorApplication.timeSinceStartup;
-                Repaint();
-            }
-
-            if (!string.IsNullOrEmpty(filterString))
-            {
-                if (EditorApplication.timeSinceStartup - lastTypeTime > 5.0d)
-                {
-                    filterString = "";
-                    Repaint();
-                }
-            }
         }
     }
 }
