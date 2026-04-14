@@ -12,7 +12,7 @@ namespace CrossingLears.Editor
         public Text text;
         public TMP_Text tmp_text;
 
-        bool alsoChangeSelectedObjectName;
+        bool alsoChangeSelectedObjectName = true;
 
         public override void DrawContent()
         {
