@@ -34,7 +34,7 @@ namespace CrossingLears.Editor
     public class CL_Window : EditorWindow
     {
         public static string Message = "";
-        internal static CL_Window current;
+        public static CL_Window current;
 
         private int selectedTab = 0;
         internal List<CL_WindowTab> tabs = new List<CL_WindowTab>();
