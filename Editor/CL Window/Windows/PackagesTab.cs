@@ -19,6 +19,7 @@ namespace CrossingLears.Editor
             new PackageEntry("UI", "A collection of UI tools", "https://github.com/crossinglears/UI.git"),
             new PackageEntry("Audio", "A simple Audio Manager", "https://github.com/crossinglears/Audio.git"),
             new PackageEntry("Haptic Feedback", "Enable vibration on mobile", "https://github.com/crossinglears/HapticFeedback.git"),
+            new PackageEntry("Auto RuleTile", "Create RuleTile from textures", "https://github.com/crossinglears/Auto-RuleTile.git"),
         };
 
         static List<PackageEntry> cL_PaidPackages = new()

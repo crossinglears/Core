@@ -15,7 +15,29 @@ namespace CrossingLears.Editor
         public virtual void OnEnable() { }
         public virtual void Awake() { }
         public virtual void OnDisable() { }
-        public virtual void DrawTitle() { GUILayout.Label(TabName, EditorStyles.boldLabel); }
+        public virtual void DrawTitle()
+        {
+            if (GUILayout.Button(TabName, EditorStyles.boldLabel))
+            {
+                PingScript();
+            }
+        }
+
+        protected void PingScript()
+        {
+            string[] guids = AssetDatabase.FindAssets($"{GetType().Name} t:script");
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
+                if (script != null && script.GetClass() == GetType())
+                {
+                    EditorGUIUtility.PingObject(script);
+                    Selection.activeObject = script;
+                    return;
+                }
+            }
+        }
     }
 
     public abstract class CL_WindowTab_WIP : CL_WindowTab
@@ -23,7 +45,10 @@ namespace CrossingLears.Editor
         public override void DrawTitle()
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label(TabName, EditorStyles.boldLabel);
+            if (GUILayout.Button(TabName, EditorStyles.boldLabel))
+            {
+                PingScript();
+            }
             GUI.contentColor = Color.yellow;
             GUILayout.Label("⚠️ Feature in development", EditorStyles.boldLabel);
             GUI.contentColor = Color.white;
