@@ -60,6 +60,14 @@ namespace CrossingLears
             color.a = alpha;
             spriteRenderer.color = color;
         }
+
+        public static void setActiveAll(this GameObject[] gameObjects, bool state)
+        {
+            foreach(var item in gameObjects)
+            {
+                item.SetActive(state);
+            }
+        }
     }
 
     public static class VectorExtensions 
