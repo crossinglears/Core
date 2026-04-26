@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-public abstract class ObjectDictionary<T> : MonoBehaviour
+public abstract class ObjectDictionary<TOwner, T> : MonoBehaviour where TOwner : ObjectDictionary<TOwner, T>
 {
     protected abstract string NameGetter(T inp);
 
@@ -46,7 +46,7 @@ public abstract class ObjectDictionary<T> : MonoBehaviour
     #endif
 }
 
-public abstract class ObjectLibrary<T> : ObjectDictionary<T> where T : Object
+public abstract class ObjectLibrary<TOwner, T> : ObjectDictionary<TOwner, T> where TOwner : ObjectLibrary<TOwner, T> where T : Object
 {
     #if UNITY_EDITOR
     [CrossingLears.Button]
