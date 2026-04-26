@@ -2,8 +2,8 @@
     "name": "Crossing Lears Editor",
     "rootNamespace": "CrossingLears.Editor",
     "references": [
-        "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:a15f6d61ee483674bbd5d2211d454338"
+        "Unity.TextMeshPro",
+        "Crossing Lears"
     ],
     "includePlatforms": [
         "Editor"
