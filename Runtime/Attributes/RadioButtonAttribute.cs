@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 
 namespace CrossingLears
 {
+    [AttributeUsage(AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
     public class RadioAttribute : PropertyAttribute
     {
         public readonly string[] BoolLabels;
@@ -18,6 +20,7 @@ namespace CrossingLears
     }
 }
 
+[AttributeUsage(AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
 public class RadioAttribute : CrossingLears.RadioAttribute
 {
     public RadioAttribute()
@@ -63,10 +66,10 @@ namespace CrossingLears
             Rect contentRect = EditorGUI.PrefixLabel(position, label);
             int indentLevel = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
-            int selectedIndex = property.boolValue ? 0 : 1;
-            int nextIndex = GUI.Toolbar(contentRect, selectedIndex, radioAttribute.BoolLabels);
-            property.boolValue = nextIndex == 0;
-
+            string[] displayedLabels = new string[] { radioAttribute.BoolLabels[1], radioAttribute.BoolLabels[0] };
+            int selectedIndex = property.boolValue ? 1 : 0;
+            int nextIndex = GUI.Toolbar(contentRect, selectedIndex, displayedLabels);
+            property.boolValue = nextIndex == 1;
             EditorGUI.indentLevel = indentLevel;
         }
 
