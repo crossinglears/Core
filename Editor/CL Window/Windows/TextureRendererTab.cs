@@ -240,6 +240,34 @@ namespace CrossingLears.Editor
         private void DrawAssetListHeader(Rect rect)
         {
             EditorGUI.LabelField(rect, "Assets");
+
+            Event currentEvent = Event.current;
+            if (!rect.Contains(currentEvent.mousePosition))
+            {
+                return;
+            }
+
+            if (currentEvent.type == EventType.DragUpdated)
+            {
+                DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+                currentEvent.Use();
+                return;
+            }
+
+            if (currentEvent.type != EventType.DragPerform)
+            {
+                return;
+            }
+
+            DragAndDrop.AcceptDrag();
+            Object[] droppedObjects = DragAndDrop.objectReferences;
+            for (int i = 0; i < droppedObjects.Length; i++)
+            {
+                assets.Add(droppedObjects[i]);
+            }
+
+            currentEvent.Use();
+            CL_Window.current.Repaint();
         }
 
         private void DrawAssetListElement(Rect rect, int index, bool isActive, bool isFocused)
@@ -311,6 +339,12 @@ namespace CrossingLears.Editor
             byte[] bytes = texture.EncodeToPNG();
             string path = AssetDatabase.GenerateUniqueAssetPath(folderPath + "/" + asset.name + ".png");
             System.IO.File.WriteAllBytes(path, bytes);
+
+            AssetDatabase.ImportAsset(path);
+            TextureImporter textureImporter = (TextureImporter)AssetImporter.GetAtPath(path);
+            textureImporter.textureType = TextureImporterType.Sprite;
+            textureImporter.spriteImportMode = SpriteImportMode.Single;
+            textureImporter.SaveAndReimport();
 
             Object.DestroyImmediate(texture);
         }
