@@ -7,15 +7,24 @@ namespace CrossingLears
     public class RadioAttribute : PropertyAttribute
     {
         public readonly string[] BoolLabels;
+        public readonly int[] IntValues;
 
         public RadioAttribute()
         {
             BoolLabels = new string[] { "True", "False" };
+            IntValues = new int[0];
         }
 
         public RadioAttribute(string trueLabel, string falseLabel)
         {
             BoolLabels = new string[] { trueLabel, falseLabel };
+            IntValues = new int[0];
+        }
+
+        public RadioAttribute(params int[] intValues)
+        {
+            BoolLabels = new string[] { "True", "False" };
+            IntValues = intValues;
         }
     }
 }
@@ -28,6 +37,10 @@ public class RadioAttribute : CrossingLears.RadioAttribute
     }
 
     public RadioAttribute(string trueLabel, string falseLabel) : base(trueLabel, falseLabel)
+    {
+    }
+
+    public RadioAttribute(params int[] intValues) : base(intValues)
     {
     }
 }
@@ -49,13 +62,17 @@ namespace CrossingLears
             {
                 DrawBoolean(position, property, label, radioAttribute);
             }
+            else if (property.propertyType == SerializedPropertyType.Integer)
+            {
+                DrawInt(position, property, label, radioAttribute);
+            }
             else if (property.propertyType == SerializedPropertyType.Enum)
             {
                 DrawEnum(position, property, label);
             }
             else
             {
-                EditorGUI.LabelField(position, label.text, "Radio works with bool and enum fields only");
+                EditorGUI.LabelField(position, label.text, "Radio works with bool, int, and enum fields only");
             }
 
             EditorGUI.EndProperty();
@@ -70,6 +87,40 @@ namespace CrossingLears
             int selectedIndex = property.boolValue ? 1 : 0;
             int nextIndex = GUI.Toolbar(contentRect, selectedIndex, displayedLabels);
             property.boolValue = nextIndex == 1;
+            EditorGUI.indentLevel = indentLevel;
+        }
+
+        private void DrawInt(Rect position, SerializedProperty property, GUIContent label, CrossingLears.RadioAttribute radioAttribute)
+        {
+            if (radioAttribute.IntValues.Length == 0)
+            {
+                EditorGUI.LabelField(position, label.text, "Radio int fields need int parameters");
+                return;
+            }
+
+            Rect contentRect = EditorGUI.PrefixLabel(position, label);
+            int indentLevel = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
+            string[] displayedLabels = new string[radioAttribute.IntValues.Length];
+            int selectedIndex = -1;
+
+            for (int i = 0; i < radioAttribute.IntValues.Length; i++)
+            {
+                displayedLabels[i] = radioAttribute.IntValues[i].ToString();
+
+                if (property.intValue == radioAttribute.IntValues[i])
+                {
+                    selectedIndex = i;
+                }
+            }
+
+            int nextIndex = GUI.Toolbar(contentRect, selectedIndex, displayedLabels);
+
+            if (nextIndex >= 0)
+            {
+                property.intValue = radioAttribute.IntValues[nextIndex];
+            }
+
             EditorGUI.indentLevel = indentLevel;
         }
 
