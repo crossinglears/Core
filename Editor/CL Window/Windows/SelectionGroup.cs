@@ -75,10 +75,6 @@ namespace CrossingLears.Editor
 
         private void DrawLoadSaveButtons()
         {
-            EditorGUILayout.BeginHorizontal();
-
-            GUILayout.FlexibleSpace();
-
             GUI.enabled = Selection.objects.Length > 0;
             if (GUILayout.Button("Add Current Selected Objects"))
             {
@@ -90,9 +86,7 @@ namespace CrossingLears.Editor
             {
                 LoadSelectedSlot();
             }
-
             GUI.enabled = true;
-            EditorGUILayout.EndHorizontal();
         }
 
         private void BuildSelectedObjectsList()
