@@ -5,7 +5,7 @@ namespace CrossingLears
 {
     public class NamedPool<T> : MonoBehaviour where T : Component
     {
-        public T[] originals;
+        public List<T> originals;
         private Dictionary<string, Queue<T>> pools = new Dictionary<string, Queue<T>>();
 
         public static NamedPool<T> Instance;
