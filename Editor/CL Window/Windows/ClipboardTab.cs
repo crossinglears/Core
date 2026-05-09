@@ -41,6 +41,7 @@ namespace CrossingLears.Editor
             public ClipboardPurpose Purpose;
             public string SnapInterval = "";
             public string PrefabReplace = "";
+            public string AssetPath = "";
 
             public void Press()
             {
@@ -105,6 +106,24 @@ namespace CrossingLears.Editor
                         Selection.objects = newSelection.ToArray();
                         break;
 
+                    case ClipboardPurpose.PingAsset:
+                        string assetPath = AssetPath;
+                        if (assetPath == "")
+                        {
+                            assetPath = Message;
+                        }
+
+                        UnityEngine.Object asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(assetPath);
+                        if (asset == null)
+                        {
+                            break;
+                        }
+
+                        EditorApplication.ExecuteMenuItem("Window/General/Project");
+                        Selection.activeObject = asset;
+                        EditorGUIUtility.PingObject(asset);
+                        break;
+
                     default:
                         Debug.Log($"{Message}");
                         break;
@@ -125,6 +144,7 @@ namespace CrossingLears.Editor
             ResizeObject,
             SnapInterval,
             PrefabReplace,
+            PingAsset,
             Log,
         }
 
@@ -382,7 +402,10 @@ namespace CrossingLears.Editor
 
         private void OnGUI()
         {
-            if (editingContent == null) return;
+            if (editingContent == null)
+            {
+                return;
+            }
 
             GUILayout.Label("Edit Clipboard Content", EditorStyles.boldLabel);
 
@@ -404,6 +427,18 @@ namespace CrossingLears.Editor
             if(GUILayout.Button("Grab", GUILayout.Width(50)))
             {
                 editingContent.PrefabReplace = ExtensionTools.GetPathOfObjectSelected(Selection.activeObject);
+                if(string.IsNullOrEmpty(editingContent.Title) || editingContent.Title == "New Content")
+                {
+                    editingContent.Title = Selection.activeObject.name;
+                }
+            }
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            editingContent.AssetPath = EditorGUILayout.TextField("Asset Path", editingContent.AssetPath);
+            if(GUILayout.Button("Grab", GUILayout.Width(50)))
+            {
+                editingContent.AssetPath = ExtensionTools.GetPathOfObjectSelected(Selection.activeObject);
                 if(string.IsNullOrEmpty(editingContent.Title) || editingContent.Title == "New Content")
                 {
                     editingContent.Title = Selection.activeObject.name;
