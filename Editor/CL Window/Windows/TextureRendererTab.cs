@@ -355,6 +355,13 @@ private void DrawCameraContent()
 
     System.IO.File.WriteAllBytes(fullPath, bytes);
     AssetDatabase.Refresh();
+    
+    AssetDatabase.ImportAsset(fullPath);
+
+    TextureImporter textureImporter = (TextureImporter)AssetImporter.GetAtPath(fullPath);
+    textureImporter.textureType = TextureImporterType.Sprite;
+    textureImporter.spriteImportMode = SpriteImportMode.Single;
+    textureImporter.SaveAndReimport();
 
     Object.DestroyImmediate(output);
     Object.DestroyImmediate(texture);
