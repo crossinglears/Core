@@ -86,6 +86,7 @@ namespace CrossingLears.Editor
             {
                 LoadSelectedSlot();
             }
+
             GUI.enabled = true;
         }
 
@@ -117,8 +118,11 @@ namespace CrossingLears.Editor
         {
             rect.y += 2f;
             rect.height = EditorGUIUtility.singleLineHeight;
+
+            Object slotObject = slotObjects[index];
+
             EditorGUI.BeginDisabledGroup(true);
-            EditorGUI.ObjectField(rect, slotObjects[index], typeof(Object), true);
+            EditorGUI.ObjectField(rect, slotObject, typeof(Object), true);
             EditorGUI.EndDisabledGroup();
         }
 
@@ -145,9 +149,22 @@ namespace CrossingLears.Editor
             SelectionGroupSlot slot = slots[selectedSlotIndex];
 
             Object[] unitySelection = Selection.objects;
+
             for (int i = 0; i < unitySelection.Length; i++)
             {
                 AddObjectToSlot(unitySelection[i], slot);
+            }
+
+            string[] assetGUIDs = Selection.assetGUIDs;
+
+            for (int i = 0; i < assetGUIDs.Length; i++)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(assetGUIDs[i]);
+
+                if (AssetDatabase.IsValidFolder(assetPath))
+                {
+                    AddAssetPathToSlot(assetPath, slot);
+                }
             }
 
             RefreshSlotObjects();
@@ -164,6 +181,7 @@ namespace CrossingLears.Editor
             slotObjects.Clear();
 
             List<Object> currentSlotObjects = GetSlotObjects(selectedSlotIndex);
+
             for (int i = 0; i < currentSlotObjects.Count; i++)
             {
                 slotObjects.Add(currentSlotObjects[i]);
@@ -229,9 +247,14 @@ namespace CrossingLears.Editor
 
         private void AddObjectToSlot(Object objectToAdd, SelectionGroupSlot slot)
         {
+            if (objectToAdd == null)
+            {
+                return;
+            }
+
             string assetPath = AssetDatabase.GetAssetPath(objectToAdd);
 
-            if (AssetDatabase.IsValidFolder(assetPath))
+            if (!string.IsNullOrEmpty(assetPath) && AssetDatabase.IsValidFolder(assetPath))
             {
                 AddAssetPathToSlot(assetPath, slot);
                 return;
@@ -256,24 +279,26 @@ namespace CrossingLears.Editor
 
         private bool SlotHasObjects(int slotIndex)
         {
-            List<Object> slotObjects = GetSlotObjects(slotIndex);
-            return slotObjects.Count > 0;
+            List<Object> currentSlotObjects = GetSlotObjects(slotIndex);
+            return currentSlotObjects.Count > 0;
         }
 
         private List<Object> GetSlotObjects(int slotIndex)
         {
-            List<Object> slotObjects = new List<Object>();
+            List<Object> currentSlotObjects = new List<Object>();
             SelectionGroupSlot slot = slots[slotIndex];
 
             for (int i = 0; i < slot.ObjectIds.Count; i++)
             {
                 GlobalObjectId globalObjectId;
+
                 if (GlobalObjectId.TryParse(slot.ObjectIds[i], out globalObjectId))
                 {
                     Object slotObject = GlobalObjectId.GlobalObjectIdentifierToObjectSlow(globalObjectId);
+
                     if (slotObject != null)
                     {
-                        slotObjects.Add(slotObject);
+                        currentSlotObjects.Add(slotObject);
                     }
                 }
             }
@@ -281,13 +306,14 @@ namespace CrossingLears.Editor
             for (int i = 0; i < slot.AssetPaths.Count; i++)
             {
                 Object slotObject = AssetDatabase.LoadAssetAtPath<Object>(slot.AssetPaths[i]);
+
                 if (slotObject != null)
                 {
-                    slotObjects.Add(slotObject);
+                    currentSlotObjects.Add(slotObject);
                 }
             }
 
-            return slotObjects;
+            return currentSlotObjects;
         }
 
         private void LoadGroups()
@@ -325,6 +351,7 @@ namespace CrossingLears.Editor
             saveData.Slots = slots;
 
             string directory = System.IO.Path.GetDirectoryName(SaveFilePath);
+
             if (!System.IO.Directory.Exists(directory))
             {
                 System.IO.Directory.CreateDirectory(directory);
