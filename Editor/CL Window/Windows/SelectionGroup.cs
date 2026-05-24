@@ -72,22 +72,97 @@ namespace CrossingLears.Editor
 
             EditorGUILayout.EndHorizontal();
         }
-
+        
         private void DrawLoadSaveButtons()
         {
-            GUI.enabled = Selection.objects.Length > 0;
+            bool hasObjectsToAdd = false;
+            bool hasFoldersToAdd = false;
+
+            Object[] unitySelection = Selection.objects;
+
+            for (int i = 0; i < unitySelection.Length; i++)
+            {
+                string assetPath = AssetDatabase.GetAssetPath(unitySelection[i]);
+
+                if (!string.IsNullOrEmpty(assetPath) && AssetDatabase.IsValidFolder(assetPath))
+                {
+                    hasFoldersToAdd = true;
+                }
+                else
+                {
+                    hasObjectsToAdd = true;
+                }
+
+                if (hasObjectsToAdd && hasFoldersToAdd)
+                {
+                    break;
+                }
+            }
+
+            GUI.enabled = hasObjectsToAdd;
+
             if (GUILayout.Button("Add Current Selected Objects"))
             {
                 AddCurrentSelectedObjects();
             }
 
+            GUI.enabled = hasFoldersToAdd;
+
+            if (GUILayout.Button("Add Selected Folders"))
+            {
+                AddSelectedFolders();
+            }
+
             GUI.enabled = SlotHasObjects(selectedSlotIndex);
+
             if (GUILayout.Button("Load"))
             {
                 LoadSelectedSlot();
             }
 
             GUI.enabled = true;
+        }
+
+        private void AddCurrentSelectedObjects()
+        {
+            SelectionGroupSlot slot = slots[selectedSlotIndex];
+
+            Object[] unitySelection = Selection.objects;
+
+            for (int i = 0; i < unitySelection.Length; i++)
+            {
+                string assetPath = AssetDatabase.GetAssetPath(unitySelection[i]);
+
+                if (!string.IsNullOrEmpty(assetPath) && AssetDatabase.IsValidFolder(assetPath))
+                {
+                    continue;
+                }
+
+                AddObjectToSlot(unitySelection[i], slot);
+            }
+
+            RefreshSlotObjects();
+            SaveGroups();
+        }
+
+        private void AddSelectedFolders()
+        {
+            SelectionGroupSlot slot = slots[selectedSlotIndex];
+
+            string[] assetGUIDs = Selection.assetGUIDs;
+
+            for (int i = 0; i < assetGUIDs.Length; i++)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(assetGUIDs[i]);
+
+                if (AssetDatabase.IsValidFolder(assetPath))
+                {
+                    AddAssetPathToSlot(assetPath, slot);
+                }
+            }
+
+            RefreshSlotObjects();
+            SaveGroups();
         }
 
         private void BuildSelectedObjectsList()
@@ -142,33 +217,6 @@ namespace CrossingLears.Editor
         private void OnSelectionChanged()
         {
             CL_Window.current.Repaint();
-        }
-
-        private void AddCurrentSelectedObjects()
-        {
-            SelectionGroupSlot slot = slots[selectedSlotIndex];
-
-            Object[] unitySelection = Selection.objects;
-
-            for (int i = 0; i < unitySelection.Length; i++)
-            {
-                AddObjectToSlot(unitySelection[i], slot);
-            }
-
-            string[] assetGUIDs = Selection.assetGUIDs;
-
-            for (int i = 0; i < assetGUIDs.Length; i++)
-            {
-                string assetPath = AssetDatabase.GUIDToAssetPath(assetGUIDs[i]);
-
-                if (AssetDatabase.IsValidFolder(assetPath))
-                {
-                    AddAssetPathToSlot(assetPath, slot);
-                }
-            }
-
-            RefreshSlotObjects();
-            SaveGroups();
         }
 
         private void LoadSelectedSlot()
