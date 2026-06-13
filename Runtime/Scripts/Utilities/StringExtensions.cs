@@ -183,5 +183,55 @@ namespace CrossingLears
         {
             return $"<align=\"{alignment}\">{input}</align>";
         }
+
+        public static string Nicify(this string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return input;
+            }
+
+            StringBuilder builder = new StringBuilder(input.Length + 8);
+
+            int startIndex = 0;
+
+            if (input.Length >= 2 && input[0] == 'm' && input[1] == '_')
+            {
+                startIndex = 2;
+            }
+            else if (input.Length >= 2 && input[0] == 'k' && char.IsUpper(input[1]))
+            {
+                startIndex = 1;
+            }
+
+            for (int i = startIndex; i < input.Length; i++)
+            {
+                char current = input[i];
+
+                if (builder.Length == 0)
+                {
+                    builder.Append(char.ToUpperInvariant(current));
+                    continue;
+                }
+
+                char previous = input[i - 1];
+
+                if (char.IsUpper(current))
+                {
+                    if (char.IsLower(previous) ||
+                        char.IsDigit(previous) ||
+                        (char.IsUpper(previous) &&
+                        i + 1 < input.Length &&
+                        char.IsLower(input[i + 1])))
+                    {
+                        builder.Append(' ');
+                    }
+                }
+
+                builder.Append(current);
+            }
+
+            return builder.ToString();
+        }
     }
 }
