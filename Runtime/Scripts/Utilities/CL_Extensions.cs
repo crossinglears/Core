@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CrossingLears
@@ -15,6 +16,24 @@ namespace CrossingLears
 
         public static void open(this GameObject go) => go.SetActive(true);
         public static void close(this GameObject go) => go.SetActive(false);
+
+        public static void open(this IEnumerable<GameObject> gameObjects)
+        {
+            foreach (GameObject go in gameObjects)
+            {
+                if(go != null)
+                go.SetActive(true);
+            }
+        }
+
+        public static void close(this IEnumerable<GameObject> gameObjects)
+        {
+            foreach (GameObject go in gameObjects)
+            {
+                if(go != null)
+                go.SetActive(true);
+            }
+        }
 
         public static void open(this Component go) => go.gameObject.SetActive(true);
         public static void close(this Component go) => go.gameObject.SetActive(false);
