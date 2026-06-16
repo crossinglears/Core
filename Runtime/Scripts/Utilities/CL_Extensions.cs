@@ -31,7 +31,7 @@ namespace CrossingLears
             foreach (GameObject go in gameObjects)
             {
                 if(go != null)
-                go.SetActive(true);
+                go.SetActive(false);
             }
         }
 
