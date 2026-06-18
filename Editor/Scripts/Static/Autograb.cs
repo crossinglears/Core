@@ -12,7 +12,7 @@ namespace CrossingLears.Editor
             Component component = (Component)command.context;
             Undo.RecordObject(component, "AutoGrab (GameObject)");
             AssignComponents(component, component.GetComponentInChildren);
-            EditorUtility.SetDirty(component);
+            UnityEditor.EditorUtility.SetDirty(component);
         }
 
         [MenuItem("CONTEXT/Component/AutoGrab (Scene)")]
@@ -21,7 +21,7 @@ namespace CrossingLears.Editor
             Component component = (Component)command.context;
             Undo.RecordObject(component, "AutoGrab (Scene)");
             AssignComponents(component, type => (Component)Object.FindAnyObjectByType(type));
-            EditorUtility.SetDirty(component);
+            UnityEditor.EditorUtility.SetDirty(component);
         }
 
         private static void AssignComponents(Component targetComponent, System.Func<System.Type, Component> searchFunc)

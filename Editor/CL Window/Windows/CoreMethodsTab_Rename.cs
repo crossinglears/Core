@@ -65,7 +65,7 @@ namespace CrossingLears.Editor
                     .Replace(text, "<.*?>", string.Empty)
                     .Replace("\n", " ");
 
-                EditorUtility.SetDirty(gameObject);
+                UnityEditor.EditorUtility.SetDirty(gameObject);
             }
 
             if (!Application.isPlaying)

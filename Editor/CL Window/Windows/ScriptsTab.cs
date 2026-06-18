@@ -59,7 +59,7 @@ namespace CrossingLears.Editor
             if (GUILayout.Button("Open Local Folder", GUILayout.Width(130f), GUILayout.Height(24f)))
             {
                 EnsureLocalFolderExists();
-                EditorUtility.RevealInFinder(LocalScriptsRoot);
+                UnityEditor.EditorUtility.RevealInFinder(LocalScriptsRoot);
             }
 
             EditorGUILayout.EndHorizontal();
@@ -490,7 +490,7 @@ namespace CrossingLears.Editor
 
             if (string.IsNullOrWhiteSpace(scriptName))
             {
-                EditorUtility.DisplayDialog("Invalid Name", "Script name is required.", "OK");
+                UnityEditor.EditorUtility.DisplayDialog("Invalid Name", "Script name is required.", "OK");
                 return;
             }
 
@@ -500,7 +500,7 @@ namespace CrossingLears.Editor
 
             if (File.Exists(filePath))
             {
-                EditorUtility.DisplayDialog("Already Exists", "Script already exists:\n" + filePath, "OK");
+                UnityEditor.EditorUtility.DisplayDialog("Already Exists", "Script already exists:\n" + filePath, "OK");
                 return;
             }
 
@@ -554,7 +554,7 @@ public class {scriptName} : MonoBehaviour
                 }
                 else
                 {
-                    EditorUtility.DisplayDialog("Missing File", "Local file not found:\n" + entry.FilePath, "OK");
+                    UnityEditor.EditorUtility.DisplayDialog("Missing File", "Local file not found:\n" + entry.FilePath, "OK");
                 }
 
                 return;
@@ -572,7 +572,7 @@ public class {scriptName} : MonoBehaviour
 
         private void InsertEntry(ScriptEntry entry)
         {
-            string destinationFolder = EditorUtility.OpenFolderPanel("Select destination folder inside this Unity project", Application.dataPath, "");
+            string destinationFolder = UnityEditor.EditorUtility.OpenFolderPanel("Select destination folder inside this Unity project", Application.dataPath, "");
 
             if (string.IsNullOrWhiteSpace(destinationFolder))
             {
@@ -581,7 +581,7 @@ public class {scriptName} : MonoBehaviour
 
             if (!destinationFolder.StartsWith(Application.dataPath, StringComparison.OrdinalIgnoreCase))
             {
-                EditorUtility.DisplayDialog("Invalid Folder", "Destination must be inside this project's Assets folder.", "OK");
+                UnityEditor.EditorUtility.DisplayDialog("Invalid Folder", "Destination must be inside this project's Assets folder.", "OK");
                 return;
             }
 
@@ -589,7 +589,7 @@ public class {scriptName} : MonoBehaviour
 
             if (entry.Dependencies.Count > 0)
             {
-                installDependencies = EditorUtility.DisplayDialog("Dependencies Found", "This script has dependencies:\n\n" + string.Join("\n", entry.Dependencies) + "\n\nInstall dependencies too?", "Yes", "No");
+                installDependencies = UnityEditor.EditorUtility.DisplayDialog("Dependencies Found", "This script has dependencies:\n\n" + string.Join("\n", entry.Dependencies) + "\n\nInstall dependencies too?", "Yes", "No");
             }
 
             try
@@ -618,11 +618,11 @@ public class {scriptName} : MonoBehaviour
                 AssetDatabase.Refresh();
 
                 string relativeFolder = "Assets" + destinationFolder.Substring(Application.dataPath.Length);
-                EditorUtility.DisplayDialog("Insert Complete", "Script copied to:\n" + relativeFolder, "OK");
+                UnityEditor.EditorUtility.DisplayDialog("Insert Complete", "Script copied to:\n" + relativeFolder, "OK");
             }
             catch (Exception ex)
             {
-                EditorUtility.DisplayDialog("Insert Failed", ex.Message, "OK");
+                UnityEditor.EditorUtility.DisplayDialog("Insert Failed", ex.Message, "OK");
             }
         }
 
@@ -635,7 +635,7 @@ public class {scriptName} : MonoBehaviour
 
             if (File.Exists(destinationPath))
             {
-                bool overwrite = EditorUtility.DisplayDialog("File Already Exists", fileName + " already exists.\nOverwrite it?", "Overwrite", "Skip");
+                bool overwrite = UnityEditor.EditorUtility.DisplayDialog("File Already Exists", fileName + " already exists.\nOverwrite it?", "Overwrite", "Skip");
 
                 if (!overwrite)
                 {

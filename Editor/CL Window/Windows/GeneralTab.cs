@@ -46,7 +46,7 @@ namespace CrossingLears.Editor
 
             if (GUILayout.Button("Visit Website"))
             {
-                if (EditorUtility.DisplayDialog("Open URL", $"Open \"{WebsiteLink}\" with your browser?", "Yes", "No"))
+                if (UnityEditor.EditorUtility.DisplayDialog("Open URL", $"Open \"{WebsiteLink}\" with your browser?", "Yes", "No"))
                 {
                     Application.OpenURL(WebsiteLink);
                 }

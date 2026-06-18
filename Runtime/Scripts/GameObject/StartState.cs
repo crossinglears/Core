@@ -32,7 +32,7 @@ namespace CrossingLears
             }
             else
             {
-                if (EditorUtility.DisplayDialog("StartStateController Missing",
+                if (UnityEditor.EditorUtility.DisplayDialog("StartStateController Missing",
                     "No StartStateController found in this scene.\n\nDo you want to create one?",
                     "Create", "Don't Create"))
                 {

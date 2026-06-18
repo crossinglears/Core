@@ -64,7 +64,7 @@ public abstract class ObjectLibrary<TOwner, T> : ObjectDictionary<TOwner, T> whe
             }
         }
 
-        EditorUtility.SetDirty(this);
+        UnityEditor.EditorUtility.SetDirty(this);
     }
     
     [CrossingLears.Button]
@@ -110,8 +110,8 @@ public abstract class ObjectLibrary<TOwner, T> : ObjectDictionary<TOwner, T> whe
                 }
             }
         }
-        
-        EditorUtility.SetDirty(this);
+
+        UnityEditor.EditorUtility.SetDirty(this);
         Debug.Log($"[ObjectDictionary] Loaded {Lister.Count} items via AssetDatabase");
     }
     #endif

@@ -107,7 +107,7 @@ namespace CrossingLears.Editor
                     t.localScale = adjustedScale;
                 }
 
-                EditorUtility.SetDirty(t);
+                        UnityEditor.EditorUtility.SetDirty(t);
             }
         }
     }

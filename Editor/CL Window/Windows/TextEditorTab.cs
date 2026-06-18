@@ -43,17 +43,17 @@ namespace CrossingLears.Editor
                 if (foundText != null)
                 {
                     foundText.text = newValue;
-                    EditorUtility.SetDirty(foundText);
+                    UnityEditor.EditorUtility.SetDirty(foundText);
                 }
                 if (foundTMP != null)
                 {
                     foundTMP.text = newValue;
-                    EditorUtility.SetDirty(foundTMP);
+                    UnityEditor.EditorUtility.SetDirty(foundTMP);
                 }
                 if (alsoChangeSelectedObjectName)
                 {
                     selected.name = newValue;
-                    EditorUtility.SetDirty(selected);
+                    UnityEditor.EditorUtility.SetDirty(selected);
                 }
             }
   

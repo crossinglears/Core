@@ -32,7 +32,7 @@ namespace CrossingLears.Editor
 
             if(GUILayout.Button(new GUIContent("Replace With Prefab", "Replace the Heirarchy Object with the Project Object")))
             {
-                int option = EditorUtility.DisplayDialogComplex(
+                int option = UnityEditor.EditorUtility.DisplayDialogComplex(
                     "Replace With Prefab",
                     "Choose replace mode",
                     "Full Prefab Replace",

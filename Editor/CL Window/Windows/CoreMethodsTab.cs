@@ -47,7 +47,7 @@ namespace CrossingLears.Editor
             bool hasStartState = Object.FindObjectsByType<StartState>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                 .Any(s => s.gameObject.scene == scene);
 
-            if (hasStartState || EditorUtility.DisplayDialog("No StartState found",
+            if (hasStartState || UnityEditor.EditorUtility.DisplayDialog("No StartState found",
                 "No StartState found in this scene.\n\nDo you want to spawn this controller?",
                 "Spawn StartStateController", "Cancel"))
             {

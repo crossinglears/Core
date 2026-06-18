@@ -89,7 +89,7 @@ namespace CrossingLears.Editor
                     }
                 }
 
-                EditorUtility.RevealInFinder(path);
+                UnityEditor.EditorUtility.RevealInFinder(path);
             }
 
             public Path(string n, string d)

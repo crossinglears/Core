@@ -119,7 +119,7 @@ namespace CrossingLears.Editor
             GUILayout.Label("Favorite Packages", EditorStyles.boldLabel);
             if (GUILayout.Button("Reset", GUILayout.Width(60)))
             {
-                if (EditorUtility.DisplayDialog(
+                if (UnityEditor.EditorUtility.DisplayDialog(
                     "Reset Favorites",
                     "Are you sure you want to reset the package list?",
                     "Yes",
@@ -200,7 +200,7 @@ namespace CrossingLears.Editor
 
                 if (GUILayout.Button("Buy", GUILayout.Width(60)))
                 {
-                    if (EditorUtility.DisplayDialog("Open URL", $"Open \"{package.Url}\" with your browser?", "Yes", "No"))
+                    if (UnityEditor.EditorUtility.DisplayDialog("Open URL", $"Open \"{package.Url}\" with your browser?", "Yes", "No"))
                         Application.OpenURL(package.Url);
                 }
                 GUILayout.Space(3);

@@ -21,7 +21,7 @@ namespace CrossingLears.Editor
                         localScale.z = Mathf.Abs(localScale.z);
                         item.localScale = localScale;
 
-                        EditorUtility.SetDirty(item);
+                        UnityEditor.EditorUtility.SetDirty(item);
                     }
                 }
             }

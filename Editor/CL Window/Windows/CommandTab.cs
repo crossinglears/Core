@@ -183,7 +183,7 @@ namespace CrossingLears.Editor
                     foreach (UnityEngine.Object instance in instances)
                     {
                         method.Invoke(instance, null);
-                        EditorUtility.SetDirty(instance);
+                        UnityEditor.EditorUtility.SetDirty(instance);
                     }
                 }
             }
@@ -296,7 +296,7 @@ namespace CrossingLears.Editor
                             foreach (UnityEngine.Object instance in instances)
                             {
                                 method.Invoke(instance, null);
-                                EditorUtility.SetDirty(instance);
+                                UnityEditor.EditorUtility.SetDirty(instance);
                             }
                             break;
 

@@ -40,7 +40,7 @@ namespace CrossingLears.Editor
             string cameraID = EditorPrefs.GetString("TextureRendererCamera", "");
             if (!string.IsNullOrEmpty(cameraID))
             {
-                camera = EditorUtility.InstanceIDToObject(int.Parse(cameraID)) as Camera;
+                camera = UnityEditor.EditorUtility.InstanceIDToObject(int.Parse(cameraID)) as Camera;
             }
 
             BuildAssetList();
