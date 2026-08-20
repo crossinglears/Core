@@ -1,0 +1,236 @@
+Crossing Lears Core
+===================
+Version: 0.4.1
+Minimum Unity: 6000.0 (Unity 6)
+Publisher: Crossing Lears
+Website: https://crossinglears.com/
+
+This package is licensed under the Unity Asset Store EULA when obtained from
+the Unity Asset Store.
+
+
+1. Overview
+-----------
+Crossing Lears Core is an editor and runtime utility package. It includes:
+
+- Inspector attributes ([Button], [ReadOnly], and related drawers)
+- Runtime helpers (Chance, extensions, pooling, object dictionaries)
+- Runtime components (PlatformDependent, StartState, OnEnableScript, and more)
+- Context menu utilities (AutoGrab, MoveToTop)
+- An extensible editor toolbox window with auto-discovered tabs
+
+Open the demo scene to see runtime components in a sample setup:
+
+  Assets/Crossing Lears Core/Demo/CrossingLearsCoreDemo.unity
+
+
+2. Dependencies
+---------------
+Required Package Manager dependency:
+
+- com.unity.ugui (Unity UI / TextMesh Pro)
+
+See Third-Party Notices.txt in the package root.
+
+Asset Store listing note:
+"Asset uses Unity UI / TextMesh Pro under the Unity Companion License; see
+Third-Party Notices.txt file in package for details."
+
+
+3. Installation
+---------------
+Asset Store / Package Manager:
+
+1. Import Crossing Lears Core into your project.
+2. Confirm com.unity.ugui is present (included by default in most Unity 6
+   projects).
+3. Open Window > Crossing Lears Core > Toolbox to use the editor window.
+4. Open the demo scene under Demo/ to inspect sample components.
+
+
+4. Toolbox Window
+-----------------
+Menu: Window > Crossing Lears Core > Toolbox
+
+Behavior:
+- Tabs are discovered automatically by reflection
+- General is always pinned first
+- Tab order is saved in EditorPrefs
+- Tabs can be hidden from the General tab
+- Search filters the visible tab list
+
+Built-in tabs include: General, Packages, Scenes, Todo, Clipboard, Auto Save,
+Command, Core Methods, Editor, Level Design, Object Snap, Paths, Pivot,
+Play Mode, Random Prefab, Renderer, Script, Selection, Snippets, Text Edit,
+Transform, and related helpers.
+
+
+5. Feedback Sender (data disclosure)
+------------------------------------
+The General tab includes an optional Send Feedback field.
+
+- Feedback is sent ONLY when you click Send Feedback.
+- Nothing is transmitted on import, load, domain reload, or Play Mode enter.
+- Only the text you typed is posted to the Crossing Lears publisher endpoint.
+- The Visit Website button asks for confirmation before opening a browser.
+
+
+6. Inspector Attributes
+-----------------------
+[CrossingLears.Button]
+[CrossingLears.Button("Custom Label")]
+- Place on a method to draw an Inspector button that invokes it.
+- Attribute namespace: CrossingLears
+- Runtime assembly name: Crossing Lears
+- Runtime assembly definition GUID: b5b95d56ce8ae8a4d86d5517a33f4f18
+- Assembly definition reference:
+  GUID:b5b95d56ce8ae8a4d86d5517a33f4f18
+
+Core automatically adds CROSSINGLEARS to PlayerSettings for every
+NamedBuildTarget while installed. Removing the UPM package or deleting
+Assets/Crossing Lears Core through Unity removes the define.
+
+Consumer example:
+
+#if CROSSINGLEARS
+[CrossingLears.Button("Run Action")]
+#else
+[ContextMenu("Run Action")]
+#endif
+private void RunAction()
+{
+}
+
+When CROSSINGLEARS is active, the consumer assembly must reference the Core
+runtime assembly in its .asmdef:
+
+  "references": [
+    "GUID:b5b95d56ce8ae8a4d86d5517a33f4f18"
+  ]
+
+Do not include that reference when shipping the consumer as a standalone Asset
+Store package. Without Core, CROSSINGLEARS is not defined and the consumer
+uses its ContextMenu fallback.
+
+[ReadOnly]
+- Place on a field to draw it as non-editable in the Inspector.
+
+Also included: CL_CommandAttribute, InspectorTextAttribute, ShowSpriteAttribute,
+RadioButtonAttribute.
+
+
+7. Context Menu Utilities
+-------------------------
+AutoGrab
+- CONTEXT/Component/AutoGrab (GameObject)
+- CONTEXT/Component/AutoGrab (Scene)
+- Fills empty public/serialized references. Undo-supported.
+
+MoveToTop
+- CONTEXT/MonoBehaviour/MoveToTop
+- Moves the MonoBehaviour to the top of the component list.
+
+
+8. Runtime Utilities
+--------------------
+Chance
+- Percentage checks, weighted RandomEnum, vector range helpers.
+
+CL_Extensions
+- instantiate, destroy, open, close, destroyChildObjects, closeChildObjects,
+  alphaChange, vector snap/range helpers.
+
+CSharp_Utilities
+- Shuffle, GetRandomFromList, RandomEnum helpers.
+
+CoroutineAsync
+- Wait for Task completion inside coroutines.
+
+RemoveDuplicatesExtension
+- Deduplicate collections.
+
+CL_Logger
+- CreateFloatingText2D / CreateFloatingTextUI (requires TextMesh Pro).
+
+Pool / NamedPool
+- Generic component pooling bases.
+
+ObjectDictionary / ObjectLibrary
+- Named asset lookup helpers.
+
+
+9. Runtime Components
+---------------------
+PlatformDependent
+- Limits GameObjects to selected build targets during preprocess build.
+
+StartState / StartStateController
+- Controls initial open/close/destroy state of objects at Start.
+
+OnEnableScript
+- Exposes UnityEvents for OnEnable and OnDisable.
+
+CloseOnDisable / ClosedOnDisable
+- Deactivates the GameObject on disable.
+
+VersionDisplay
+- Writes a SemVer-formatted version string to a TMP_Text on Start.
+
+SmoothScrollRect
+- ScrollRect subclass with smoothed scroll chasing.
+
+RadialMenu
+- Arranges child RectTransforms in a circular layout.
+
+
+10. Demo Scene
+--------------
+Path: Demo/CrossingLearsCoreDemo.unity
+
+Contents:
+- PlatformDependent Cube
+- StartState Sphere with StartStateController
+- Attribute Showcase ([Button] / [ReadOnly] / OnEnableScript)
+- UI Canvas with SmoothScrollRect and RadialMenu sample items
+
+Prefabs:
+- Demo/Prefabs/Demo_PlatformCube.prefab
+- Demo/Prefabs/Demo_StartStateObject.prefab
+
+Enter Play mode to see the on-screen Demo Guide (DemoGuide) that walks
+through each feature and its setup steps. Select Attribute Showcase in the
+Hierarchy and use the Inspector buttons added by [Button].
+
+
+11. Extending The Toolbox
+-------------------------
+1. Create a class that inherits from CL_WindowTab (CrossingLears.Editor).
+2. Implement TabName and DrawContent().
+3. Place the script in an Editor assembly or Editor folder.
+4. Reopen the toolbox or trigger a script reload.
+
+Tabs are discovered automatically. No manual registration is required.
+
+
+12. Persistence Paths
+---------------------
+Project-local:
+- Assets/Editor/Development Files/Todo.json
+- Assets/Editor/Development Files/Clipboard.json
+
+Machine-local:
+- %AppData%/CrossingLears/FavoritePackages.json
+
+
+13. Fast Enter Play Mode
+------------------------
+This package supports Enter Play Mode Options with Domain Reload disabled
+(Unity 6.6 default for new projects). Mutable static fields are reset via
+InitializeOnEnterPlayMode (editor) and RuntimeInitializeOnLoadMethod
+SubsystemRegistration (runtime).
+
+
+14. Support
+-----------
+Website: https://crossinglears.com/
+Email: main@crossinglears.com

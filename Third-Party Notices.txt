@@ -1,0 +1,17 @@
+This package depends on the following third-party components:
+
+-------------------------------------------------------------------------------
+Unity UI / TextMesh Pro (com.unity.ugui)
+-------------------------------------------------------------------------------
+Copyright (c) Unity Technologies.
+Licensed under the Unity Companion License for Unity-dependent projects.
+See https://docs.unity3d.com/Packages/com.unity.ugui@latest
+
+TextMesh Pro is provided through the Unity UI (ugui) package and is not
+redistributed inside this asset. It is declared as a Package Manager
+dependency and must be present in the consuming project (installed
+automatically when using this package via UPM, or already available in most
+Unity 6 projects).
+
+Asset uses Unity UI / TextMesh Pro under the Unity Companion License; see this
+Third-Party Notices.txt file in the package for details.

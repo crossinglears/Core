@@ -1,0 +1,23 @@
+{
+  "name": "com.crossinglears.core",
+  "displayName": "Crossing Lears Core",
+  "version": "0.4.1",
+  "unity": "6000.0",
+  "unityRelease": "0f1",
+  "description": "Shared foundation for Crossing Lears tools: runtime helpers, inspector attributes, context menu utilities, and an extensible editor toolbox window.",
+  "dependencies": {
+    "com.unity.ugui": "2.0.0"
+  },
+  "author": {
+    "name": "Crossing Lears",
+    "email": "main@crossinglears.com",
+    "url": "https://crossinglears.com/"
+  },
+  "keywords": [
+    "editor",
+    "tools",
+    "utilities",
+    "attributes",
+    "toolbox"
+  ]
+}
