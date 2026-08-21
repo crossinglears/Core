@@ -2,6 +2,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+#if UNITY_6000_0_OR_NEWER
+using UnityEditor.SceneManagement;
+#endif
 
 namespace CrossingLears.Editor
 {
@@ -42,23 +45,48 @@ namespace CrossingLears.Editor
             {
                 if (foundText != null)
                 {
-                    foundText.text = newValue;
-                    UnityEditor.EditorUtility.SetDirty(foundText);
+                    CommitInstanceEdit(foundText, () => foundText.text = newValue);
                 }
                 if (foundTMP != null)
                 {
-                    foundTMP.text = newValue;
-                    UnityEditor.EditorUtility.SetDirty(foundTMP);
+                    CommitInstanceEdit(foundTMP, () => foundTMP.text = newValue);
                 }
                 if (alsoChangeSelectedObjectName)
                 {
-                    selected.name = newValue;
-                    UnityEditor.EditorUtility.SetDirty(selected);
+                    CommitInstanceEdit(selected, () => selected.name = newValue);
                 }
             }
   
             CoreMethodsTab.RenameAllSelected();
             CL_Window.current.Repaint();
+        }
+
+        static void CommitInstanceEdit(Object obj, System.Action apply)
+        {
+#if UNITY_6000_0_OR_NEWER
+            if (PrefabUtility.IsPartOfPrefabAsset(obj) && !PrefabUtility.IsPartOfNonAssetPrefabInstance(obj))
+            {
+                return;
+            }
+            GameObject go = obj as GameObject;
+            if (go == null)
+            {
+                go = ((Component)obj).gameObject;
+            }
+            if (PrefabStageUtility.GetPrefabStage(go) != null && !PrefabUtility.IsPartOfNonAssetPrefabInstance(obj))
+            {
+                return;
+            }
+            apply();
+            if (PrefabUtility.IsPartOfNonAssetPrefabInstance(obj))
+            {
+                PrefabUtility.RecordPrefabInstancePropertyModifications(obj);
+                return;
+            }
+#else
+            apply();
+#endif
+            UnityEditor.EditorUtility.SetDirty(obj);
         }
 
     }
