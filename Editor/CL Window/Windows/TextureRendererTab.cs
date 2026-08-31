@@ -72,7 +72,7 @@ namespace CrossingLears.Editor
             string cameraID = EditorPrefs.GetString("TextureRendererCamera", "");
             if (!string.IsNullOrEmpty(cameraID))
             {
-                camera = UnityEditor.EditorUtility.InstanceIDToObject(int.Parse(cameraID)) as Camera;
+                camera = UnityEditor.EditorUtility.EntityIdToObject(EntityId.FromULong(ulong.Parse(cameraID))) as Camera;
             }
 
             BuildAssetList();
@@ -89,7 +89,7 @@ namespace CrossingLears.Editor
 
             if (camera != null)
             {
-                EditorPrefs.SetString("TextureRendererCamera", camera.GetInstanceID().ToString());
+                EditorPrefs.SetString("TextureRendererCamera", EntityId.ToULong(camera.GetEntityId()).ToString());
             }
         }
 

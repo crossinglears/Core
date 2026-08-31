@@ -30,10 +30,9 @@ namespace CrossingLears
         }
         public bool ResetOnUnload = true;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStaticState()
+        static ObjectDictionary()
         {
-            Dict = new Dictionary<string, T>();
+            PlayModeStaticReset.Register(() => Dict = new Dictionary<string, T>());
         }
         
         #if UNITY_EDITOR

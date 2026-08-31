@@ -10,10 +10,9 @@ namespace CrossingLears
 
         public static NamedPool<T> Instance;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStaticState()
+        static NamedPool()
         {
-            Instance = null;
+            PlayModeStaticReset.Register(() => Instance = null);
         }
 
         void Awake()

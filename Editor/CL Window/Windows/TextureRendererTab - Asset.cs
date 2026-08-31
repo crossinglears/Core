@@ -195,7 +195,7 @@ namespace CrossingLears.Editor
 
                 Texture2D preview = AssetPreview.GetAssetPreview(asset);
 
-                if (preview == null && AssetPreview.IsLoadingAssetPreview(asset.GetInstanceID()))
+                if (preview == null && AssetPreview.IsLoadingAssetPreview(asset.GetEntityId()))
                 {
                     EditorApplication.delayCall += GenerateAssetTextures;
                     return;

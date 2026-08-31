@@ -34,7 +34,7 @@ namespace CrossingLears.Editor
                     ? ObjectNames.NicifyVariableName(method.Name)
                     : button.Name;
 
-                string key = editor.target.GetInstanceID() + "_" + method.MetadataToken;
+                string key = editor.target.GetEntityId() + "_" + method.MetadataToken;
 
                 if (!cachedArgs.TryGetValue(key, out object[] args))
                 {
